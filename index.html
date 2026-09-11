@@ -978,6 +978,63 @@ html[data-theme="light"] .job-banner .nec-pill {
 }
 html[data-theme="light"] .field .readonly-val { background: var(--readonly-bg); }
 html[data-theme="light"] table.data th { background: var(--thead-bg); }
+
+/* Catalog category accordion */
+.cat-groups { display: flex; flex-direction: column; gap: .4rem; }
+.cat-group {
+  border: 1px solid var(--border, #2a3544);
+  border-radius: 10px;
+  background: var(--card, #121a24);
+  overflow: hidden;
+}
+.cat-group-hd {
+  display: flex; align-items: center; gap: .6rem;
+  width: 100%; text-align: left;
+  padding: .55rem .75rem;
+  background: transparent; border: 0; cursor: pointer;
+  color: inherit; font: inherit;
+}
+.cat-group-hd:hover { background: rgba(127,156,245,.08); }
+.cat-group-hd .cat-chev {
+  display: inline-block; width: 1rem; flex: 0 0 auto;
+  transition: transform .15s ease; opacity: .7; font-size: .85rem;
+}
+.cat-group.open .cat-chev { transform: rotate(90deg); }
+.cat-group-hd .cat-name { flex: 1 1 auto; font-weight: 600; }
+.cat-group-hd .cat-badge {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+  font-size: .85rem;
+  padding: .15rem .5rem;
+  border-radius: 999px;
+  background: rgba(127,156,245,.18);
+  color: var(--text, #e8eef6);
+  border: 1px solid rgba(127,156,245,.35);
+}
+.cat-group-hd .cat-badge.has-used {
+  background: rgba(52, 211, 153, .18);
+  border-color: rgba(52, 211, 153, .45);
+}
+.cat-group-bd { display: none; border-top: 1px solid var(--border, #2a3544); }
+.cat-group.open .cat-group-bd { display: block; }
+.cat-group-bd .table-wrap { max-height: 42vh; overflow: auto; margin: 0; }
+html[data-theme="light"] .cat-group {
+  background: #fff !important;
+  border-color: #c5d0de !important;
+}
+html[data-theme="light"] .cat-group-hd .cat-badge {
+  background: #e8eef6 !important;
+  color: #1a2332 !important;
+  border-color: #b8c5d6 !important;
+}
+html[data-theme="light"] .cat-group-hd .cat-badge.has-used {
+  background: #d1fae5 !important;
+  border-color: #6ee7b7 !important;
+}
+.cat-row-used td { opacity: .72; }
+.cat-row-miss td:first-child { color: var(--text-muted); }
+.cat-row-used td:first-child { color: #34d399; font-weight: 700; }
+
 html[data-theme="light"] .stat { background: var(--stat-bg); }
 html[data-theme="light"] .badge { background: var(--badge-bg); }
 html[data-theme="light"] .status-draft { background: #e8eef6; color: var(--text-muted); }
@@ -1186,7 +1243,7 @@ html[data-theme="light"] .panel {
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.6</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.7</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -1433,31 +1490,20 @@ html[data-theme="light"] .panel {
         <h2>Catalog</h2>
         <span class="hint">full materials list · search · add to this job</span>
       </div>
-      <p class="section-help"><strong>General materials list:</strong> Search by description / part / vendor (try <em>LED</em>, <em>lamp</em>, <em>fixture</em>). Columns: Description, Part #, Vendor, Units, Unit price. <strong>Add to job</strong> copies the line to <strong>Job materials</strong> with Qty 1 — edit Qty and Unit price there (Extension = Qty × Price). Some workbook lighting lines ship at $0 until you set a price. Catalog is kept on blank job.</p>
+      <p class="section-help"><strong>General materials list:</strong> Search by description / part / vendor (try <em>LED</em>, <em>lamp</em>, <em>fixture</em>). Grouped into collapsible categories (badge = used on job / total). <strong>Add to job</strong> copies a line to <strong>Job materials</strong> with Qty 1 — edit Qty and Unit price there. Some lighting lines ship at $0 until you set a price. Catalog is kept on blank job.</p>
       <div class="card">
-        <h3>Materials catalog <span class="sub">search · add to job</span></h3>
-        <div class="toolbar">
+        <h3>Materials catalog <span class="sub">categories · search · add to job</span></h3>
+        <div class="toolbar" style="flex-wrap:wrap;gap:.4rem">
           <button type="button" class="btn btn-sm" id="cat-open-job">View job materials</button>
+          <button type="button" class="btn btn-sm" id="cat-expand-all" title="Expand all categories">Expand all</button>
+          <button type="button" class="btn btn-sm" id="cat-collapse-all" title="Collapse all categories">Collapse all</button>
         </div>
         <div class="search-bar">
           <input type="search" id="cat-search" placeholder="Search description, part #, vendor (try: LED, lamp, fixture)…" />
           <span class="badge" id="cat-count">0</span>
         </div>
-        <div class="table-wrap" style="max-height:70vh;overflow:auto">
-          <table class="data">
-            <thead>
-              <tr>
-                <th>Description</th>
-                <th>Part #</th>
-                <th>Vendor</th>
-                <th>Units</th>
-                <th class="col-cost">Unit price</th>
-                <th class="col-actions">Add to job</th>
-              </tr>
-            </thead>
-            <tbody id="cat-body"></tbody>
-          </table>
-        </div>
+        <p class="hint" style="margin:.35rem 0 .5rem;color:var(--text-muted);font-size:.82rem">Collapsed badge = <strong>used on this job / items in category</strong> (e.g. Lamps 2/82). Open a section to browse or add lines.</p>
+        <div id="cat-groups" class="cat-groups" aria-label="Catalog categories"></div>
       </div>
     </section>
 
@@ -1867,7 +1913,7 @@ html[data-theme="light"] .panel {
 
       <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.6<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.7<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
       </div>
     </section>
 
@@ -13287,27 +13333,13 @@ window.BRUNO_SEED = {
   }
 
   function renderCatalog(filter) {
-    var q = (filter || '').toLowerCase().trim();
-    var cat = state.catalog || [];
-    var shown = 0;
-    var html = '';
-    var limit = 80;
-    for (var i = 0; i < cat.length && shown < limit; i++) {
-      var c = cat[i];
-      var hay = (c.item + ' ' + c.part + ' ' + c.vendor).toLowerCase();
-      if (q && hay.indexOf(q) < 0) continue;
-      html += '<tr>' +
-        '<td>' + esc(c.item) + '</td>' +
-        '<td>' + esc(c.part) + '</td>' +
-        '<td>' + esc(c.vendor) + '</td>' +
-        '<td>' + esc(c.units) + '</td>' +
-        '<td class="num-cell">' + money(c.unitCost) + '</td>' +
-        '<td class="col-actions"><button type="button" class="btn btn-sm btn-primary cat-add" data-i="' + i + '">+</button></td>' +
-        '</tr>';
-      shown++;
+    // Overridden by renderCatalogFixed in setupRest (category checklist accordion).
+    if (typeof renderCatalogFixed === 'function') {
+      renderCatalogFixed(filter);
+      return;
     }
-    document.getElementById('cat-body').innerHTML = html || '<tr><td colspan="6">No matches found</td></tr>';
-    document.getElementById('cat-count').textContent = shown + (shown >= limit ? '+' : '') + ' / ' + cat.length;
+    var host = document.getElementById('cat-groups');
+    if (host) host.innerHTML = '<p style="color:var(--text-muted);padding:.75rem">Catalog loading…</p>';
   }
 
   function renderEquip() {
@@ -13717,38 +13749,215 @@ window.BRUNO_SEED = {
     on('cat-open-job', 'click', function () { activateTab('materials'); });
   }
 
-  // Fix catalog add: store id on button
+  /* Catalog categories — checklist-style accordion (used/total when collapsed) */
+  var CAT_OPEN_KEY = 'bruno-electric-cat-open-v1';
+  var catOpenMap = null;
+
+  function loadCatOpenMap() {
+    if (catOpenMap) return catOpenMap;
+    catOpenMap = {};
+    try {
+      var raw = localStorage.getItem(CAT_OPEN_KEY);
+      if (raw) catOpenMap = JSON.parse(raw) || {};
+    } catch (e) { catOpenMap = {}; }
+    return catOpenMap;
+  }
+  function saveCatOpenMap() {
+    try { localStorage.setItem(CAT_OPEN_KEY, JSON.stringify(catOpenMap || {})); } catch (e) {}
+  }
+
+  function catalogCategory(item) {
+    var s = String(item || '');
+    var rules = [
+      ['Lighting & lamps', /lamp|light|fixt|fluorescent|led\b|troffer|bulb|ballast|exit sign|emergency light|wall pack|flood|downlight|high bay|low bay|photocell|photo cell|occupancy|vacancy|sconce|bollard|mercury vapor|quartz|halogen|metal halide|task lt|lense|\blens\b|turret|egress|\bt5\b|\bt8\b|\bt12\b|f32t8|f40|f48|f96|mvr |lu 400|fb-?32|sylfb|dimmer|time clock/i],
+      ['Breakers & panels', /breaker|panel|load center|meter base|disconnect|panelboard|\bqo\b|\bqob\b|homeline|single pole|double pole|triple pole|\bamp\b.*pole|pole.*\bamp\b/i],
+      ['Wire & cable', /thhn|wire|cable|romex|nm-b|mc cable|\bser\b|soow|sjow|ground wire|bare copper|conductor|underground/i],
+      ['Conduit & fittings', /conduit|emt|\bpvc\b|rigid|\bimc\b|nipple|coupling|connector|elbow|\blb\b|\bll\b|\blr\b|strap|clamp|unistrut|allthread|locknut|bushing|expansion|beamclamp|beam clamp/i],
+      ['Boxes & covers', /box|cover|gang|mud ring|extension ring|handy box|fs box|fd box/i],
+      ['Devices (switches & receptacles)', /switch|receptacle|gfci|outlet|toggle|decorator|\bplug\b/i],
+      ['Fuses & protection', /fuse|fusible|flsr|surge|gfpe|arc fault/i],
+      ['Motors & controls', /motor|starter|contactor|relay|\bvfd\b|push button|selector|pilot light|potentiometer|control/i],
+      ['Data & communications', /data|cat ?5|cat ?6|fiber|rj45|ethernet|communication|phone/i],
+      ['Tools & expendables', /blade|saw |drill bit|cutting oil|hacksaw|milwaukee|lennox|saber/i],
+      ['Safety & misc', /safety|lockout|tagout|ppe|glove|hard hat|nail plate/i]
+    ];
+    for (var i = 0; i < rules.length; i++) {
+      if (rules[i][1].test(s)) return rules[i][0];
+    }
+    return 'Other';
+  }
+
+  function catalogUsedKeys() {
+    var used = {};
+    var rows = (state && state.materialsUsed) || [];
+    for (var i = 0; i < rows.length; i++) {
+      var m = rows[i];
+      if (!m) continue;
+      var q = Number(m.qty) || 0;
+      if (q <= 0) continue;
+      if (m.item) used['item:' + String(m.item).toLowerCase()] = true;
+      if (m.part) used['part:' + String(m.part).toLowerCase()] = true;
+    }
+    return used;
+  }
+
+  function isCatalogRowUsed(c, used) {
+    if (!c) return false;
+    if (c.item && used['item:' + String(c.item).toLowerCase()]) return true;
+    if (c.part && String(c.part).trim() && used['part:' + String(c.part).toLowerCase()]) return true;
+    return false;
+  }
+
+  var CAT_ORDER = [
+    'Lighting & lamps',
+    'Wire & cable',
+    'Conduit & fittings',
+    'Boxes & covers',
+    'Devices (switches & receptacles)',
+    'Breakers & panels',
+    'Fuses & protection',
+    'Motors & controls',
+    'Data & communications',
+    'Tools & expendables',
+    'Safety & misc',
+    'Other'
+  ];
+
   function renderCatalogFixed(filter) {
     var q = (filter || '').toLowerCase().trim();
-    var cat = state.catalog || [];
-    var shown = 0;
-    var html = '';
-    var limit = 80;
-    for (var i = 0; i < cat.length && shown < limit; i++) {
-      var c = cat[i];
-      var hay = (c.item + ' ' + (c.part||'') + ' ' + (c.vendor||'')).toLowerCase();
+    var cat = (state && state.catalog) || [];
+    var used = catalogUsedKeys();
+    var openMap = loadCatOpenMap();
+    var groups = {};
+    var i, c, name, hay, matchedTotal = 0;
+
+    for (i = 0; i < cat.length; i++) {
+      c = cat[i];
+      hay = ((c.item || '') + ' ' + (c.part || '') + ' ' + (c.vendor || '')).toLowerCase();
       if (q && hay.indexOf(q) < 0) continue;
-      html += '<tr>' +
-        '<td>' + esc(c.item) + '</td>' +
-        '<td>' + esc(c.part) + '</td>' +
-        '<td>' + esc(c.vendor) + '</td>' +
-        '<td>' + esc(c.units) + '</td>' +
-        '<td class="num-cell">' + money(c.unitCost) + '</td>' +
-        '<td class="col-actions"><button type="button" class="btn btn-sm btn-primary cat-add" data-id="' + esc(c.id) + '">+</button></td>' +
-        '</tr>';
-      shown++;
+      name = catalogCategory(c.item);
+      if (!groups[name]) groups[name] = [];
+      groups[name].push({ c: c, used: isCatalogRowUsed(c, used) });
+      matchedTotal++;
     }
-    document.getElementById('cat-body').innerHTML = html || '<tr><td colspan="6">No matches found</td></tr>';
-    document.getElementById('cat-count').textContent = shown + (shown >= limit ? '+' : '') + ' / ' + cat.length;
+
+    // When searching, auto-open matching categories for this render only
+    var forceOpen = !!q;
+
+    var order = CAT_ORDER.slice();
+    Object.keys(groups).forEach(function (k) {
+      if (order.indexOf(k) < 0) order.push(k);
+    });
+
+    var html = '';
+    var shownCats = 0;
+    for (i = 0; i < order.length; i++) {
+      name = order[i];
+      var rows = groups[name];
+      if (!rows || !rows.length) continue;
+      shownCats++;
+      var usedCount = 0;
+      var j;
+      for (j = 0; j < rows.length; j++) if (rows[j].used) usedCount++;
+      var isOpen = forceOpen ? true : !!openMap[name];
+      var badgeClass = 'cat-badge' + (usedCount > 0 ? ' has-used' : '');
+      var badgeTitle = usedCount + ' of ' + rows.length + ' in this category are on the job (qty > 0)';
+      html += '<div class="cat-group' + (isOpen ? ' open' : '') + '" data-cat="' + esc(name) + '">';
+      html += '<button type="button" class="cat-group-hd" aria-expanded="' + (isOpen ? 'true' : 'false') + '">';
+      html += '<span class="cat-chev" aria-hidden="true">▶</span>';
+      html += '<span class="cat-name">' + esc(name) + '</span>';
+      html += '<span class="' + badgeClass + '" title="' + esc(badgeTitle) + '">' + usedCount + '/' + rows.length + '</span>';
+      html += '</button>';
+      html += '<div class="cat-group-bd">';
+      if (isOpen) {
+        html += '<div class="table-wrap"><table class="data"><thead><tr>';
+        html += '<th style="width:2.2rem" title="On this job">✓</th>';
+        html += '<th>Description</th><th>Part #</th><th>Vendor</th><th>Units</th>';
+        html += '<th class="col-cost">Unit price</th><th class="col-actions">Add</th>';
+        html += '</tr></thead><tbody>';
+        var limit = 120;
+        var shown = 0;
+        // show unused first when checklist browsing (help spot gaps), unless searching
+        var sorted = rows.slice();
+        if (!q) {
+          sorted.sort(function (a, b) {
+            if (a.used === b.used) return 0;
+            return a.used ? 1 : -1; // unused first
+          });
+        }
+        for (j = 0; j < sorted.length && shown < limit; j++) {
+          var row = sorted[j];
+          c = row.c;
+          html += '<tr class="' + (row.used ? 'cat-row-used' : 'cat-row-miss') + '">';
+          html += '<td class="num-cell" title="' + (row.used ? 'Already on job' : 'Not on job yet') + '">' + (row.used ? '✓' : '·') + '</td>';
+          html += '<td>' + esc(c.item) + '</td>';
+          html += '<td>' + esc(c.part) + '</td>';
+          html += '<td>' + esc(c.vendor) + '</td>';
+          html += '<td>' + esc(c.units) + '</td>';
+          html += '<td class="num-cell">' + money(c.unitCost) + '</td>';
+          html += '<td class="col-actions"><button type="button" class="btn btn-sm btn-primary cat-add" data-id="' + esc(c.id) + '" title="Add to job">+</button></td>';
+          html += '</tr>';
+          shown++;
+        }
+        if (sorted.length > limit) {
+          html += '<tr><td colspan="7" style="color:var(--text-muted)">Showing ' + limit + ' of ' + sorted.length + ' — refine search</td></tr>';
+        }
+        html += '</tbody></table></div>';
+      }
+      html += '</div></div>';
+    }
+
+    var host = document.getElementById('cat-groups');
+    if (host) host.innerHTML = html || '<p style="color:var(--text-muted);padding:.75rem">No matches found</p>';
+    var cnt = document.getElementById('cat-count');
+    if (cnt) cnt.textContent = matchedTotal + ' items · ' + shownCats + ' groups';
   }
 
   function setupRest() {
+
     // Replace catalog render
     renderCatalog = renderCatalogFixed;
 
-    on('cat-body', 'click', function (e) {
+    // Category accordion: toggle open/closed (checklist browse)
+    var catGroupsEl = document.getElementById('cat-groups');
+    if (catGroupsEl && !catGroupsEl._brunoBound) {
+      catGroupsEl._brunoBound = true;
+      catGroupsEl.addEventListener('click', function (e) {
+        var hd = e.target.closest('.cat-group-hd');
+        if (!hd) return;
+        e.preventDefault();
+        var grp = hd.closest('.cat-group');
+        if (!grp) return;
+        var name = grp.getAttribute('data-cat') || '';
+        var openMap = loadCatOpenMap();
+        var nowOpen = !grp.classList.contains('open');
+        openMap[name] = nowOpen;
+        catOpenMap = openMap;
+        saveCatOpenMap();
+        var cs = document.getElementById('cat-search');
+        renderCatalog(cs ? cs.value : '');
+      });
+    }
+    on('cat-expand-all', 'click', function () {
+      var openMap = loadCatOpenMap();
+      CAT_ORDER.forEach(function (n) { openMap[n] = true; });
+      // also any custom keys already present
+      Object.keys(openMap).forEach(function (k) { openMap[k] = true; });
+      catOpenMap = openMap; saveCatOpenMap();
+      var cs = document.getElementById('cat-search');
+      renderCatalog(cs ? cs.value : '');
+    });
+    on('cat-collapse-all', 'click', function () {
+      catOpenMap = {}; saveCatOpenMap();
+      var cs = document.getElementById('cat-search');
+      renderCatalog(cs ? cs.value : '');
+    });
+
+    on('cat-groups', 'click', function (e) {
       var btn = e.target.closest('.cat-add');
       if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
       var id = btn.getAttribute('data-id');
       var c = null;
       for (var i = 0; i < state.catalog.length; i++) {
@@ -14531,7 +14740,7 @@ window.BRUNO_SEED = {
       '<p class="fine">Jurisdiction: ' + esc(js.jurisdiction || '') +
         ' · NEC ' + esc(js.necEdition || '') +
         ' (informational — this quote is not auto-recalculated for a different NEC edition).' +
-        '<br>' + esc(companyDisplayName(c)) + ' · v1.6</p>';
+        '<br>' + esc(companyDisplayName(c)) + ' · v1.7</p>';
 
     var pq = document.getElementById('print-quote');
     if (pq) pq.innerHTML = quoteHtml;
@@ -14853,7 +15062,7 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.6';
+    if (badge && ship) badge.textContent = 'v1.7';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');

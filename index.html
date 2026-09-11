@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob:; style-src 'unsafe-inline'; script-src 'sha256-cK65lK5NjywdAySomrtW28Eucfe/oJM1OzVZvUUz9lk=' 'sha256-Ud42Vvs9+J7VO/UW/f5KNlc36Q3y1mpaW7mOXECIJDg=' 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; connect-src 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob:; style-src 'unsafe-inline'; script-src 'unsafe-inline' 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; connect-src 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Bruno Electric Estimating</title>
   <meta name="theme-color" content="#0f1419" />
@@ -833,7 +833,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.2.1</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.2.2</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -1405,7 +1405,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
 
       <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.2.1<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.2.2<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
       </div>
     </section>
 
@@ -9739,6 +9739,7 @@ window.BRUNO_SEED = {
   }
   function toast(msg) {
     var el = document.getElementById('toast');
+    if (!el) return;
     el.textContent = msg;
     el.classList.add('show');
     setTimeout(function () { el.classList.remove('show'); }, 2200);
@@ -11939,7 +11940,7 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.2.1';
+    if (badge && ship) badge.textContent = 'v1.2.2';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');
@@ -11963,23 +11964,38 @@ window.BRUNO_SEED = {
     demoSeed = deepClone(window.BRUNO_SEED);
     var stored = loadFromStorage();
     state = normalizeState(stored ? stored : deepClone(demoSeed));
-    ensureProfilesVault();
-    applyActiveProfileToState();
+    setupTabs(); // bind navigation first so UI never looks dead if later init fails
+
+    try {
+      ensureProfilesVault();
+      applyActiveProfileToState();
+    } catch (err) {
+      console.error('[Bruno] profiles init', err);
+    }
 
     // Ensure tm equipment lines exist as empty for honest T&M=0
+    if (!state.tm) state.tm = {};
     if (!state.tm.laborLines) state.tm.laborLines = [];
     if (!state.tm.equipmentLines || state.tm.equipmentLines.length === 0) {
       // keep empty — totals from detail
       state.tm.equipmentLines = state.tm.equipmentLines || [];
     }
 
-    setupTabs();
-    setupQuoteListeners();
-    setupMaterialListeners();
-    setupRest();
-    setupV3Listeners();
-    bindAll();
-    refresh();
+    try {
+      setupQuoteListeners();
+      setupMaterialListeners();
+      setupRest();
+      setupV3Listeners();
+      bindAll();
+      refresh();
+    } catch (err) {
+      console.error('[Bruno] init bind/refresh', err);
+      var banner = document.createElement('div');
+      banner.setAttribute('role','alert');
+      banner.style.cssText='position:sticky;top:0;z-index:9999;background:#7f1d1d;color:#fff;padding:10px 14px;font:14px/1.4 system-ui';
+      banner.textContent='App init error: ' + (err && err.message ? err.message : String(err));
+      document.body.insertBefore(banner, document.body.firstChild);
+    }
     measureSticky();
     window.addEventListener('resize', measureSticky);
     setTimeout(measureSticky, 50);

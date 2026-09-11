@@ -211,6 +211,31 @@ main {
 body.ship-mode [data-ship-hide="1"] { display: none !important; }
 body.ship-mode .brand-text p .ver-badge { letter-spacing: .02em; }
 .card.company-profile h3 { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; flex-wrap: wrap; }
+
+.profiles-list { display: flex; flex-direction: column; gap: .5rem; margin: .75rem 0 1rem; }
+.profile-card {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem;
+  padding: .75rem 1rem; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--bg-elev); cursor: pointer; text-align: left; width: 100%;
+  color: inherit; font: inherit;
+}
+.profile-card:hover { border-color: var(--accent, #3b82f6); }
+.profile-card.is-editing { border-color: var(--accent, #3b82f6); box-shadow: 0 0 0 1px var(--accent, #3b82f6); }
+.profile-card .pc-meta { flex: 1; min-width: 0; }
+.profile-card .pc-name { font-weight: 700; color: var(--text); }
+.profile-card .pc-sub { font-size: .82rem; color: var(--text-muted); margin-top: .15rem; }
+.badge-active {
+  display: inline-block; font-size: .7rem; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; padding: .2rem .45rem; border-radius: 999px;
+  background: rgba(34,197,94,.18); color: #4ade80; white-space: nowrap;
+}
+.letterhead-strip {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem;
+  padding: .85rem 1rem; margin-bottom: 1rem;
+}
+.letterhead-strip label { margin: 0; font-weight: 600; color: var(--text); }
+.letterhead-strip select { min-width: 12rem; max-width: 100%; }
+.letterhead-strip .lh-manage { font-size: .85rem; color: var(--accent, #60a5fa); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; font: inherit; }
 .card.company-profile .co-preview {
   margin-top: .85rem;
   padding: .75rem .85rem;
@@ -808,7 +833,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.1</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.2</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -841,18 +866,63 @@ html, body { min-height: 100vh; min-height: 100dvh; }
   </div>
 
   <nav class="nav-tabs no-print" role="tablist" id="nav-tabs">
-    <button type="button" class="nav-tab active" data-tab="quote" aria-selected="true">1. Quote</button>
-    <button type="button" class="nav-tab" data-tab="materials">2. Materials</button>
-    <button type="button" class="nav-tab" data-tab="labor">3. Labor &amp; Equip</button>
-    <button type="button" class="nav-tab" data-tab="summary">4. Summary</button>
-    <button type="button" class="nav-tab" data-tab="cos">5. Change Orders</button>
-    <button type="button" class="nav-tab" data-tab="personnel">6. Personnel</button>
-    <button type="button" class="nav-tab" data-tab="tm">7. T&amp;M Invoice</button>
-    <button type="button" class="nav-tab" data-tab="pnl">8. Profit &amp; Loss</button>
-    <button type="button" class="nav-tab" data-tab="help">9. Help</button>
+    <button type="button" class="nav-tab" data-tab="profiles" aria-selected="false">Profiles</button>
+    <button type="button" class="nav-tab active" data-tab="quote" aria-selected="true">Quote</button>
+    <button type="button" class="nav-tab" data-tab="materials">Materials</button>
+    <button type="button" class="nav-tab" data-tab="labor">Labor &amp; Equip</button>
+    <button type="button" class="nav-tab" data-tab="summary">Summary</button>
+    <button type="button" class="nav-tab" data-tab="cos">Change Orders</button>
+    <button type="button" class="nav-tab" data-tab="personnel">Personnel</button>
+    <button type="button" class="nav-tab" data-tab="tm">T&amp;M Invoice</button>
+    <button type="button" class="nav-tab" data-tab="pnl">Profit &amp; Loss</button>
+    <button type="button" class="nav-tab" data-tab="help">Help</button>
   </nav>
 
   <main>
+
+    <!-- PROFILES -->
+    <section class="panel" id="panel-profiles" role="tabpanel">
+      <div class="panel-head">
+        <h2>Profiles</h2>
+        <span class="hint">Shop letterheads · separate from jobs</span>
+      </div>
+      <p class="section-help"><strong>Profiles</strong> are shop letterheads (legal name, address, license, footer). Jobs are separate. <strong>New blank job</strong> never deletes profiles. Set one profile as the active letterhead for Quote / Invoice / PDF.</p>
+      <div class="card">
+        <h3>Your profiles</h3>
+        <div class="toolbar" style="flex-wrap:wrap;gap:.5rem">
+          <button type="button" class="btn btn-primary btn-sm" id="pf-new">New profile</button>
+          <button type="button" class="btn btn-sm" id="pf-dup">Duplicate</button>
+          <button type="button" class="btn btn-sm" id="pf-set-active">Set as letterhead</button>
+          <button type="button" class="btn btn-sm btn-danger" id="pf-del">Delete</button>
+          <button type="button" class="btn btn-sm" id="pf-export">Export profiles JSON</button>
+          <label class="btn btn-sm" style="cursor:pointer;margin:0">
+            Import profiles JSON
+            <input type="file" id="pf-import" accept="application/json,.json" class="sr-only" />
+          </label>
+        </div>
+        <div class="profiles-list" id="profiles-list"></div>
+      </div>
+      <div class="card company-profile">
+        <h3>Edit profile <span class="sub">letterhead fields</span></h3>
+        <div class="grid grid-2">
+          <div class="field"><label>Profile name</label><input type="text" id="pf-name" placeholder="Shop nickname" /></div>
+          <div class="field"><label>Legal name</label><input type="text" id="co-legal" placeholder="Your Electrical LLC" /></div>
+          <div class="field"><label>DBA (optional)</label><input type="text" id="co-dba" placeholder="Doing business as" /></div>
+          <div class="field"><label>Address line 1</label><input type="text" id="co-addr1" /></div>
+          <div class="field"><label>Address line 2</label><input type="text" id="co-addr2" placeholder="Suite / unit (optional)" /></div>
+          <div class="field"><label>City</label><input type="text" id="co-city" /></div>
+          <div class="field"><label>State</label><input type="text" id="co-state" placeholder="TX" /></div>
+          <div class="field"><label>ZIP</label><input type="text" id="co-zip" /></div>
+          <div class="field"><label>Phone</label><input type="text" id="co-phone" /></div>
+          <div class="field"><label>Email</label><input type="email" id="co-email" /></div>
+          <div class="field"><label>License (TECL)</label><input type="text" id="co-license" placeholder="TECL #####" /></div>
+          <div class="field"><label>Website</label><input type="text" id="co-website" placeholder="https://" /></div>
+          <div class="field" style="grid-column:1/-1"><label>Invoice / quote footer note</label><textarea id="co-footer" rows="3" placeholder="Thank you / terms line shown on printed docs"></textarea></div>
+        </div>
+        <div class="co-preview" id="co-block" aria-live="polite"></div>
+      </div>
+    </section>
+
     <!-- QUOTE -->
     <section class="panel active" id="panel-quote" role="tabpanel">
       <div class="panel-head">
@@ -862,7 +932,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
           <button type="button" class="btn btn-sm btn-accent" id="btn-print-quote-2">Print Quote (PDF)</button>
         </div>
       </div>
-      <p class="section-help"><strong>How to use:</strong> Set Company Profile and job header, describe the work, then review the live preview. Quote Total follows Summary (Method A) plus approved Change Orders. Print Quote builds a letterhead PDF from your profile.</p>
+      <p class="section-help"><strong>How to use:</strong> Pick a letterhead (Profiles), set job header, describe the work, then review the live preview. Quote Total follows Summary (Method A) plus approved Change Orders. Print Quote builds a letterhead PDF from the active Profiles letterhead.</p>
       <div class="card">
         <h3>Job settings <span class="sub">stored on this job · not a calc switch</span></h3>
         <div class="grid grid-2">
@@ -884,24 +954,11 @@ html, body { min-height: 100vh; min-height: 100dvh; }
           Use the edition the AHJ enforces; do not auto-apply the wrong calc.
         </p>
       </div>
-      <div class="card company-profile">
-        <h3>Company Profile <span class="sub">letterhead on Quote / Invoice / PDF</span></h3>
-        <p class="section-help" style="margin-top:0">Edit your shop details once. Print Quote and Print Invoice use this profile for the letterhead and footer — not hardcoded Bruno strings — so other EC shops can reuse the app.</p>
-        <div class="grid grid-2">
-          <div class="field"><label>Legal name</label><input type="text" id="co-legal" placeholder="Your Electrical LLC" /></div>
-          <div class="field"><label>DBA (optional)</label><input type="text" id="co-dba" placeholder="Doing business as" /></div>
-          <div class="field"><label>Address line 1</label><input type="text" id="co-addr1" /></div>
-          <div class="field"><label>Address line 2</label><input type="text" id="co-addr2" placeholder="Suite / unit (optional)" /></div>
-          <div class="field"><label>City</label><input type="text" id="co-city" /></div>
-          <div class="field"><label>State</label><input type="text" id="co-state" placeholder="TX" /></div>
-          <div class="field"><label>ZIP</label><input type="text" id="co-zip" /></div>
-          <div class="field"><label>Phone</label><input type="text" id="co-phone" /></div>
-          <div class="field"><label>Email</label><input type="email" id="co-email" /></div>
-          <div class="field"><label>License (TECL)</label><input type="text" id="co-license" placeholder="TECL #####" /></div>
-          <div class="field"><label>Website</label><input type="text" id="co-website" placeholder="https://" /></div>
-          <div class="field" style="grid-column:1/-1"><label>Invoice / quote footer note</label><textarea id="co-footer" rows="3" placeholder="Thank you / terms line shown on printed docs"></textarea></div>
-        </div>
-        <div class="co-preview" id="co-block" aria-live="polite"></div>
+      <div class="card letterhead-strip company-profile" id="letterhead-strip">
+        <label for="q-letterhead-select">Letterhead:</label>
+        <select id="q-letterhead-select" aria-label="Active letterhead profile"></select>
+        <span style="color:var(--text-muted)">·</span>
+        <button type="button" class="lh-manage" id="btn-manage-profiles">Manage in Profiles</button>
       </div>
       <div class="card">
         <h3>Job header</h3>
@@ -1150,7 +1207,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
           <button type="button" class="btn btn-sm btn-accent" id="btn-print-tm-2">Print Invoice (PDF)</button>
         </div>
       </div>
-      <p class="section-help"><strong>Time &amp; material:</strong> Invoice total comes from equipment/labor lines plus materials and sub on this page — not from Summary OH&amp;P. Print Invoice uses Company Profile for letterhead and footer.</p>
+      <p class="section-help"><strong>Time &amp; material:</strong> Invoice total comes from equipment/labor lines plus materials and sub on this page — not from Summary OH&amp;P. Print Invoice uses the active Profiles letterhead and footer.</p>
       <div class="note-box warn">
         When detail is empty, T&amp;M total = <strong>$0</strong> — honest T&amp;M, not a margined quote.
         The Quote stays on the Quote / Summary tabs.
@@ -1280,24 +1337,29 @@ html, body { min-height: 100vh; min-height: 100dvh; }
       <div class="card">
         <h3>Quick start</h3>
         <ol class="help-list">
-          <li>Open <strong>1. Quote</strong> and fill <strong>Company Profile</strong> (legal name, address, phone, email, license). Print Quote and Print Invoice use this for letterhead.</li>
+          <li>Open <strong>Profiles</strong> and set your shop letterhead (legal name, address, phone, email, license). Print Quote and Print Invoice use the active profile.</li>
           <li>Enter job header fields (customer, proposal #, site address, scope description).</li>
-          <li>Add materials on <strong>2. Materials</strong>, then labor/equipment on <strong>3. Labor &amp; Equip</strong>.</li>
-          <li>Set overhead and profit on <strong>4. Summary</strong> — that is the only margin layer for a fixed-price quote.</li>
+          <li>Add materials on <strong>Materials</strong>, then labor/equipment on <strong>Labor &amp; Equip</strong>.</li>
+          <li>Set overhead and profit on <strong>Summary</strong> — that is the only margin layer for a fixed-price quote.</li>
           <li>Use <strong>Print Quote</strong> (header or Quote tab) and choose <strong>Save as PDF</strong> in the print dialog.</li>
         </ol>
       </div>
 
       <div class="card">
-        <h3>Company Profile</h3>
-        <p class="section-help" style="margin-top:0">On the Quote tab, expand <strong>Company Profile</strong>. Edit shop details once per install (or per job after Import). Letterhead and footer on Print Quote / Print Invoice come from this profile — not from hardcoded shop strings — so other EC shops can reuse the app.</p>
+        <h3>Profiles (letterheads)</h3>
+        <p class="section-help" style="margin-top:0">Profiles are shop letterheads stored separately from jobs in <code>bruno-electric-profiles-v1</code>. Create multiple shops, set one as the active letterhead, and switch anytime from the Quote tab strip or the Profiles tab. Letterhead and footer on Print Quote / Print Invoice come from <strong>getActiveProfile()</strong> — not hardcoded shop strings.</p>
+        <ul class="help-list">
+          <li><strong>New blank job:</strong> Clears the current job to zeros. Never deletes profiles; letterhead stays from the active profile.</li>
+          <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job. Does <em>not</em> wipe the profiles vault; ensures the Bruno seed profile exists and prefers it as active.</li>
+          <li><strong>Export / Import profiles JSON:</strong> Backup or restore letterheads independently of the job file.</li>
+        </ul>
       </div>
 
       <div class="card">
         <h3>Build a fixed-price quote</h3>
         <ul class="help-list">
           <li><strong>Materials:</strong> Add lines or pull from the catalog. Extension = Qty × Unit Cost. Do <em>not</em> mark up materials here.</li>
-          <li><strong>Labor &amp; Equip:</strong> Equipment, small tools, subcontractors, and labor hours. Burden rates come from <strong>6. Personnel</strong>.</li>
+          <li><strong>Labor &amp; Equip:</strong> Equipment, small tools, subcontractors, and labor hours. Burden rates come from <strong>Personnel</strong>.</li>
           <li><strong>Summary (OH &amp; profit):</strong> Adjust overhead and profit of sales (Method A). Final sales price is rounded for the base quote. This is the single margin layer.</li>
           <li><strong>Quote Total:</strong> ROUND(Summary final sales) + <strong>approved</strong> Change Orders. Live chips at the top always show the running total.</li>
         </ul>
@@ -1314,7 +1376,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
 
       <div class="card">
         <h3>Change Orders</h3>
-        <p class="section-help" style="margin-top:0">On <strong>5. Change Orders</strong>, add COs with amount and status. Only status <strong>approved</strong> adds to Quote Total and appears on the printed quote. Draft / submitted / rejected / void never change the customer total.</p>
+        <p class="section-help" style="margin-top:0">On <strong>Change Orders</strong>, add COs with amount and status. Only status <strong>approved</strong> adds to Quote Total and appears on the printed quote. Draft / submitted / rejected / void never change the customer total.</p>
       </div>
 
       <div class="card">
@@ -1322,15 +1384,15 @@ html, body { min-height: 100vh; min-height: 100dvh; }
         <ol class="help-list">
           <li>Click <strong>Print Quote</strong> or <strong>Print Invoice</strong> in the header (or the matching button on Quote / T&amp;M).</li>
           <li>In the system print dialog, choose <strong>Save as PDF</strong> (or Microsoft Print to PDF).</li>
-          <li>Letterhead and footer use your Company Profile. Set the profile before printing.</li>
+          <li>Letterhead and footer use your active Profiles letterhead. Set or switch the profile before printing.</li>
         </ol>
       </div>
 
       <div class="card">
         <h3>Reset demo · Export / Import</h3>
         <ul class="help-list">
-          <li><strong>New blank job:</strong> Clears the current job to zeros (materials, labor, equipment, COs, T&amp;M, customer fields). Keeps company profile, employee rates, and material catalog.</li>
-          <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job and demo company data. Confirms before wiping the current job in this app profile.</li>
+          <li><strong>New blank job:</strong> Clears the current job to zeros (materials, labor, equipment, COs, T&amp;M, customer fields). Keeps employee rates, material catalog, and the profiles vault (letterhead stays).</li>
+          <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job. Does not wipe profiles; ensures Bruno seed letterhead exists and sets it active.</li>
           <li><strong>Export JSON:</strong> Saves a backup of the current job to a file you choose.</li>
           <li><strong>Import JSON:</strong> Loads a previously exported backup (size-capped; invalid files are rejected).</li>
         </ul>
@@ -1343,7 +1405,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
 
       <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.0<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.2<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
       </div>
     </section>
 
@@ -10022,10 +10084,223 @@ window.BRUNO_SEED = {
     return c;
   }
 
+
+  /* ========== PROFILES VAULT ========== */
+  function loadProfilesVault() {
+    try {
+      var raw = localStorage.getItem(PROFILES_KEY);
+      if (!raw || raw.length > 2 * 1024 * 1024) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+      if (!Array.isArray(parsed.profiles)) return null;
+      return parsed;
+    } catch (e) {}
+    return null;
+  }
+
+  function saveProfilesVault() {
+    try {
+      if (profilesVault) localStorage.setItem(PROFILES_KEY, JSON.stringify(profilesVault));
+    } catch (e) { /* ignore quota */ }
+  }
+
+  function companyFieldsFrom(src) {
+    var c = normalizeCompany(deepClone(src || {}));
+    return {
+      legalName: c.legalName || '',
+      dba: c.dba || '',
+      address1: c.address1 || '',
+      address2: c.address2 || '',
+      city: c.city || '',
+      state: c.state || '',
+      zip: c.zip || '',
+      phone: c.phone || '',
+      email: c.email || '',
+      license: c.license || '',
+      website: c.website || '',
+      invoiceFooter: c.invoiceFooter || ''
+    };
+  }
+
+  function profileFromFields(id, name, fields) {
+    fields = fields || {};
+    return {
+      id: id,
+      name: name || fields.legalName || 'Profile',
+      legalName: fields.legalName || '',
+      dba: fields.dba || '',
+      address1: fields.address1 || '',
+      address2: fields.address2 || '',
+      city: fields.city || '',
+      state: fields.state || '',
+      zip: fields.zip || '',
+      phone: fields.phone || '',
+      email: fields.email || '',
+      license: fields.license || '',
+      website: fields.website || '',
+      invoiceFooter: fields.invoiceFooter || '',
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  function findProfileById(id) {
+    if (!profilesVault || !profilesVault.profiles) return null;
+    for (var i = 0; i < profilesVault.profiles.length; i++) {
+      if (profilesVault.profiles[i].id === id) return profilesVault.profiles[i];
+    }
+    return null;
+  }
+
+  function ensureProfilesVault() {
+    var loaded = loadProfilesVault();
+    if (loaded && loaded.profiles && loaded.profiles.length) {
+      profilesVault = loaded;
+      if (!profilesVault.version) profilesVault.version = 1;
+      if (!findProfileById(profilesVault.activeId)) {
+        profilesVault.activeId = profilesVault.profiles[0].id;
+        saveProfilesVault();
+      }
+    } else {
+      var seedSrc = null;
+      if (state && state.company && String(state.company.legalName || '').trim()) {
+        seedSrc = state.company;
+      } else if (window.BRUNO_SEED && window.BRUNO_SEED.company) {
+        seedSrc = window.BRUNO_SEED.company;
+      } else {
+        seedSrc = {};
+      }
+      var fields = companyFieldsFrom(seedSrc);
+      var id = uid('prof');
+      var pname = fields.legalName || 'Bruno Electric Services LLC';
+      profilesVault = {
+        version: 1,
+        activeId: id,
+        profiles: [profileFromFields(id, pname, fields)]
+      };
+      saveProfilesVault();
+    }
+    if (!editingProfileId || !findProfileById(editingProfileId)) {
+      editingProfileId = profilesVault.activeId;
+    }
+    return profilesVault;
+  }
+
+  function getActiveProfile() {
+    ensureProfilesVault();
+    return findProfileById(profilesVault.activeId) || profilesVault.profiles[0] || null;
+  }
+
+  function applyActiveProfileToState() {
+    if (!state) return;
+    var p = getActiveProfile();
+    if (!p) return;
+    state.company = normalizeCompany({
+      legalName: p.legalName,
+      dba: p.dba,
+      address1: p.address1,
+      address2: p.address2,
+      city: p.city,
+      state: p.state,
+      zip: p.zip,
+      phone: p.phone,
+      email: p.email,
+      license: p.license,
+      website: p.website,
+      invoiceFooter: p.invoiceFooter
+    });
+  }
+
+  function createProfile() {
+    ensureProfilesVault();
+    var id = uid('prof');
+    var p = profileFromFields(id, 'New profile', {});
+    profilesVault.profiles.push(p);
+    profilesVault.activeId = id;
+    editingProfileId = id;
+    saveProfilesVault();
+    applyActiveProfileToState();
+    return p;
+  }
+
+  function duplicateProfile(id) {
+    ensureProfilesVault();
+    var src = findProfileById(id) || getActiveProfile();
+    if (!src) return null;
+    var copy = deepClone(src);
+    copy.id = uid('prof');
+    copy.name = (src.name || src.legalName || 'Profile') + ' (copy)';
+    copy.updatedAt = new Date().toISOString();
+    profilesVault.profiles.push(copy);
+    profilesVault.activeId = copy.id;
+    editingProfileId = copy.id;
+    saveProfilesVault();
+    applyActiveProfileToState();
+    return copy;
+  }
+
+  function deleteProfile(id) {
+    ensureProfilesVault();
+    if (!profilesVault.profiles || profilesVault.profiles.length <= 1) {
+      toast('Cannot delete the last profile');
+      return false;
+    }
+    var idx = -1;
+    for (var i = 0; i < profilesVault.profiles.length; i++) {
+      if (profilesVault.profiles[i].id === id) { idx = i; break; }
+    }
+    if (idx < 0) return false;
+    var wasActive = profilesVault.profiles[idx].id === profilesVault.activeId;
+    profilesVault.profiles.splice(idx, 1);
+    if (wasActive) profilesVault.activeId = profilesVault.profiles[0].id;
+    if (editingProfileId === id) editingProfileId = profilesVault.activeId;
+    saveProfilesVault();
+    applyActiveProfileToState();
+    return true;
+  }
+
+  function setActiveProfile(id) {
+    ensureProfilesVault();
+    if (!findProfileById(id)) return false;
+    profilesVault.activeId = id;
+    saveProfilesVault();
+    applyActiveProfileToState();
+    return true;
+  }
+
+  function ensureBrunoSeedProfile() {
+    ensureProfilesVault();
+    var seed = window.BRUNO_SEED && window.BRUNO_SEED.company;
+    if (!seed) return getActiveProfile();
+    var targetName = 'Bruno Electric Services LLC';
+    var found = null;
+    for (var i = 0; i < profilesVault.profiles.length; i++) {
+      var p = profilesVault.profiles[i];
+      if ((p.legalName && p.legalName === seed.legalName) || p.name === targetName) {
+        found = p;
+        break;
+      }
+    }
+    if (!found) {
+      var fields = companyFieldsFrom(seed);
+      found = profileFromFields(uid('prof'), targetName, fields);
+      profilesVault.profiles.push(found);
+    }
+    profilesVault.activeId = found.id;
+    editingProfileId = found.id;
+    saveProfilesVault();
+    return found;
+  }
+
+  function letterheadCompany() {
+    var p = null;
+    try { p = getActiveProfile(); } catch (e) {}
+    return normalizeCompany(p || (state && state.company) || {});
+  }
+
   /* ========== RENDER ========== */
   function renderCompany() {
-    var c = normalizeCompany(state.company || {});
-    state.company = c;
+    var p = findProfileById(editingProfileId) || getActiveProfile();
+    var c = normalizeCompany(p || state.company || {});
     var block = document.getElementById('co-block');
     if (!block) return;
     var addr = companyAddressLines(c).map(esc).join('<br>');
@@ -10039,12 +10314,27 @@ window.BRUNO_SEED = {
   }
 
   function bindCompany() {
-    var c = normalizeCompany(state.company || {});
-    state.company = c;
+    ensureProfilesVault();
+    var p = findProfileById(editingProfileId) || getActiveProfile() || {};
+    var c = normalizeCompany({
+      legalName: p.legalName,
+      dba: p.dba,
+      address1: p.address1,
+      address2: p.address2,
+      city: p.city,
+      state: p.state,
+      zip: p.zip,
+      phone: p.phone,
+      email: p.email,
+      license: p.license,
+      website: p.website,
+      invoiceFooter: p.invoiceFooter
+    });
     var set = function (id, val) {
       var el = document.getElementById(id);
       if (el) el.value = val == null ? '' : val;
     };
+    set('pf-name', p.name || '');
     set('co-legal', c.legalName);
     set('co-dba', c.dba);
     set('co-addr1', c.address1);
@@ -10058,28 +10348,82 @@ window.BRUNO_SEED = {
     set('co-website', c.website);
     set('co-footer', c.invoiceFooter);
     renderCompany();
+    renderProfilesList();
+    renderLetterheadSelect();
   }
 
   function readCompany() {
-    if (!state.company) state.company = {};
+    ensureProfilesVault();
+    var p = findProfileById(editingProfileId);
+    if (!p) {
+      p = getActiveProfile();
+      if (p) editingProfileId = p.id;
+    }
+    if (!p) return;
     var g = function (id) {
       var el = document.getElementById(id);
       return el ? el.value : '';
     };
-    state.company.legalName = g('co-legal');
-    state.company.dba = g('co-dba');
-    state.company.address1 = g('co-addr1');
-    state.company.address2 = g('co-addr2');
-    state.company.city = g('co-city');
-    state.company.state = g('co-state');
-    state.company.zip = g('co-zip');
-    state.company.phone = g('co-phone');
-    state.company.email = g('co-email');
-    state.company.license = g('co-license');
-    state.company.website = g('co-website');
-    state.company.invoiceFooter = g('co-footer');
-    normalizeCompany(state.company);
+    var nameEl = document.getElementById('pf-name');
+    if (nameEl) p.name = nameEl.value || p.name || '';
+    p.legalName = g('co-legal');
+    p.dba = g('co-dba');
+    p.address1 = g('co-addr1');
+    p.address2 = g('co-addr2');
+    p.city = g('co-city');
+    p.state = g('co-state');
+    p.zip = g('co-zip');
+    p.phone = g('co-phone');
+    p.email = g('co-email');
+    p.license = g('co-license');
+    p.website = g('co-website');
+    p.invoiceFooter = g('co-footer');
+    p.updatedAt = new Date().toISOString();
+    normalizeCompany(p);
+    if (!p.name) p.name = p.legalName || 'Profile';
+    saveProfilesVault();
+    if (p.id === profilesVault.activeId) applyActiveProfileToState();
     renderCompany();
+    renderProfilesList();
+    renderLetterheadSelect();
+  }
+
+  function renderProfilesList() {
+    var host = document.getElementById('profiles-list');
+    if (!host) return;
+    ensureProfilesVault();
+    var html = '';
+    for (var i = 0; i < profilesVault.profiles.length; i++) {
+      var p = profilesVault.profiles[i];
+      var isActive = p.id === profilesVault.activeId;
+      var isEdit = p.id === editingProfileId;
+      var sub = [p.legalName, p.city, p.state].filter(Boolean).join(' · ');
+      html += '<button type="button" class="profile-card' + (isEdit ? ' is-editing' : '') +
+        '" data-profile-id="' + esc(p.id) + '">' +
+        '<div class="pc-meta"><div class="pc-name">' + esc(p.name || p.legalName || 'Profile') +
+        '</div><div class="pc-sub">' + esc(sub || 'No address yet') + '</div></div>' +
+        (isActive ? '<span class="badge-active">Active</span>' : '') +
+        '</button>';
+    }
+    host.innerHTML = html || '<p class="hint">No profiles yet.</p>';
+  }
+
+  function renderLetterheadSelect() {
+    var sel = document.getElementById('q-letterhead-select');
+    if (!sel) return;
+    ensureProfilesVault();
+    var cur = sel.value;
+    var opts = '';
+    for (var i = 0; i < profilesVault.profiles.length; i++) {
+      var p = profilesVault.profiles[i];
+      var label = p.name || p.legalName || 'Profile';
+      opts += '<option value="' + esc(p.id) + '"' +
+        (p.id === profilesVault.activeId ? ' selected' : '') + '>' +
+        esc(label) + '</option>';
+    }
+    sel.innerHTML = opts;
+    if (profilesVault.activeId) sel.value = profilesVault.activeId;
+    else if (cur) sel.value = cur;
   }
 
   function esc(t) {
@@ -10119,7 +10463,7 @@ window.BRUNO_SEED = {
 
   function renderQuotePreview(calc) {
     var q = state.quote;
-    var c = normalizeCompany(state.company || {});
+    var c = letterheadCompany();
     var cityLine = companyCityLine(c);
     var addrBits = [];
     if (c.address1 || c.address) addrBits.push(c.address1 || c.address);
@@ -10475,6 +10819,7 @@ window.BRUNO_SEED = {
     panel.classList.add('active');
     measureSticky();
     if (name === 'quote' || name === 'tm') buildPrintDocs(calcAll(state));
+    if (name === 'profiles') { renderProfilesList(); bindCompany(); }
   }
 
   function setupTabs() {
@@ -10865,31 +11210,32 @@ window.BRUNO_SEED = {
     }
 
     on('btn-blank', 'click', function () {
-      if (!confirm('Start a blank job? Quote totals go to $0. Company profile, catalog, and employee rates are kept.')) return;
+      if (!confirm('Start a blank job? Quote totals go to $0. Profiles, catalog, and employee rates are kept.')) return;
       state = makeBlankJob({
         company: state && state.company,
         catalog: state && state.catalog,
         personnel: state && state.personnel,
         summary: state && state.summary
       });
+      applyActiveProfileToState();
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
       renderAll();
-      toast('Blank job — totals $0');
+      toast('Blank job — totals $0 · letterhead kept');
     });
     on('btn-reset', 'click', function () {
-      if (!confirm('Reset to demo data (Pioneer Farms)? Local changes will be lost.')) return;
+      if (!confirm('Reset to demo data (Pioneer Farms)? Local job changes will be lost. Profiles are kept.')) return;
       try {
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem('bruno-electric-modernized-v3');
         localStorage.removeItem('bruno-electric-modernized-v3-2');
+        /* Do NOT wipe bruno-electric-profiles-v1 */
       } catch (e) {}
       demoSeed = deepClone(window.BRUNO_SEED);
       state = normalizeState(deepClone(window.BRUNO_SEED));
-      if (window.BRUNO_SEED && window.BRUNO_SEED.company) {
-        state.company = normalizeCompany(deepClone(window.BRUNO_SEED.company));
-      }
+      ensureBrunoSeedProfile();
+      applyActiveProfileToState();
       renderAll();
-      toast('Demo data restored');
+      toast('Demo job restored · profiles kept');
     });
   }
 
@@ -11197,9 +11543,8 @@ window.BRUNO_SEED = {
   function buildPrintDocs(calc) {
     calc = calc || calcAll(state);
     var q = state.quote || {};
-    var c = state.company || {};
+    var c = letterheadCompany();
     var js = state.jobSettings || {};
-    c = normalizeCompany(c);
     var addrHtml = companyAddressLines(c).map(esc).join('<br>');
     var metaBits = [];
     if (c.phone) metaBits.push(esc(c.phone));
@@ -11370,7 +11715,7 @@ window.BRUNO_SEED = {
 
   function setupV3Listeners() {
     [
-      'co-legal','co-dba','co-addr1','co-addr2','co-city','co-state','co-zip',
+      'pf-name','co-legal','co-dba','co-addr1','co-addr2','co-city','co-state','co-zip',
       'co-phone','co-email','co-license','co-website','co-footer'
     ].forEach(function (id) {
       on(id, 'input', function () {
@@ -11379,6 +11724,105 @@ window.BRUNO_SEED = {
         renderQuotePreview(calcAll(state));
         buildPrintDocs(calcAll(state));
       });
+    });
+
+    on('q-letterhead-select', 'change', function () {
+      var id = this.value;
+      if (!id) return;
+      setActiveProfile(id);
+      editingProfileId = id;
+      save();
+      bindCompany();
+      renderQuotePreview(calcAll(state));
+      buildPrintDocs(calcAll(state));
+      toast('Letterhead updated');
+    });
+    on('btn-manage-profiles', 'click', function () {
+      activateTab('profiles');
+    });
+    on('profiles-list', 'click', function (e) {
+      var card = e.target.closest('[data-profile-id]');
+      if (!card) return;
+      editingProfileId = card.getAttribute('data-profile-id');
+      bindCompany();
+    });
+    on('pf-new', 'click', function () {
+      createProfile();
+      save();
+      bindCompany();
+      renderQuotePreview(calcAll(state));
+      buildPrintDocs(calcAll(state));
+      toast('New profile');
+    });
+    on('pf-dup', 'click', function () {
+      duplicateProfile(editingProfileId || (profilesVault && profilesVault.activeId));
+      save();
+      bindCompany();
+      renderQuotePreview(calcAll(state));
+      buildPrintDocs(calcAll(state));
+      toast('Profile duplicated');
+    });
+    on('pf-set-active', 'click', function () {
+      var id = editingProfileId || (profilesVault && profilesVault.activeId);
+      if (!id) return;
+      setActiveProfile(id);
+      save();
+      bindCompany();
+      renderQuotePreview(calcAll(state));
+      buildPrintDocs(calcAll(state));
+      toast('Set as letterhead');
+    });
+    on('pf-del', 'click', function () {
+      var id = editingProfileId || (profilesVault && profilesVault.activeId);
+      if (!id) return;
+      if (!confirm('Delete this profile? This cannot be undone.')) return;
+      if (!deleteProfile(id)) return;
+      save();
+      bindCompany();
+      renderQuotePreview(calcAll(state));
+      buildPrintDocs(calcAll(state));
+      toast('Profile deleted');
+    });
+    on('pf-export', 'click', function () {
+      ensureProfilesVault();
+      var blob = new Blob([JSON.stringify(profilesVault, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'bruno-electric-profiles.json';
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      toast('Profiles exported');
+    });
+    on('pf-import', 'change', function (e) {
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        try {
+          var parsed = JSON.parse(String(reader.result || ''));
+          if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.profiles) || !parsed.profiles.length) {
+            throw new Error('Expected { profiles: [...] }');
+          }
+          profilesVault = {
+            version: 1,
+            activeId: parsed.activeId || parsed.profiles[0].id,
+            profiles: parsed.profiles
+          };
+          if (!findProfileById(profilesVault.activeId)) profilesVault.activeId = profilesVault.profiles[0].id;
+          editingProfileId = profilesVault.activeId;
+          saveProfilesVault();
+          applyActiveProfileToState();
+          save();
+          bindCompany();
+          renderQuotePreview(calcAll(state));
+          buildPrintDocs(calcAll(state));
+          toast('Profiles imported');
+        } catch (err) {
+          alert('Invalid profiles JSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
     });
 
     ['js-jurisdiction'].forEach(function (id) {
@@ -11492,7 +11936,7 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.0';
+    if (badge && ship) badge.textContent = 'v1.2';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');
@@ -11516,6 +11960,8 @@ window.BRUNO_SEED = {
     demoSeed = deepClone(window.BRUNO_SEED);
     var stored = loadFromStorage();
     state = normalizeState(stored ? stored : deepClone(demoSeed));
+    ensureProfilesVault();
+    applyActiveProfileToState();
 
     // Ensure tm equipment lines exist as empty for honest T&M=0
     if (!state.tm.laborLines) state.tm.laborLines = [];

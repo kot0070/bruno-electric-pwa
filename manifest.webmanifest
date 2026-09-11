@@ -1,7 +1,7 @@
 {
   "name": "Bruno Electric Estimating",
   "short_name": "Bruno Electric",
-  "description": "Offline electrical estimating, quotes, and job costing.",
+  "description": "Offline electrical estimating, quotes, and job costing. © 2026 Bruno Electric Services LLC. All rights reserved.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

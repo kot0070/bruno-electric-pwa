@@ -5,6 +5,9 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob:; style-src 'unsafe-inline'; script-src 'unsafe-inline' 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; connect-src 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Bruno Electric Estimating</title>
+  <meta name="author" content="Bruno Electric Services LLC" />
+  <meta name="copyright" content="© 2026 Bruno Electric Services LLC. All rights reserved." />
+  <meta name="application-name" content="Bruno Electric Estimating" />
   <meta name="theme-color" content="#0f1419" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -15,7 +18,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
   <style>
-/* Bruno Electric Estimating */
+/* Bruno Electric Estimating — © 2026 Bruno Electric Services LLC. All rights reserved. */
 :root {
   --bg: #0f1419;
   --bg-elev: #1a222d;
@@ -1243,7 +1246,7 @@ html[data-theme="light"] .panel {
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.8</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.8.1</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -1984,14 +1987,19 @@ html[data-theme="light"] .panel {
 
       <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.8<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.8.1<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help"><strong>Copyright:</strong> © 2026 Bruno Electric Services LLC. All rights reserved.<br/>
+        This application, its name, branding, and documentation are proprietary to <strong>Bruno Electric Services LLC</strong>. Unauthorized copying, redistribution, or commercial use without written permission is prohibited.</p>
+        <p class="section-help" style="margin-top:.5rem"><strong>Owner:</strong> Bruno Electric Services LLC<br/>
+        <strong>Product:</strong> Bruno Electric Estimating (PWA)<br/>
+        <strong>Notice:</strong> © 2026 Bruno Electric Services LLC. All rights reserved.</p>
       </div>
     </section>
 
   </main>
 
   <footer class="app-foot no-print">
-    Bruno Electric Services LLC · Estimating · Offline
+    © 2026 Bruno Electric Services LLC · Estimating · Offline · All rights reserved
   </footer>
 
   <div class="ui-prefs no-print" id="ui-prefs" aria-label="Theme and zoom">
@@ -14007,7 +14015,7 @@ window.BRUNO_SEED = {
     return {
       brunoExportType: type,
       brunoExportVersion: 1,
-      appVersion: 'v1.8',
+      appVersion: 'v1.8.1',
       exportedAt: new Date().toISOString(),
       payload: payload
     };
@@ -15016,7 +15024,7 @@ window.BRUNO_SEED = {
       '<p class="fine">Jurisdiction: ' + esc(js.jurisdiction || '') +
         ' · NEC ' + esc(js.necEdition || '') +
         ' (informational — this quote is not auto-recalculated for a different NEC edition).' +
-        '<br>' + esc(companyDisplayName(c)) + ' · v1.8</p>';
+        '<br>' + esc(companyDisplayName(c)) + ' · v1.8.1</p>';
 
     var pq = document.getElementById('print-quote');
     if (pq) pq.innerHTML = quoteHtml;
@@ -15317,12 +15325,12 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.8';
+    if (badge && ship) badge.textContent = 'v1.8.1';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');
       if (foot) {
-        foot.innerHTML = 'Bruno Electric Services LLC · Estimating · Offline';
+        foot.innerHTML = '© 2026 Bruno Electric Services LLC · Estimating · Offline · All rights reserved';
       }
       /* Ensure hidden ship tabs cannot stay active */
       var active = document.querySelector('.nav-tab.active');

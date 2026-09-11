@@ -1,5 +1,10 @@
 # Bruno Electric Estimating (PWA)
 
+**Copyright © 2026 Bruno Electric Services LLC. All rights reserved.**
+
+This application and its branding are proprietary to Bruno Electric Services LLC.
+Unauthorized copying, redistribution, or commercial use without written permission is prohibited.
+
 Private source for the Bruno Electric Services LLC estimating web app.
 
 ## iPhone install (Add to Home Screen)

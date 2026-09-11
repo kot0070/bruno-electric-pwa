@@ -808,7 +808,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.0</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.1</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -819,6 +819,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
         Import JSON
         <input type="file" id="btn-import" accept="application/json,.json" class="sr-only" />
       </label>
+      <button type="button" class="btn btn-sm" id="btn-blank" title="Start a blank job (totals $0)">New blank job</button>
       <button type="button" class="btn btn-sm btn-danger" id="btn-reset">Reset demo</button>
     </div>
   </header>
@@ -1328,6 +1329,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
       <div class="card">
         <h3>Reset demo · Export / Import</h3>
         <ul class="help-list">
+          <li><strong>New blank job:</strong> Clears the current job to zeros (materials, labor, equipment, COs, T&amp;M, customer fields). Keeps company profile, employee rates, and material catalog.</li>
           <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job and demo company data. Confirms before wiping the current job in this app profile.</li>
           <li><strong>Export JSON:</strong> Saves a backup of the current job to a file you choose.</li>
           <li><strong>Import JSON:</strong> Loads a previously exported backup (size-capped; invalid files are rejected).</li>
@@ -10788,6 +10790,91 @@ window.BRUNO_SEED = {
       };
       reader.readAsText(file);
       e.target.value = '';
+    });
+    function makeBlankJob(keep) {
+      keep = keep || {};
+      var company = normalizeCompany(deepClone(keep.company || (window.BRUNO_SEED && window.BRUNO_SEED.company) || {}));
+      var catalog = deepClone(keep.catalog || (window.BRUNO_SEED && window.BRUNO_SEED.catalog) || []);
+      var personnel = deepClone(keep.personnel || (window.BRUNO_SEED && window.BRUNO_SEED.personnel) || { employees: [], burden: [] });
+      var summary = deepClone(keep.summary || (window.BRUNO_SEED && window.BRUNO_SEED.summary) || { ohRate: 0.25, profitMargin: 0.15 });
+      var today = new Date();
+      var yyyy = today.getFullYear();
+      var mm = String(today.getMonth() + 1).padStart(2, '0');
+      var dd = String(today.getDate()).padStart(2, '0');
+      var iso = yyyy + '-' + mm + '-' + dd;
+      return normalizeState({
+        company: company,
+        catalog: catalog,
+        personnel: personnel,
+        summary: summary,
+        quote: {
+          date: iso,
+          proposal: '',
+          po: '',
+          workOrder: '',
+          contact: '',
+          customer: '',
+          jobAddress1: '',
+          jobAddress2: '',
+          reference: '',
+          quotedBy: '',
+          description: [''],
+          terms: deepClone((window.BRUNO_SEED && window.BRUNO_SEED.quote && window.BRUNO_SEED.quote.terms) || [])
+        },
+        materialsUsed: [],
+        laborEquip: {
+          equipment: [],
+          smallTools: 0,
+          subcontractors: [],
+          estimationHours: 0,
+          blocks: []
+        },
+        tm: {
+          date: iso,
+          invoice: '',
+          contact: '',
+          customer: '',
+          jobAddress1: '',
+          jobAddress2: '',
+          equipmentLines: [],
+          laborLines: [],
+          subAmount: 0,
+          materialAmount: 0,
+          notes: ''
+        },
+        pnl: {
+          billed: null,
+          actualLabor: 0,
+          actualEquip: 0,
+          actualMaterial: null,
+          actualSub: 0,
+          actualOther: 0,
+          linkMaterial: true
+        },
+        jobSettings: {
+          jurisdiction: 'Texas / Austin area',
+          necEdition: '2023'
+        },
+        changeOrders: [],
+        meta: {
+          source: 'blank job',
+          appVersion: 'v1',
+          globalPriceUpdate: iso
+        }
+      });
+    }
+
+    on('btn-blank', 'click', function () {
+      if (!confirm('Start a blank job? Quote totals go to $0. Company profile, catalog, and employee rates are kept.')) return;
+      state = makeBlankJob({
+        company: state && state.company,
+        catalog: state && state.catalog,
+        personnel: state && state.personnel,
+        summary: state && state.summary
+      });
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+      renderAll();
+      toast('Blank job — totals $0');
     });
     on('btn-reset', 'click', function () {
       if (!confirm('Reset to demo data (Pioneer Farms)? Local changes will be lost.')) return;

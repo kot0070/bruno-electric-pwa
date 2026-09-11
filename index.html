@@ -982,6 +982,26 @@ html[data-theme="light"] .job-banner .nec-pill {
 html[data-theme="light"] .field .readonly-val { background: var(--readonly-bg); }
 html[data-theme="light"] table.data th { background: var(--thead-bg); }
 
+
+/* Dispatch day journal */
+.dispatch-week { display:flex; gap:.35rem; flex-wrap:wrap; margin:.5rem 0 .75rem; }
+.dispatch-day {
+  flex:1 1 3.2rem; min-width:3.2rem; max-width:5.5rem;
+  border:1px solid var(--border,#2e3a4a); border-radius:10px;
+  background: var(--bg-elev,#1a222d); color:inherit;
+  padding:.35rem .25rem; cursor:pointer; text-align:center; font:inherit;
+}
+.dispatch-day:hover { border-color: var(--accent-2,#3d8bfd); }
+.dispatch-day.active { border-color: var(--accent,#f0a500); background: rgba(240,165,0,.12); }
+.dispatch-day .d-wd { display:block; font-size:.7rem; color:var(--text-muted); text-transform:uppercase; }
+.dispatch-day .d-num { display:block; font-weight:700; font-size:1rem; }
+.dispatch-day .d-meta { display:block; font-size:.65rem; color:var(--text-muted); margin-top:.15rem; font-variant-numeric:tabular-nums; }
+.dispatch-day.has-calls .d-meta { color:#34d399; }
+.dispatch-totals { display:flex; flex-wrap:wrap; gap:.5rem; margin:.5rem 0; }
+.dispatch-totals .stat { min-width:7rem; }
+html[data-theme="light"] .dispatch-day { background:#fff !important; border-color:#c5d0de !important; color:#1a2332 !important; }
+html[data-theme="light"] .dispatch-day.active { background:#fff7e6 !important; border-color:#f0a500 !important; }
+
 /* Catalog category accordion */
 .cat-groups { display: flex; flex-direction: column; gap: .4rem; }
 .cat-group {
@@ -1246,7 +1266,7 @@ html[data-theme="light"] .panel {
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.8.1</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.9</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -1292,6 +1312,7 @@ html[data-theme="light"] .panel {
     <button type="button" class="nav-tab" data-tab="summary">Summary</button>
     <button type="button" class="nav-tab" data-tab="cos">Change Orders</button>
     <button type="button" class="nav-tab" data-tab="personnel">Workers</button>
+    <button type="button" class="nav-tab" data-tab="dispatch">Dispatch</button>
     <button type="button" class="nav-tab" data-tab="tm">T&amp;M Invoice</button>
     <button type="button" class="nav-tab" data-tab="pnl">Profit &amp; Loss</button>
     <button type="button" class="nav-tab" data-tab="reference">Reference</button>
@@ -1840,6 +1861,80 @@ html[data-theme="light"] .panel {
 <article class="ref-block card" id="ref-haz"><h3>Hazardous Locations (overview)</h3><p class="section-help" style="margin-top:.35rem">Install intrinsically safe systems with a seal-off when entering/exiting. Seal-offs within 18&quot; of a device or when entering/exiting an explosion-proof enclosure. Informational only.</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>Classification</th><th>Meaning</th></tr></thead><tbody><tr><td>Class I</td><td class="num-cell">Explosion hazards may exist due to flammable gases, vapors, or flammable liquids</td></tr><tr><td>Class II</td><td class="num-cell">Explosion hazards may exist due to combustible dusts</td></tr><tr><td>Class III</td><td class="num-cell">Explosion hazards may exist due to ignitable fibers or flyings</td></tr><tr><td>Zone I</td><td class="num-cell">A location where an explosive atmosphere is present under normal operating conditions</td></tr><tr><td>Zone II</td><td class="num-cell">A location where an explosive atmosphere is present only under abnormal operating conditions</td></tr></tbody></table></div></article>
     </section>
 
+
+    <!-- DISPATCH / DAY JOURNAL -->
+    <section class="panel" id="panel-dispatch" role="tabpanel">
+      <div class="panel-head">
+        <h2>Dispatch · day journal</h2>
+        <span class="hint">Service calls by calendar day · gross / after-tax</span>
+      </div>
+      <p class="section-help"><strong>Daily service log:</strong> Pick a date (synced with weekday and week strip). Log each call with time, address, description, hours, and pay. Net uses <strong>Tax settings</strong> below (change when you work in another state). Does not change Quote Method A.</p>
+
+      <div class="card">
+        <h3>Tax settings <span class="sub">jurisdiction · custom rates</span></h3>
+        <p class="section-help" style="margin-top:0">Set rates when the work state changes. Effective tax is stacked: federal, then state, then local. Dispatch net and optional worker defaults use this. Informational payroll estimate — not tax advice.</p>
+        <div class="grid grid-2">
+          <div class="field"><label>State / jurisdiction code</label><input type="text" id="tax-code" placeholder="TX" maxlength="8" /></div>
+          <div class="field"><label>Jurisdiction label</label><input type="text" id="tax-label" placeholder="Texas" /></div>
+          <div class="field"><label>Federal %</label><input type="number" class="num" id="tax-federal" step="0.01" min="0" max="100" /></div>
+          <div class="field"><label>State %</label><input type="number" class="num" id="tax-state" step="0.01" min="0" max="100" /></div>
+          <div class="field"><label>Local / other %</label><input type="number" class="num" id="tax-local" step="0.01" min="0" max="100" /></div>
+          <div class="field"><label>Effective combined %</label><input type="text" id="tax-effective" readonly /></div>
+          <div class="field" style="grid-column:1/-1"><label>Notes</label><input type="text" id="tax-notes" placeholder="e.g. switched to CO job site this week" /></div>
+        </div>
+        <div class="toolbar" style="flex-wrap:wrap;gap:.5rem;margin-top:.5rem">
+          <button type="button" class="btn btn-sm" id="tax-apply-workers" title="Set each worker taxRate to effective %">Apply effective % to all Workers</button>
+          <span class="hint" id="tax-apply-hint" style="align-self:center"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Calendar day</h3>
+        <div class="toolbar" style="flex-wrap:wrap;gap:.5rem;align-items:end">
+          <button type="button" class="btn btn-sm" id="disp-prev" title="Previous day">←</button>
+          <div class="field" style="margin:0;min-width:10rem">
+            <label>Date</label>
+            <input type="date" id="disp-date" />
+          </div>
+          <button type="button" class="btn btn-sm" id="disp-next" title="Next day">→</button>
+          <button type="button" class="btn btn-sm" id="disp-today">Today</button>
+          <div class="field" style="margin:0;min-width:9rem">
+            <label>Weekday</label>
+            <input type="text" id="disp-weekday" readonly />
+          </div>
+        </div>
+        <div class="dispatch-week" id="disp-week" aria-label="Week strip"></div>
+        <div class="dispatch-totals" id="disp-day-totals"></div>
+      </div>
+
+      <div class="card">
+        <h3>Service calls <span class="sub" id="disp-day-label">this day</span></h3>
+        <div class="toolbar" style="flex-wrap:wrap;gap:.5rem">
+          <button type="button" class="btn btn-sm btn-primary" id="disp-add">+ Add call</button>
+          <button type="button" class="btn btn-sm" id="disp-sort">Sort by time</button>
+        </div>
+        <div class="table-wrap" style="overflow:auto">
+          <table class="data" id="disp-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Hours</th>
+                <th>Address</th>
+                <th>Description</th>
+                <th>Gross pay</th>
+                <th>Tax %</th>
+                <th>Net (after tax)</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="disp-body"></tbody>
+          </table>
+        </div>
+        <p class="hint" style="margin-top:.5rem;color:var(--text-muted);font-size:.82rem">Tax % blank = use Tax settings effective rate. Net = Gross × (1 − tax%/100). Journal is kept when you start a blank job.</p>
+      </div>
+    </section>
+
     <section class="panel" id="panel-help" role="tabpanel">
       <div class="panel-head">
         <h2>Help &amp; About</h2>
@@ -1911,7 +2006,7 @@ html[data-theme="light"] .panel {
       <div class="card">
         <h3>Reset demo</h3>
         <ul class="help-list">
-          <li><strong>New blank job:</strong> Clears the current job to zeros (job materials, labor, equipment, small-tool <em>quantities</em>, COs, T&amp;M, customer fields). Keeps worker burden/pay fields, material catalog, small-tool templates, and the Company letterheads vault.</li>
+          <li><strong>New blank job:</strong> Clears the current job to zeros (job materials, labor, equipment, small-tool <em>quantities</em>, COs, T&amp;M, customer fields). Keeps worker burden/pay fields, material catalog, small-tool templates, Dispatch journal, Tax settings, and the Company letterheads vault.</li>
           <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job. Does not wipe Company letterheads; ensures Bruno seed letterhead exists and sets it active.</li>
         </ul>
       </div>
@@ -1985,9 +2080,22 @@ html[data-theme="light"] .panel {
         </ul>
       </div>
 
+
+      <div class="card">
+        <h3>Dispatch · day journal</h3>
+        <ul class="help-list">
+          <li><strong>Where:</strong> <strong>Dispatch</strong> tab — calendar day synced to weekday and Mon–Sun week strip.</li>
+          <li><strong>Each call:</strong> Time, hours, address, description, gross pay, tax % (blank = Tax settings), net after tax, status.</li>
+          <li><strong>Day totals:</strong> Calls, hours, gross, tax estimate, net. Cancelled calls stay listed but week strip net skips cancelled.</li>
+          <li><strong>Tax settings:</strong> Jurisdiction code/label + federal / state / local %. Effective % is stacked. Optional: apply effective % to all Workers.</li>
+          <li><strong>Kept on blank job:</strong> Dispatch journal and tax settings survive <strong>New blank job</strong> (like catalog / workers).</li>
+          <li><strong>Not Google Calendar:</strong> In-app day/week calendar only. Export app backup includes dispatch in the job JSON.</li>
+        </ul>
+      </div>
+
       <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.8.1<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.9<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
         <p class="section-help"><strong>Copyright:</strong> © 2026 Bruno Electric Services LLC. All rights reserved.<br/>
         This application, its name, branding, and documentation are proprietary to <strong>Bruno Electric Services LLC</strong>. Unauthorized copying, redistribution, or commercial use without written permission is prohibited.</p>
         <p class="section-help" style="margin-top:.5rem"><strong>Owner:</strong> Bruno Electric Services LLC<br/>
@@ -12677,6 +12785,60 @@ window.BRUNO_SEED = {
     return null;
   }
 
+
+  function clampPct(n) {
+    n = asNum(n);
+    if (n < 0) n = 0;
+    if (n > 100) n = 100;
+    return n;
+  }
+  function effectiveTaxPct(ts) {
+    ts = ts || (state && state.taxSettings) || {};
+    var f = clampPct(ts.federalPct) / 100;
+    var s = clampPct(ts.statePct) / 100;
+    var l = clampPct(ts.localPct) / 100;
+    return (1 - (1 - f) * (1 - s) * (1 - l)) * 100;
+  }
+  function callTaxPct(call) {
+    if (call && call.taxPct !== '' && call.taxPct != null && !isNaN(Number(call.taxPct))) {
+      return clampPct(Number(call.taxPct));
+    }
+    return effectiveTaxPct();
+  }
+  function callNet(call) {
+    var g = asNum(call && call.grossPay);
+    var t = callTaxPct(call) / 100;
+    return g * (1 - t);
+  }
+  function parseISODate(iso) {
+    var p = String(iso || '').split('-');
+    if (p.length !== 3) return new Date();
+    return new Date(+p[0], +p[1] - 1, +p[2]);
+  }
+  function toISODate(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+  function weekdayName(iso) {
+    try {
+      return parseISODate(iso).toLocaleDateString('en-US', { weekday: 'long' });
+    } catch (e) { return ''; }
+  }
+  function shiftISODate(iso, days) {
+    var d = parseISODate(iso);
+    d.setDate(d.getDate() + days);
+    return toISODate(d);
+  }
+  function startOfWeekMonday(iso) {
+    var d = parseISODate(iso);
+    var day = d.getDay(); // 0 Sun
+    var diff = (day === 0 ? -6 : 1 - day);
+    d.setDate(d.getDate() + diff);
+    return toISODate(d);
+  }
+
   function normalizeState(s) {
     if (!s || typeof s !== 'object' || Array.isArray(s)) s = {};
     if (!s.tm) s.tm = {};
@@ -12864,6 +13026,40 @@ window.BRUNO_SEED = {
       if (row.part == null) row.part = '';
       if (row.vendor == null) row.vendor = '-';
       if (row.units == null || row.units === '') row.units = 'EA';
+    }
+    // Tax settings (jurisdiction) — informational; feeds Dispatch net + optional Workers default
+    if (!s.taxSettings || typeof s.taxSettings !== 'object' || Array.isArray(s.taxSettings)) {
+      s.taxSettings = { jurisdiction: 'TX', jurisdictionLabel: 'Texas', federalPct: 0, statePct: 0, localPct: 0, notes: '' };
+    } else {
+      s.taxSettings.jurisdiction = s.taxSettings.jurisdiction != null ? String(s.taxSettings.jurisdiction) : 'TX';
+      s.taxSettings.jurisdictionLabel = s.taxSettings.jurisdictionLabel != null ? String(s.taxSettings.jurisdictionLabel) : '';
+      s.taxSettings.federalPct = clampPct(asNum(s.taxSettings.federalPct));
+      s.taxSettings.statePct = clampPct(asNum(s.taxSettings.statePct));
+      s.taxSettings.localPct = clampPct(asNum(s.taxSettings.localPct));
+      if (s.taxSettings.notes == null) s.taxSettings.notes = '';
+    }
+    // Dispatch day journal
+    if (!s.dispatch || typeof s.dispatch !== 'object' || Array.isArray(s.dispatch)) {
+      s.dispatch = { selectedDate: todayISO(), calls: [] };
+    }
+    if (!s.dispatch.selectedDate) s.dispatch.selectedDate = todayISO();
+    if (!Array.isArray(s.dispatch.calls)) s.dispatch.calls = [];
+    for (i = 0; i < s.dispatch.calls.length; i++) {
+      row = s.dispatch.calls[i];
+      if (!row || typeof row !== 'object') {
+        s.dispatch.calls[i] = { id: uid('d'), date: s.dispatch.selectedDate, time: '08:00', hours: 0, address: '', description: '', grossPay: 0, taxPct: '', status: 'scheduled' };
+        continue;
+      }
+      if (!row.id) row.id = uid('d');
+      if (!row.date) row.date = s.dispatch.selectedDate;
+      if (row.time == null) row.time = '';
+      row.hours = asNum(row.hours);
+      row.grossPay = asNum(row.grossPay);
+      if (row.address == null) row.address = '';
+      if (row.description == null) row.description = '';
+      if (row.taxPct === null || row.taxPct === undefined) row.taxPct = '';
+      else if (row.taxPct !== '') row.taxPct = asNum(row.taxPct);
+      if (!row.status) row.status = 'scheduled';
     }
     return s;
   }
@@ -13716,6 +13912,7 @@ window.BRUNO_SEED = {
         renderLaborBlocks(calc);
         renderPersonnel();
         renderTM();
+        try { renderDispatch(); } catch (eDisp) { console.error('[Bruno] dispatch', eDisp); }
       }
       renderPnL(calc);
       renderQuotePreview(calc);
@@ -14015,7 +14212,7 @@ window.BRUNO_SEED = {
     return {
       brunoExportType: type,
       brunoExportVersion: 1,
-      appVersion: 'v1.8.1',
+      appVersion: 'v1.9',
       exportedAt: new Date().toISOString(),
       payload: payload
     };
@@ -14156,6 +14353,240 @@ window.BRUNO_SEED = {
     }
   }
 
+
+
+  function ensureDispatch() {
+    if (!state.dispatch) state.dispatch = { selectedDate: todayISO(), calls: [] };
+    if (!state.dispatch.selectedDate) state.dispatch.selectedDate = todayISO();
+    if (!Array.isArray(state.dispatch.calls)) state.dispatch.calls = [];
+    if (!state.taxSettings) state.taxSettings = { jurisdiction: 'TX', jurisdictionLabel: 'Texas', federalPct: 0, statePct: 0, localPct: 0, notes: '' };
+  }
+
+  function bindTaxSettings() {
+    ensureDispatch();
+    var ts = state.taxSettings;
+    var el;
+    el = document.getElementById('tax-code'); if (el) el.value = ts.jurisdiction || '';
+    el = document.getElementById('tax-label'); if (el) el.value = ts.jurisdictionLabel || '';
+    el = document.getElementById('tax-federal'); if (el) el.value = asNum(ts.federalPct);
+    el = document.getElementById('tax-state'); if (el) el.value = asNum(ts.statePct);
+    el = document.getElementById('tax-local'); if (el) el.value = asNum(ts.localPct);
+    el = document.getElementById('tax-notes'); if (el) el.value = ts.notes || '';
+    el = document.getElementById('tax-effective');
+    if (el) el.value = effectiveTaxPct(ts).toFixed(2) + '%';
+  }
+
+  function readTaxSettingsFromDom() {
+    ensureDispatch();
+    var ts = state.taxSettings;
+    var el;
+    el = document.getElementById('tax-code'); if (el) ts.jurisdiction = el.value;
+    el = document.getElementById('tax-label'); if (el) ts.jurisdictionLabel = el.value;
+    el = document.getElementById('tax-federal'); if (el) ts.federalPct = clampPct(el.value);
+    el = document.getElementById('tax-state'); if (el) ts.statePct = clampPct(el.value);
+    el = document.getElementById('tax-local'); if (el) ts.localPct = clampPct(el.value);
+    el = document.getElementById('tax-notes'); if (el) ts.notes = el.value;
+    el = document.getElementById('tax-effective');
+    if (el) el.value = effectiveTaxPct(ts).toFixed(2) + '%';
+  }
+
+  function renderDispatch() {
+    ensureDispatch();
+    var iso = state.dispatch.selectedDate || todayISO();
+    var dateEl = document.getElementById('disp-date');
+    if (dateEl && dateEl.value !== iso) dateEl.value = iso;
+    var wd = document.getElementById('disp-weekday');
+    if (wd) wd.value = weekdayName(iso);
+    var lab = document.getElementById('disp-day-label');
+    if (lab) lab.textContent = weekdayName(iso) + ' · ' + iso;
+
+    // week strip Mon-Sun
+    var weekHost = document.getElementById('disp-week');
+    if (weekHost) {
+      var mon = startOfWeekMonday(iso);
+      var htmlW = '';
+      for (var d = 0; d < 7; d++) {
+        var dayIso = shiftISODate(mon, d);
+        var dd = parseISODate(dayIso);
+        var calls = state.dispatch.calls.filter(function (c) { return c && c.date === dayIso && c.status !== 'cancelled'; });
+        var net = 0;
+        for (var ci = 0; ci < calls.length; ci++) net += callNet(calls[ci]);
+        var active = dayIso === iso ? ' active' : '';
+        var has = calls.length ? ' has-calls' : '';
+        htmlW += '<button type="button" class="dispatch-day' + active + has + '" data-date="' + esc(dayIso) + '">' +
+          '<span class="d-wd">' + esc(dd.toLocaleDateString('en-US', { weekday: 'short' })) + '</span>' +
+          '<span class="d-num">' + dd.getDate() + '</span>' +
+          '<span class="d-meta">' + (calls.length ? (calls.length + ' · ' + money(net)) : '—') + '</span></button>';
+      }
+      weekHost.innerHTML = htmlW;
+    }
+
+    var dayCalls = state.dispatch.calls
+      .map(function (c, idx) { return { c: c, idx: idx }; })
+      .filter(function (x) { return x.c && x.c.date === iso; });
+    // display order by time
+    dayCalls.sort(function (a, b) {
+      return String(a.c.time || '').localeCompare(String(b.c.time || ''));
+    });
+
+    var hours = 0, gross = 0, net = 0, taxAmt = 0;
+    var tbody = document.getElementById('disp-body');
+    var rowsHtml = '';
+    for (var i = 0; i < dayCalls.length; i++) {
+      var c = dayCalls[i].c;
+      var idx = dayCalls[i].idx;
+      var tp = callTaxPct(c);
+      var n = callNet(c);
+      var g = asNum(c.grossPay);
+      if (c.status !== 'cancelled') {
+        hours += asNum(c.hours);
+        gross += g;
+        net += n;
+        taxAmt += (g - n);
+      }
+      var taxDisplay = (c.taxPct === '' || c.taxPct == null) ? '' : asNum(c.taxPct);
+      rowsHtml += '<tr data-i="' + idx + '">' +
+        '<td><input type="time" class="disp-time" value="' + esc(c.time || '') + '" /></td>' +
+        '<td><input type="number" class="num disp-hours" step="0.25" min="0" value="' + asNum(c.hours) + '" /></td>' +
+        '<td><input type="text" class="disp-addr" value="' + esc(c.address || '') + '" placeholder="Job address" /></td>' +
+        '<td><input type="text" class="disp-desc" value="' + esc(c.description || '') + '" placeholder="What / who" /></td>' +
+        '<td><input type="number" class="num disp-gross" step="0.01" min="0" value="' + g + '" /></td>' +
+        '<td><input type="number" class="num disp-tax" step="0.01" min="0" max="100" value="' + taxDisplay + '" placeholder="' + tp.toFixed(1) + '" title="Blank = Tax settings effective" /></td>' +
+        '<td class="num-cell">' + money(n) + '</td>' +
+        '<td><select class="disp-status">' +
+          '<option value="scheduled"' + (c.status === 'scheduled' ? ' selected' : '') + '>Scheduled</option>' +
+          '<option value="done"' + (c.status === 'done' ? ' selected' : '') + '>Done</option>' +
+          '<option value="cancelled"' + (c.status === 'cancelled' ? ' selected' : '') + '>Cancelled</option>' +
+        '</select></td>' +
+        '<td class="col-actions"><button type="button" class="btn btn-sm btn-danger disp-del" title="Remove">×</button></td>' +
+        '</tr>';
+    }
+    if (tbody) tbody.innerHTML = rowsHtml || '<tr><td colspan="9" style="color:var(--text-muted);padding:1rem">No calls this day — + Add call</td></tr>';
+
+    var tot = document.getElementById('disp-day-totals');
+    if (tot) {
+      tot.innerHTML =
+        '<div class="stat"><div class="lbl">Calls</div><div class="val">' + dayCalls.length + '</div></div>' +
+        '<div class="stat"><div class="lbl">Hours</div><div class="val">' + (Math.round(hours * 100) / 100) + '</div></div>' +
+        '<div class="stat"><div class="lbl">Gross</div><div class="val">' + money(gross) + '</div></div>' +
+        '<div class="stat"><div class="lbl">Tax est.</div><div class="val">' + money(taxAmt) + '</div></div>' +
+        '<div class="stat"><div class="lbl">Net (after tax)</div><div class="val big">' + money(net) + '</div></div>' +
+        '<div class="stat"><div class="lbl">Jurisdiction</div><div class="val" style="font-size:.9rem">' + esc((state.taxSettings.jurisdiction || '') + (state.taxSettings.jurisdictionLabel ? ' · ' + state.taxSettings.jurisdictionLabel : '')) + '</div></div>';
+    }
+    bindTaxSettings();
+  }
+
+  function setupDispatchListeners() {
+    ensureDispatch();
+    on('disp-date', 'change', function () {
+      state.dispatch.selectedDate = this.value || todayISO();
+      renderDispatch();
+      save();
+    });
+    on('disp-prev', 'click', function () {
+      state.dispatch.selectedDate = shiftISODate(state.dispatch.selectedDate || todayISO(), -1);
+      renderDispatch(); save();
+    });
+    on('disp-next', 'click', function () {
+      state.dispatch.selectedDate = shiftISODate(state.dispatch.selectedDate || todayISO(), 1);
+      renderDispatch(); save();
+    });
+    on('disp-today', 'click', function () {
+      state.dispatch.selectedDate = todayISO();
+      renderDispatch(); save();
+    });
+    on('disp-week', 'click', function (e) {
+      var btn = e.target.closest('.dispatch-day');
+      if (!btn) return;
+      state.dispatch.selectedDate = btn.getAttribute('data-date') || todayISO();
+      renderDispatch(); save();
+    });
+    on('disp-add', 'click', function () {
+      ensureDispatch();
+      state.dispatch.calls.push({
+        id: uid('d'),
+        date: state.dispatch.selectedDate || todayISO(),
+        time: '08:00',
+        hours: 1,
+        address: '',
+        description: '',
+        grossPay: 0,
+        taxPct: '',
+        status: 'scheduled'
+      });
+      renderDispatch(); save();
+    });
+    on('disp-sort', 'click', function () {
+      ensureDispatch();
+      var iso = state.dispatch.selectedDate;
+      var day = [];
+      var rest = [];
+      for (var i = 0; i < state.dispatch.calls.length; i++) {
+        var c = state.dispatch.calls[i];
+        if (c && c.date === iso) day.push(c); else rest.push(c);
+      }
+      day.sort(function (a, b) { return String(a.time || '').localeCompare(String(b.time || '')); });
+      state.dispatch.calls = rest.concat(day);
+      renderDispatch(); save();
+      toast('Sorted by time');
+    });
+    on('disp-body', 'input', function (e) {
+      var tr = e.target.closest('tr[data-i]');
+      if (!tr) return;
+      var i = +tr.getAttribute('data-i');
+      var c = state.dispatch.calls[i];
+      if (!c) return;
+      if (e.target.classList.contains('disp-time')) c.time = e.target.value;
+      if (e.target.classList.contains('disp-hours')) c.hours = asNum(e.target.value);
+      if (e.target.classList.contains('disp-addr')) c.address = e.target.value;
+      if (e.target.classList.contains('disp-desc')) c.description = e.target.value;
+      if (e.target.classList.contains('disp-gross')) c.grossPay = asNum(e.target.value);
+      if (e.target.classList.contains('disp-tax')) {
+        var v = e.target.value;
+        c.taxPct = (v === '' || v == null) ? '' : clampPct(v);
+      }
+      // update net cell live
+      var netTd = tr.querySelector('td.num-cell');
+      if (netTd) netTd.textContent = money(callNet(c));
+      save();
+    });
+    on('disp-body', 'change', function (e) {
+      var tr = e.target.closest('tr[data-i]');
+      if (!tr) return;
+      var i = +tr.getAttribute('data-i');
+      var c = state.dispatch.calls[i];
+      if (!c) return;
+      if (e.target.classList.contains('disp-status')) {
+        c.status = e.target.value;
+        renderDispatch(); save();
+      }
+    });
+    on('disp-body', 'click', function (e) {
+      if (!e.target.classList.contains('disp-del')) return;
+      var tr = e.target.closest('tr[data-i]');
+      if (!tr) return;
+      state.dispatch.calls.splice(+tr.getAttribute('data-i'), 1);
+      renderDispatch(); save();
+    });
+    // tax settings inputs
+    ['tax-code','tax-label','tax-federal','tax-state','tax-local','tax-notes'].forEach(function (id) {
+      on(id, 'input', function () {
+        readTaxSettingsFromDom();
+        renderDispatch();
+        save();
+      });
+    });
+    on('tax-apply-workers', 'click', function () {
+      var pct = effectiveTaxPct();
+      if (!confirm('Set every worker Tax % to effective ' + pct.toFixed(2) + '% (' + (state.taxSettings.jurisdiction || '') + ')?')) return;
+      var emps = (state.personnel && state.personnel.employees) || [];
+      for (var i = 0; i < emps.length; i++) emps[i].taxRate = pct;
+      var hint = document.getElementById('tax-apply-hint');
+      if (hint) hint.textContent = 'Applied ' + pct.toFixed(2) + '% to ' + emps.length + ' workers';
+      refresh();
+      toast('Workers tax % updated');
+    });
+  }
 
   function setupRest() {
 
@@ -14536,6 +14967,8 @@ window.BRUNO_SEED = {
       var catalog = deepClone(keep.catalog || (window.BRUNO_SEED && window.BRUNO_SEED.catalog) || []);
       var personnel = deepClone(keep.personnel || (window.BRUNO_SEED && window.BRUNO_SEED.personnel) || { employees: [], burden: [] });
       var summary = deepClone(keep.summary || (window.BRUNO_SEED && window.BRUNO_SEED.summary) || { ohRate: 0.25, profitMargin: 0.15 });
+      var taxSettings = deepClone(keep.taxSettings || (state && state.taxSettings) || { jurisdiction: 'TX', jurisdictionLabel: 'Texas', federalPct: 0, statePct: 0, localPct: 0, notes: '' });
+      var dispatch = deepClone(keep.dispatch || (state && state.dispatch) || { selectedDate: todayISO(), calls: [] });
       var today = new Date();
       var yyyy = today.getFullYear();
       var mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -14546,6 +14979,8 @@ window.BRUNO_SEED = {
         catalog: catalog,
         personnel: personnel,
         summary: summary,
+        taxSettings: taxSettings,
+        dispatch: dispatch,
         quote: {
           date: iso,
           proposal: '',
@@ -14612,6 +15047,8 @@ window.BRUNO_SEED = {
         catalog: state && state.catalog,
         personnel: state && state.personnel,
         summary: state && state.summary,
+        taxSettings: state && state.taxSettings,
+        dispatch: state && state.dispatch,
         smallToolsLines: state && state.laborEquip && state.laborEquip.smallToolsLines
       });
       applyActiveProfileToState();
@@ -15024,7 +15461,7 @@ window.BRUNO_SEED = {
       '<p class="fine">Jurisdiction: ' + esc(js.jurisdiction || '') +
         ' · NEC ' + esc(js.necEdition || '') +
         ' (informational — this quote is not auto-recalculated for a different NEC edition).' +
-        '<br>' + esc(companyDisplayName(c)) + ' · v1.8.1</p>';
+        '<br>' + esc(companyDisplayName(c)) + ' · v1.9</p>';
 
     var pq = document.getElementById('print-quote');
     if (pq) pq.innerHTML = quoteHtml;
@@ -15325,7 +15762,7 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.8.1';
+    if (badge && ship) badge.textContent = 'v1.9';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');
@@ -15371,6 +15808,7 @@ window.BRUNO_SEED = {
       setupQuoteListeners();
       setupMaterialListeners();
       setupRest();
+      setupDispatchListeners();
       setupV3Listeners();
       bindAll();
       refresh();

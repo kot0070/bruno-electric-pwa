@@ -1243,16 +1243,21 @@ html[data-theme="light"] .panel {
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.7</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.8</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
       <button type="button" class="btn btn-sm btn-accent" id="btn-print-quote" title="Print Quote (Save as PDF)">Print Quote</button>
       <button type="button" class="btn btn-sm" id="btn-print-tm" title="Print T&amp;M Invoice (Save as PDF)">Print Invoice</button>
-      <button type="button" class="btn btn-sm" id="btn-export" title="Export JSON">Export JSON</button>
-      <label class="btn btn-sm" style="cursor:pointer;margin:0">
-        Import JSON
+      <button type="button" class="btn btn-sm" id="btn-export" title="Export current job JSON only">Export job</button>
+      <label class="btn btn-sm" style="cursor:pointer;margin:0" title="Import a job JSON file">
+        Import job
         <input type="file" id="btn-import" accept="application/json,.json" class="sr-only" />
+      </label>
+      <button type="button" class="btn btn-sm" id="btn-export-app" title="Full app backup: job + companies + workers + prefs">Export app</button>
+      <label class="btn btn-sm" style="cursor:pointer;margin:0" title="Restore a full app backup JSON">
+        Import app
+        <input type="file" id="btn-import-app" accept="application/json,.json" class="sr-only" />
       </label>
       <button type="button" class="btn btn-sm" id="btn-blank" title="Start a blank job (totals $0)">New blank job</button>
       <button type="button" class="btn btn-sm btn-danger" id="btn-reset">Reset demo</button>
@@ -1306,9 +1311,9 @@ html[data-theme="light"] .panel {
           <button type="button" class="btn btn-sm" id="pf-dup">Duplicate</button>
           <button type="button" class="btn btn-sm" id="pf-set-active">Set as letterhead</button>
           <button type="button" class="btn btn-sm btn-danger" id="pf-del">Delete</button>
-          <button type="button" class="btn btn-sm" id="pf-export">Export profiles JSON</button>
-          <label class="btn btn-sm" style="cursor:pointer;margin:0">
-            Import profiles JSON
+          <button type="button" class="btn btn-sm" id="pf-export" title="Export companies / letterheads only">Export companies</button>
+          <label class="btn btn-sm" style="cursor:pointer;margin:0" title="Import companies / letterheads JSON">
+            Import companies
             <input type="file" id="pf-import" accept="application/json,.json" class="sr-only" />
           </label>
         </div>
@@ -1631,6 +1636,17 @@ html[data-theme="light"] .panel {
       </div>
       <p class="section-help"><strong>Workers</strong> are people and job-cost burden rates — <strong>not</strong> Company letterheads. Burden rates feed Labor &amp; Equip and Method A bill-out. The per-worker pay calculator is an informational payroll estimate (gross / after-tax take-home) and does <strong>not</strong> change Labor &amp; Equip burden or Quote OH&amp;P.</p>
       <div class="card">
+        <h3>Workers backup</h3>
+        <p class="section-help" style="margin-top:0">Export / import the Workers roster only (burden rates + pay calculator fields). Does not move Company letterheads or the current job materials.</p>
+        <div class="toolbar" style="flex-wrap:wrap;gap:.5rem">
+          <button type="button" class="btn btn-sm" id="wk-export" title="Export workers JSON">Export workers</button>
+          <label class="btn btn-sm" style="cursor:pointer;margin:0" title="Import workers JSON">
+            Import workers
+            <input type="file" id="wk-import" accept="application/json,.json" class="sr-only" />
+          </label>
+        </div>
+      </div>
+      <div class="card">
         <h3>Labor of Burden Rates (editable)</h3>
         <p class="section-help" style="margin-top:0"><strong>Job costing:</strong> Edit burden (straight / OT multipliers). Labor &amp; Equip uses these burden rates. Bill-out columns follow Method A with current OH and profit. Separate from worker take-home pay below.</p>
         <div class="table-wrap">
@@ -1845,13 +1861,13 @@ html[data-theme="light"] .panel {
         <ul class="help-list">
           <li><strong>New blank job:</strong> Clears the current job to zeros. Never deletes letterheads; active Company letterhead stays.</li>
           <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job. Does <em>not</em> wipe the Company vault; ensures the Bruno seed letterhead exists and prefers it as active.</li>
-          <li><strong>Export / Import profiles JSON:</strong> Backup or restore letterheads independently of the job file.</li>
+          <li><strong>Export / Import companies:</strong> Backup or restore letterheads only (see Help → Backup). File: <code>bruno-companies-*.json</code>.</li>
         </ul>
       </div>
 
       <div class="card">
         <h3>Workers (burden + take-home)</h3>
-        <p class="section-help" style="margin-top:0"><strong>Workers</strong> holds job-cost burden rates and an informational per-worker hourly pay calculator (gross / after-tax). Burden rates feed Labor &amp; Equip and Method A bill-out. Pay calculator fields (<code>payRate</code>, <code>taxRate</code> %) do <strong>not</strong> change Quote OH&amp;P or Labor &amp; Equip burden.</p>
+        <p class="section-help" style="margin-top:0"><strong>Workers</strong> holds job-cost burden rates and an informational per-worker hourly pay calculator (gross / after-tax). Burden rates feed Labor &amp; Equip and Method A bill-out. Pay calculator fields (<code>payRate</code>, <code>taxRate</code> %) do <strong>not</strong> change Quote OH&amp;P or Labor &amp; Equip burden. Use <strong>Export workers</strong> / <strong>Import workers</strong> on the Workers tab to move the roster without the job (see Help → Backup).</p>
       </div>
 
       <div class="card">
@@ -1890,18 +1906,73 @@ html[data-theme="light"] .panel {
       </div>
 
       <div class="card">
-        <h3>Reset demo · Export / Import</h3>
+        <h3>Reset demo</h3>
         <ul class="help-list">
           <li><strong>New blank job:</strong> Clears the current job to zeros (job materials, labor, equipment, small-tool <em>quantities</em>, COs, T&amp;M, customer fields). Keeps worker burden/pay fields, material catalog, small-tool templates, and the Company letterheads vault.</li>
           <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job. Does not wipe Company letterheads; ensures Bruno seed letterhead exists and sets it active.</li>
-          <li><strong>Export JSON:</strong> Saves a backup of the current job to a file you choose.</li>
-          <li><strong>Import JSON:</strong> Loads a previously exported backup (size-capped; invalid files are rejected).</li>
         </ul>
+      </div>
+
+      <div class="card" id="help-backup">
+        <h3>Backup · Export / Import (detailed)</h3>
+        <p class="section-help" style="margin-top:0">Everything stays on <strong>this device</strong> (browser <code>localStorage</code>) until you export a file. Exports download as <strong>.json</strong> into your browser’s usual <strong>Downloads</strong> folder (Chrome/Edge/Safari download bar). Pick a clear name and keep copies off-device (USB / Drive / email to yourself).</p>
+
+        <h4 style="margin:1rem 0 .35rem;font-size:.95rem">1) Export job / Import job <span class="sub">(header)</span></h4>
+        <ul class="help-list">
+          <li><strong>Why:</strong> Move or archive <em>one quote/job</em> (materials, labor, COs, T&amp;M, P&amp;L, OH/profit, catalog copy on that job, workers snapshot inside the job file).</li>
+          <li><strong>File name:</strong> <code>bruno-job-&lt;Job# or proposal&gt;-&lt;YYYY-MM-DD&gt;.json</code> (example: <code>bruno-job-PF-2026-09-11.json</code>). Older files may be named <code>bruno-electric-quote-*.json</code> — still importable.</li>
+          <li><strong>Saved:</strong> Current job state (quote header, materials, labor/equip, small tools qtys, summary rates, COs, T&amp;M, P&amp;L, catalog embedded in the job, personnel/burden on that job).</li>
+          <li><strong>Not saved:</strong> Company letterheads vault (<code>bruno-electric-profiles-v1</code>), theme/zoom prefs, catalog accordion open/closed. Importing a job does <em>not</em> replace your Company profiles list.</li>
+          <li><strong>Where:</strong> Header buttons <strong>Export job</strong> / <strong>Import job</strong>. Max file size ~5&nbsp;MB. Invalid JSON is rejected.</li>
+        </ul>
+
+        <h4 style="margin:1rem 0 .35rem;font-size:.95rem">2) Export app / Import app <span class="sub">(full backup)</span></h4>
+        <ul class="help-list">
+          <li><strong>Why:</strong> Full device backup or move to another phone/PC — shops, workers, current job, UI prefs in one file.</li>
+          <li><strong>File name:</strong> <code>bruno-app-backup-&lt;YYYY-MM-DD&gt;.json</code>.</li>
+          <li><strong>Saved:</strong> Job state + Company letterheads vault + UI theme/zoom (+ catalog open map). Envelope field <code>brunoExportType: "app"</code>.</li>
+          <li><strong>Not saved:</strong> Browser cookies for other sites, service-worker cache of the app shell (reinstall from the same URL if needed), files you never exported.</li>
+          <li><strong>Where:</strong> Header <strong>Export app</strong> / <strong>Import app</strong>. Import asks to confirm before overwriting.</li>
+        </ul>
+
+        <h4 style="margin:1rem 0 .35rem;font-size:.95rem">3) Export companies / Import companies <span class="sub">(Company tab)</span></h4>
+        <ul class="help-list">
+          <li><strong>Why:</strong> Backup or share letterheads only (legal name, address, license, footer) without the job.</li>
+          <li><strong>File name:</strong> <code>bruno-companies-&lt;YYYY-MM-DD&gt;.json</code> (legacy: <code>bruno-electric-profiles.json</code> still works).</li>
+          <li><strong>Saved:</strong> Profiles vault only (<code>profiles[]</code>, active letterhead id).</li>
+          <li><strong>Not saved:</strong> Job materials, workers, OH/profit, theme.</li>
+          <li><strong>Where:</strong> <strong>Company</strong> tab → Export companies / Import companies.</li>
+        </ul>
+
+        <h4 style="margin:1rem 0 .35rem;font-size:.95rem">4) Export workers / Import workers <span class="sub">(Workers tab)</span></h4>
+        <ul class="help-list">
+          <li><strong>Why:</strong> Move burden rates and pay-calculator wages between devices without touching the quote.</li>
+          <li><strong>File name:</strong> <code>bruno-workers-&lt;YYYY-MM-DD&gt;.json</code>.</li>
+          <li><strong>Saved:</strong> <code>personnel.employees</code> (names, gross $/hr, tax %) and <code>personnel.burden</code> (straight/OT burden).</li>
+          <li><strong>Not saved:</strong> Company letterheads, job materials, catalog, theme.</li>
+          <li><strong>Where:</strong> <strong>Workers</strong> tab → Workers backup card.</li>
+        </ul>
+
+        <h4 style="margin:1rem 0 .35rem;font-size:.95rem">Quick picker</h4>
+        <div class="toolbar" style="flex-wrap:wrap;gap:.5rem;margin-top:.35rem">
+          <button type="button" class="btn btn-sm" id="help-export-job">Export job</button>
+          <button type="button" class="btn btn-sm" id="help-export-app">Export app backup</button>
+          <button type="button" class="btn btn-sm" id="help-export-companies">Export companies</button>
+          <button type="button" class="btn btn-sm" id="help-export-workers">Export workers</button>
+        </div>
+        <p class="hint" style="margin-top:.5rem;color:var(--text-muted);font-size:.82rem">Tip: for a new phone, use <strong>Export app</strong> here, then <strong>Import app</strong> in the header on the other device.</p>
       </div>
 
       <div class="card">
         <h3>Where data is stored</h3>
-        <p class="section-help" style="margin-top:0">Job data is stored in <strong>localStorage</strong> inside this app’s profile on your PC (not in the cloud). Uninstalling the app or clearing the app data folder removes saved jobs — use Export JSON for backups.</p>
+        <p class="section-help" style="margin-top:0">On-device keys (not cloud):</p>
+        <ul class="help-list">
+          <li><code>bruno-electric-v1</code> — current job (includes embedded catalog + workers on that job)</li>
+          <li><code>bruno-electric-profiles-v1</code> — Company letterheads vault</li>
+          <li><code>bruno-electric-ui-prefs-v1</code> — theme + zoom</li>
+          <li><code>bruno-electric-cat-open-v1</code> — which Catalog categories are expanded</li>
+        </ul>
+        <p class="section-help">Clearing site data / uninstalling the PWA wipes these. Always keep an <strong>Export app</strong> file if the data matters.</p>
       </div>
 
       <div class="card">
@@ -1913,7 +1984,7 @@ html[data-theme="light"] .panel {
 
       <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.7<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.8<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
       </div>
     </section>
 
@@ -13913,6 +13984,171 @@ window.BRUNO_SEED = {
     if (cnt) cnt.textContent = matchedTotal + ' items · ' + shownCats + ' groups';
   }
 
+  function exportStamp() {
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+  function safeFilePart(s) {
+    s = String(s || '').trim().replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, '-');
+    return s.slice(0, 48) || 'export';
+  }
+  function downloadJson(filename, obj) {
+    var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+  }
+  function wrapExport(type, payload) {
+    return {
+      brunoExportType: type,
+      brunoExportVersion: 1,
+      appVersion: 'v1.8',
+      exportedAt: new Date().toISOString(),
+      payload: payload
+    };
+  }
+  function unwrapExport(parsed) {
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    if (parsed.brunoExportType && parsed.payload != null) {
+      return { type: String(parsed.brunoExportType), payload: parsed.payload, meta: parsed };
+    }
+    // Legacy: raw job state
+    if (parsed.quote || parsed.materialsUsed || parsed.summary) {
+      return { type: 'job', payload: parsed, meta: null };
+    }
+    // Legacy: raw profiles vault
+    if (Array.isArray(parsed.profiles)) {
+      return { type: 'companies', payload: parsed, meta: null };
+    }
+    // Legacy: personnel-only
+    if (parsed.personnel && (parsed.personnel.employees || parsed.personnel.burden) && !parsed.quote && !parsed.materialsUsed) {
+      return { type: 'workers', payload: parsed.personnel, meta: null };
+    }
+    if (parsed.employees || parsed.burden) {
+      return { type: 'workers', payload: parsed, meta: null };
+    }
+    return { type: 'unknown', payload: parsed, meta: null };
+  }
+  function readJsonFile(file, maxBytes, cb) {
+    if (!file) return;
+    if (file.size > maxBytes) {
+      alert('JSON file is too large (max ' + Math.round(maxBytes / (1024 * 1024)) + ' MB).');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var raw = String(reader.result || '');
+        if (raw.length > maxBytes) throw new Error('JSON file is too large.');
+        var parsed = JSON.parse(raw);
+        cb(null, parsed);
+      } catch (err) {
+        cb(err);
+      }
+    };
+    reader.onerror = function () { cb(new Error('Could not read file')); };
+    reader.readAsText(file);
+  }
+  function jobExportFileName() {
+    var q = (state && state.quote) || {};
+    var tag = q.jobNumber || q.proposal || 'job';
+    return 'bruno-job-' + safeFilePart(tag) + '-' + exportStamp() + '.json';
+  }
+  function doExportJob() {
+    var env = wrapExport('job', state);
+    downloadJson(jobExportFileName(), env);
+    toast('Exported job → Downloads / ' + jobExportFileName());
+  }
+  function doExportApp() {
+    ensureProfilesVault();
+    var ui = null;
+    try { ui = JSON.parse(localStorage.getItem('bruno-electric-ui-prefs-v1') || 'null'); } catch (e) {}
+    var catOpen = null;
+    try { catOpen = JSON.parse(localStorage.getItem(CAT_OPEN_KEY) || 'null'); } catch (e2) {}
+    var payload = {
+      job: state,
+      companies: profilesVault,
+      uiPrefs: ui,
+      catalogOpen: catOpen
+    };
+    var name = 'bruno-app-backup-' + exportStamp() + '.json';
+    downloadJson(name, wrapExport('app', payload));
+    toast('Exported app backup → Downloads / ' + name);
+  }
+  function doExportCompanies() {
+    ensureProfilesVault();
+    var name = 'bruno-companies-' + exportStamp() + '.json';
+    downloadJson(name, wrapExport('companies', profilesVault));
+    toast('Exported companies → Downloads / ' + name);
+  }
+  function doExportWorkers() {
+    var personnel = (state && state.personnel) || { employees: [], burden: [] };
+    var name = 'bruno-workers-' + exportStamp() + '.json';
+    downloadJson(name, wrapExport('workers', {
+      employees: personnel.employees || [],
+      burden: personnel.burden || []
+    }));
+    toast('Exported workers → Downloads / ' + name);
+  }
+  function applyCompaniesPayload(payload) {
+    if (!payload || typeof payload !== 'object' || !Array.isArray(payload.profiles) || !payload.profiles.length) {
+      throw new Error('Expected companies file with profiles: [...]');
+    }
+    profilesVault = {
+      version: 1,
+      activeId: payload.activeId || payload.profiles[0].id,
+      profiles: payload.profiles
+    };
+    if (!findProfileById(profilesVault.activeId)) profilesVault.activeId = profilesVault.profiles[0].id;
+    editingProfileId = profilesVault.activeId;
+    saveProfilesVault();
+    applyActiveProfileToState();
+  }
+  function applyWorkersPayload(payload) {
+    if (!payload || typeof payload !== 'object') throw new Error('Expected workers object');
+    if (!state.personnel) state.personnel = { employees: [], burden: [] };
+    if (Array.isArray(payload.employees)) state.personnel.employees = payload.employees;
+    if (Array.isArray(payload.burden)) state.personnel.burden = payload.burden;
+    state = normalizeState(state);
+  }
+  function applyJobPayload(payload) {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      throw new Error('Expected job object');
+    }
+    state = normalizeState(payload);
+    // Keep company vault; sync active letterhead fields onto job company if needed
+    try { applyActiveProfileToState(); } catch (e) {}
+  }
+  function applyAppPayload(payload) {
+    if (!payload || typeof payload !== 'object') throw new Error('Expected app backup payload');
+    if (payload.companies) applyCompaniesPayload(payload.companies);
+    if (payload.job) applyJobPayload(payload.job);
+    else if (payload.state) applyJobPayload(payload.state);
+    if (payload.uiPrefs && typeof payload.uiPrefs === 'object') {
+      try { localStorage.setItem('bruno-electric-ui-prefs-v1', JSON.stringify(payload.uiPrefs)); } catch (e) {}
+      try {
+        if (payload.uiPrefs.theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        else document.documentElement.removeAttribute('data-theme');
+        var z = Number(payload.uiPrefs.zoom);
+        if (isFinite(z) && z >= 80 && z <= 150) {
+          document.documentElement.style.setProperty('--ui-root-font', (15 * z / 100) + 'px');
+        }
+      } catch (e2) {}
+    }
+    if (payload.catalogOpen && typeof payload.catalogOpen === 'object') {
+      try {
+        localStorage.setItem(CAT_OPEN_KEY, JSON.stringify(payload.catalogOpen));
+        catOpenMap = payload.catalogOpen;
+      } catch (e3) {}
+    }
+  }
+
+
   function setupRest() {
 
     // Replace catalog render
@@ -14209,42 +14445,82 @@ window.BRUNO_SEED = {
       softRefresh();
     });
 
-    on('btn-export', 'click', function () {
-      var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'bruno-electric-quote-' + (state.quote.proposal || 'export') + '.json';
-      a.click();
-      URL.revokeObjectURL(a.href);
-      toast('Exported JSON');
-    });
+    on('btn-export', 'click', function () { doExportJob(); });
+    on('btn-export-app', 'click', function () { doExportApp(); });
+    on('help-export-job', 'click', function () { doExportJob(); });
+    on('help-export-app', 'click', function () { doExportApp(); });
+    on('help-export-companies', 'click', function () { doExportCompanies(); });
+    on('help-export-workers', 'click', function () { doExportWorkers(); });
+
     on('btn-import', 'change', function (e) {
       var file = e.target.files && e.target.files[0];
-      if (!file) return;
-      if (file.size > 5 * 1024 * 1024) {
-        alert('JSON file is too large (max 5 MB).');
-        e.target.value = '';
-        return;
-      }
-      var reader = new FileReader();
-      reader.onload = function () {
+      e.target.value = '';
+      readJsonFile(file, 5 * 1024 * 1024, function (err, parsed) {
+        if (err) { alert('Invalid JSON: ' + err.message); return; }
         try {
-          var raw = String(reader.result || '');
-          if (raw.length > 5 * 1024 * 1024) throw new Error('JSON file is too large (max 5 MB).');
-          var parsed = JSON.parse(raw);
-          if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-            throw new Error('Root must be an object');
+          var u = unwrapExport(parsed);
+          if (!u || (u.type !== 'job' && u.type !== 'unknown')) {
+            if (u && u.type === 'app') {
+              throw new Error('This is a full app backup. Use Import app instead.');
+            }
+            if (u && u.type === 'companies') {
+              throw new Error('This is a companies file. Use Company → Import companies.');
+            }
+            if (u && u.type === 'workers') {
+              throw new Error('This is a workers file. Use Workers → Import workers.');
+            }
           }
-          state = normalizeState(parsed);
+          var payload = (u.type === 'job') ? u.payload : parsed;
+          if (!confirm('Replace the current job with this file? Company letterheads vault stays unless the file is an app backup.')) return;
+          applyJobPayload(payload);
           bindAll();
           refresh();
-          toast('Imported');
-        } catch (err) {
-          alert('Invalid JSON: ' + err.message);
+          toast('Job imported');
+        } catch (err2) {
+          alert('Import job failed: ' + err2.message);
         }
-      };
-      reader.readAsText(file);
+      });
+    });
+
+    on('btn-import-app', 'change', function (e) {
+      var file = e.target.files && e.target.files[0];
       e.target.value = '';
+      readJsonFile(file, 8 * 1024 * 1024, function (err, parsed) {
+        if (err) { alert('Invalid JSON: ' + err.message); return; }
+        try {
+          var u = unwrapExport(parsed);
+          if (!u || u.type !== 'app') {
+            throw new Error('Expected an app backup (brunoExportType: "app"). For a single job use Import job.');
+          }
+          if (!confirm('Restore FULL app backup? This replaces the current job, Company letterheads, and (if present) theme/zoom.')) return;
+          applyAppPayload(u.payload);
+          bindAll();
+          refresh();
+          toast('App backup restored');
+        } catch (err2) {
+          alert('Import app failed: ' + err2.message);
+        }
+      });
+    });
+
+    on('wk-export', 'click', function () { doExportWorkers(); });
+    on('wk-import', 'change', function (e) {
+      var file = e.target.files && e.target.files[0];
+      e.target.value = '';
+      readJsonFile(file, 2 * 1024 * 1024, function (err, parsed) {
+        if (err) { alert('Invalid JSON: ' + err.message); return; }
+        try {
+          var u = unwrapExport(parsed);
+          var payload = (u && u.type === 'workers') ? u.payload : (parsed.personnel || parsed);
+          if (!confirm('Replace Workers (burden + pay fields) from this file? Job materials and Company letterheads stay.')) return;
+          applyWorkersPayload(payload);
+          bindAll();
+          refresh();
+          toast('Workers imported');
+        } catch (err2) {
+          alert('Import workers failed: ' + err2.message);
+        }
+      });
     });
     function makeBlankJob(keep) {
       keep = keep || {};
@@ -14740,7 +15016,7 @@ window.BRUNO_SEED = {
       '<p class="fine">Jurisdiction: ' + esc(js.jurisdiction || '') +
         ' · NEC ' + esc(js.necEdition || '') +
         ' (informational — this quote is not auto-recalculated for a different NEC edition).' +
-        '<br>' + esc(companyDisplayName(c)) + ' · v1.7</p>';
+        '<br>' + esc(companyDisplayName(c)) + ' · v1.8</p>';
 
     var pq = document.getElementById('print-quote');
     if (pq) pq.innerHTML = quoteHtml;
@@ -14909,46 +15185,25 @@ window.BRUNO_SEED = {
       buildPrintDocs(calcAll(state));
       toast('Profile deleted');
     });
-    on('pf-export', 'click', function () {
-      ensureProfilesVault();
-      var blob = new Blob([JSON.stringify(profilesVault, null, 2)], { type: 'application/json' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'bruno-electric-profiles.json';
-      a.click();
-      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
-      toast('Profiles exported');
-    });
+    on('pf-export', 'click', function () { doExportCompanies(); });
     on('pf-import', 'change', function (e) {
       var file = e.target.files && e.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function () {
-        try {
-          var parsed = JSON.parse(String(reader.result || ''));
-          if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.profiles) || !parsed.profiles.length) {
-            throw new Error('Expected { profiles: [...] }');
-          }
-          profilesVault = {
-            version: 1,
-            activeId: parsed.activeId || parsed.profiles[0].id,
-            profiles: parsed.profiles
-          };
-          if (!findProfileById(profilesVault.activeId)) profilesVault.activeId = profilesVault.profiles[0].id;
-          editingProfileId = profilesVault.activeId;
-          saveProfilesVault();
-          applyActiveProfileToState();
-          save();
-          bindCompany();
-          renderQuotePreview(calcAll(state));
-          buildPrintDocs(calcAll(state));
-          toast('Profiles imported');
-        } catch (err) {
-          alert('Invalid profiles JSON: ' + err.message);
-        }
-      };
-      reader.readAsText(file);
       e.target.value = '';
+      readJsonFile(file, 2 * 1024 * 1024, function (err, parsed) {
+        if (err) { alert('Invalid JSON: ' + err.message); return; }
+        try {
+          var u = unwrapExport(parsed);
+          var payload = (u && u.type === 'companies') ? u.payload : parsed;
+          if (!confirm('Replace Company letterheads from this file? Current job and Workers stay.')) return;
+          applyCompaniesPayload(payload);
+          save();
+          bindAll();
+          refresh();
+          toast('Companies imported');
+        } catch (err2) {
+          alert('Import companies failed: ' + err2.message);
+        }
+      });
     });
 
     ['js-jurisdiction'].forEach(function (id) {
@@ -15062,7 +15317,7 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.7';
+    if (badge && ship) badge.textContent = 'v1.8';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');

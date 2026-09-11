@@ -833,7 +833,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.2</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.2.1</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -1405,7 +1405,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
 
       <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.2<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.2.1<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
       </div>
     </section>
 
@@ -9713,6 +9713,9 @@ window.BRUNO_SEED = {
   'use strict';
 
   var STORAGE_KEY = 'bruno-electric-v1';
+  var PROFILES_KEY = 'bruno-electric-profiles-v1';
+  var profilesVault = null;
+  var editingProfileId = null;
   var state = null;
   var demoSeed = null;
 
@@ -11936,7 +11939,7 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.2';
+    if (badge && ship) badge.textContent = 'v1.2.1';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');

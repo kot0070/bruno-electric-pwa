@@ -1186,7 +1186,7 @@ html[data-theme="light"] .panel {
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.4</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.5</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -1219,14 +1219,14 @@ html[data-theme="light"] .panel {
   </div>
 
   <nav class="nav-tabs no-print" role="tablist" id="nav-tabs">
-    <button type="button" class="nav-tab" data-tab="profiles" aria-selected="false">Profiles</button>
+    <button type="button" class="nav-tab" data-tab="profiles" aria-selected="false">Company</button>
     <button type="button" class="nav-tab active" data-tab="quote" aria-selected="true">Quote</button>
     <button type="button" class="nav-tab" data-tab="materials">Job materials</button>
     <button type="button" class="nav-tab" data-tab="catalog">Catalog</button>
     <button type="button" class="nav-tab" data-tab="labor">Labor &amp; Equip</button>
     <button type="button" class="nav-tab" data-tab="summary">Summary</button>
     <button type="button" class="nav-tab" data-tab="cos">Change Orders</button>
-    <button type="button" class="nav-tab" data-tab="personnel">Personnel</button>
+    <button type="button" class="nav-tab" data-tab="personnel">Workers</button>
     <button type="button" class="nav-tab" data-tab="tm">T&amp;M Invoice</button>
     <button type="button" class="nav-tab" data-tab="pnl">Profit &amp; Loss</button>
     <button type="button" class="nav-tab" data-tab="reference">Reference</button>
@@ -1238,10 +1238,10 @@ html[data-theme="light"] .panel {
     <!-- PROFILES -->
     <section class="panel" id="panel-profiles" role="tabpanel">
       <div class="panel-head">
-        <h2>Profiles</h2>
-        <span class="hint">Shop letterheads · separate from jobs</span>
+        <h2>Company</h2>
+        <span class="hint">Shop letterheads · not workers</span>
       </div>
-      <p class="section-help"><strong>Profiles</strong> are shop letterheads (legal name, address, license, footer). Jobs are separate. <strong>New blank job</strong> never deletes profiles. Set one profile as the active letterhead for Quote / Invoice / PDF.</p>
+      <p class="section-help"><strong>Company</strong> stores shop letterheads (legal name, address, license, footer). This is <strong>not</strong> the Workers roster. Jobs are separate. <strong>New blank job</strong> never deletes letterheads. Set one letterhead as active for Quote / Invoice / PDF.</p>
       <div class="card">
         <h3>Your profiles</h3>
         <div class="toolbar" style="flex-wrap:wrap;gap:.5rem">
@@ -1287,7 +1287,7 @@ html[data-theme="light"] .panel {
           <button type="button" class="btn btn-sm btn-accent" id="btn-print-quote-2">Print Quote (PDF)</button>
         </div>
       </div>
-      <p class="section-help"><strong>How to use:</strong> Pick a letterhead (Profiles), set job header, describe the work, then review the live preview. Quote Total follows Summary (Method A) plus approved Change Orders. Print Quote builds a letterhead PDF from the active Profiles letterhead.</p>
+      <p class="section-help"><strong>How to use:</strong> Pick a letterhead (Company), set job header, describe the work, then review the live preview. Quote Total follows Summary (Method A) plus approved Change Orders. Print Quote builds a letterhead PDF from the active Company letterhead.</p>
       <div class="card">
         <h3>Job settings <span class="sub">stored on this job · not a calc switch</span></h3>
         <div class="grid grid-2">
@@ -1313,7 +1313,7 @@ html[data-theme="light"] .panel {
         <label for="q-letterhead-select">Letterhead:</label>
         <select id="q-letterhead-select" aria-label="Active letterhead profile"></select>
         <span style="color:var(--text-muted)">·</span>
-        <button type="button" class="lh-manage" id="btn-manage-profiles">Manage in Profiles</button>
+        <button type="button" class="lh-manage" id="btn-manage-profiles">Manage company</button>
       </div>
       <div class="card">
         <h3>Job header</h3>
@@ -1465,9 +1465,9 @@ html[data-theme="light"] .panel {
     <section class="panel" id="panel-labor" role="tabpanel">
       <div class="panel-head">
         <h2>Labor &amp; Equip</h2>
-        <span class="hint">Labor rates from Personnel (burden)</span>
+        <span class="hint">Labor rates from Workers (burden)</span>
       </div>
-      <p class="section-help"><strong>Costs that feed Summary:</strong> Equipment rows, <strong>small tools line items</strong> (qty × unit cost, summed into Equip Cost), subcontractors, and labor blocks (burden rates come from Personnel). Suggested hours from materials are informational.</p>
+      <p class="section-help"><strong>Costs that feed Summary:</strong> Equipment rows, <strong>small tools line items</strong> (qty × unit cost, summed into Equip Cost), subcontractors, and labor blocks (burden rates come from Workers). Suggested hours from materials are informational.</p>
       <div class="card">
         <h3>Equipment / other costs</h3>
         <div class="toolbar">
@@ -1525,7 +1525,7 @@ html[data-theme="light"] .panel {
         <div class="stat"><div class="lbl">Subcontractor Costs</div><div class="val" id="le-sub-total">$0</div></div>
       </div>
       <div class="card">
-        <h3>Labor blocks <span class="sub">burden rates from Personnel</span></h3>
+        <h3>Labor blocks <span class="sub">burden rates from Workers</span></h3>
         <div id="labor-blocks"></div>
         <div class="stat-row">
           <div class="stat"><div class="lbl">Total labor hours</div><div class="val" id="le-hrs">0</div></div>
@@ -1577,15 +1577,16 @@ html[data-theme="light"] .panel {
       </div>
     </section>
 
-    <!-- PERSONNEL -->
+    <!-- PERSONNEL / WORKERS -->
     <section class="panel" id="panel-personnel" role="tabpanel">
       <div class="panel-head">
-        <h2>Personnel rates</h2>
-        <span class="hint">Burden → Labor &amp; Equip · Bill-out = burden×(1+OH)/(1−profit)</span>
+        <h2>Workers</h2>
+        <span class="hint">Burden for job costing · pay calculator is take-home only</span>
       </div>
-      <p class="section-help"><strong>Rates:</strong> Edit burden (straight / OT multipliers). Labor &amp; Equip uses these burden rates. Bill-out columns follow Method A with current OH and profit.</p>
+      <p class="section-help"><strong>Workers</strong> are people and job-cost burden rates — <strong>not</strong> Company letterheads. Burden rates feed Labor &amp; Equip and Method A bill-out. The per-worker pay calculator is an informational payroll estimate (gross / after-tax take-home) and does <strong>not</strong> change Labor &amp; Equip burden or Quote OH&amp;P.</p>
       <div class="card">
         <h3>Labor of Burden Rates (editable)</h3>
+        <p class="section-help" style="margin-top:0"><strong>Job costing:</strong> Edit burden (straight / OT multipliers). Labor &amp; Equip uses these burden rates. Bill-out columns follow Method A with current OH and profit. Separate from worker take-home pay below.</p>
         <div class="table-wrap">
           <table class="data">
             <thead>
@@ -1596,10 +1597,24 @@ html[data-theme="light"] .panel {
         </div>
       </div>
       <div class="card">
-        <h3>Employees (reference)</h3>
+        <h3>Workers · hourly pay calculator</h3>
+        <p class="section-help" style="margin-top:0"><strong>Informational payroll estimate:</strong> Enter hourly wage (gross / before tax) and a simple tax rate %. After tax (net) = gross × (1 − tax%/100). Daily assumes 8 hrs; weekly assumes 40 hrs. Does <strong>not</strong> change burden rates or Quote Method A.</p>
         <div class="table-wrap">
           <table class="data">
-            <thead><tr><th>#</th><th>Name</th><th>Pay rate</th></tr></thead>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Gross $/hr</th>
+                <th>Tax %</th>
+                <th>Before tax $/hr</th>
+                <th>After tax $/hr</th>
+                <th>Gross / day</th>
+                <th>Net / day</th>
+                <th>Gross / wk</th>
+                <th>Net / wk</th>
+              </tr>
+            </thead>
             <tbody id="emp-body"></tbody>
           </table>
         </div>
@@ -1615,7 +1630,7 @@ html[data-theme="light"] .panel {
           <button type="button" class="btn btn-sm btn-accent" id="btn-print-tm-2">Print Invoice (PDF)</button>
         </div>
       </div>
-      <p class="section-help"><strong>Time &amp; material:</strong> Invoice total comes from equipment/labor lines plus materials and sub on this page — not from Summary OH&amp;P. Print Invoice uses the active Profiles letterhead and footer.</p>
+      <p class="section-help"><strong>Time &amp; material:</strong> Invoice total comes from equipment/labor lines plus materials and sub on this page — not from Summary OH&amp;P. Print Invoice uses the active Company letterhead and footer.</p>
       <div class="note-box warn">
         When detail is empty, T&amp;M total = <strong>$0</strong> — honest T&amp;M, not a margined quote.
         The Quote stays on the Quote / Summary tabs.
@@ -1770,7 +1785,7 @@ html[data-theme="light"] .panel {
       <div class="card">
         <h3>Quick start</h3>
         <ol class="help-list">
-          <li>Open <strong>Profiles</strong> and set your shop letterhead (legal name, address, phone, email, license). Print Quote and Print Invoice use the active profile.</li>
+          <li>Open <strong>Company</strong> and set your shop letterhead (legal name, address, phone, email, license). Print Quote and Print Invoice use the active letterhead. <strong>Workers</strong> is a separate tab for burden rates and take-home pay estimates.</li>
           <li>Enter job header fields (quote date, <strong>Job #</strong>, customer, site address, scope). Quote date, Job #, a 15-day validity note, and the quoted-by signature appear on the Quote sheet and Print Quote.</li>
           <li>Add materials on <strong>Job materials</strong> (or pull from <strong>Catalog</strong>), then labor, equipment, and small tools on <strong>Labor &amp; Equip</strong>. Use <strong>Reference</strong> for NEC ampacity tables (informational — does not change calcs).</li>
           <li>Set overhead and profit on <strong>Summary</strong> — that is the only margin layer for a fixed-price quote.</li>
@@ -1779,13 +1794,18 @@ html[data-theme="light"] .panel {
       </div>
 
       <div class="card">
-        <h3>Profiles (letterheads)</h3>
-        <p class="section-help" style="margin-top:0">Profiles are shop letterheads stored separately from jobs in <code>bruno-electric-profiles-v1</code>. Create multiple shops, set one as the active letterhead, and switch anytime from the Quote tab strip or the Profiles tab. Letterhead and footer on Print Quote / Print Invoice come from <strong>getActiveProfile()</strong> — not hardcoded shop strings.</p>
+        <h3>Company (letterheads)</h3>
+        <p class="section-help" style="margin-top:0"><strong>Company</strong> is the letterheads vault — not the Workers roster. Letterheads are stored separately from jobs in <code>bruno-electric-profiles-v1</code>. Create multiple shops, set one as the active letterhead, and switch anytime from the Quote tab strip or the Company tab. Letterhead and footer on Print Quote / Print Invoice come from <strong>getActiveProfile()</strong> — not hardcoded shop strings.</p>
         <ul class="help-list">
-          <li><strong>New blank job:</strong> Clears the current job to zeros. Never deletes profiles; letterhead stays from the active profile.</li>
-          <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job. Does <em>not</em> wipe the profiles vault; ensures the Bruno seed profile exists and prefers it as active.</li>
+          <li><strong>New blank job:</strong> Clears the current job to zeros. Never deletes letterheads; active Company letterhead stays.</li>
+          <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job. Does <em>not</em> wipe the Company vault; ensures the Bruno seed letterhead exists and prefers it as active.</li>
           <li><strong>Export / Import profiles JSON:</strong> Backup or restore letterheads independently of the job file.</li>
         </ul>
+      </div>
+
+      <div class="card">
+        <h3>Workers (burden + take-home)</h3>
+        <p class="section-help" style="margin-top:0"><strong>Workers</strong> holds job-cost burden rates and an informational per-worker hourly pay calculator (gross / after-tax). Burden rates feed Labor &amp; Equip and Method A bill-out. Pay calculator fields (<code>payRate</code>, <code>taxRate</code> %) do <strong>not</strong> change Quote OH&amp;P or Labor &amp; Equip burden.</p>
       </div>
 
       <div class="card">
@@ -1794,7 +1814,7 @@ html[data-theme="light"] .panel {
           <li><strong>Job materials:</strong> Quantities on this job. Extension = Qty × Unit Cost. Do <em>not</em> mark up materials here.</li>
           <li><strong>Catalog:</strong> Search the full materials list and add lines to the job.</li>
           <li><strong>Reference:</strong> NEC ampacity / adjustment / fill tables for lookup. Informational only — does not auto-change calculations.</li>
-          <li><strong>Labor &amp; Equip:</strong> Equipment, <strong>small tools line items</strong> (qty × unit cost, summed into Equip Cost on Summary), subcontractors, and labor hours. Burden rates come from <strong>Personnel</strong>.</li>
+          <li><strong>Labor &amp; Equip:</strong> Equipment, <strong>small tools line items</strong> (qty × unit cost, summed into Equip Cost on Summary), subcontractors, and labor hours. Burden rates come from <strong>Workers</strong>.</li>
           <li><strong>Summary (OH &amp; profit):</strong> Adjust overhead and profit of sales (Method A). Final sales price is rounded for the base quote. This is the single margin layer.</li>
           <li><strong>Quote Total:</strong> ROUND(Summary final sales) + <strong>approved</strong> Change Orders. Next to the price: this quote is valid for 15 days from the quote date, plus Quoted by / Authorized signature for Bruno Electric personnel.</li>
         </ul>
@@ -1819,15 +1839,15 @@ html[data-theme="light"] .panel {
         <ol class="help-list">
           <li>Click <strong>Print Quote</strong> or <strong>Print Invoice</strong> in the header (or the matching button on Quote / T&amp;M).</li>
           <li>In the system print dialog, choose <strong>Save as PDF</strong> (or Microsoft Print to PDF).</li>
-          <li>Letterhead and footer use your active Profiles letterhead. Set or switch the profile before printing.</li>
+          <li>Letterhead and footer use your active Company letterhead. Set or switch it before printing.</li>
         </ol>
       </div>
 
       <div class="card">
         <h3>Reset demo · Export / Import</h3>
         <ul class="help-list">
-          <li><strong>New blank job:</strong> Clears the current job to zeros (job materials, labor, equipment, small-tool <em>quantities</em>, COs, T&amp;M, customer fields). Keeps employee rates, material catalog, small-tool templates, and the profiles vault (letterhead stays).</li>
-          <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job. Does not wipe profiles; ensures Bruno seed letterhead exists and sets it active.</li>
+          <li><strong>New blank job:</strong> Clears the current job to zeros (job materials, labor, equipment, small-tool <em>quantities</em>, COs, T&amp;M, customer fields). Keeps worker burden/pay fields, material catalog, small-tool templates, and the Company letterheads vault.</li>
+          <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job. Does not wipe Company letterheads; ensures Bruno seed letterhead exists and sets it active.</li>
           <li><strong>Export JSON:</strong> Saves a backup of the current job to a file you choose.</li>
           <li><strong>Import JSON:</strong> Loads a previously exported backup (size-capped; invalid files are rejected).</li>
         </ul>
@@ -1847,7 +1867,7 @@ html[data-theme="light"] .panel {
 
       <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.4<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.5<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
       </div>
     </section>
 
@@ -9925,76 +9945,121 @@ window.BRUNO_SEED = {
         "name": "Allen Nquyen",
         "number": 1,
         "rate": 21.83
+      ,
+        "payRate": 21.83,
+        "taxRate": 0
       },
       {
         "name": "Brittany Morales",
         "number": 2,
         "rate": 15.97
+      ,
+        "payRate": 15.97,
+        "taxRate": 0
       },
       {
         "name": "Dominic Bruno",
         "number": 3,
         "rate": 18.34
+      ,
+        "payRate": 18.34,
+        "taxRate": 0
       },
       {
         "name": "Karl Kieffer",
         "number": 4,
         "rate": 19.74
+      ,
+        "payRate": 19.74,
+        "taxRate": 0
       },
       {
         "name": "Lana Bruno",
         "number": 5,
         "rate": 16.91
+      ,
+        "payRate": 16.91,
+        "taxRate": 0
       },
       {
         "name": "Noe Cueves",
         "number": 6,
         "rate": 18.34
+      ,
+        "payRate": 18.34,
+        "taxRate": 0
       },
       {
         "name": "Roger Vazquez",
         "number": 7,
         "rate": 31.11
+      ,
+        "payRate": 31.11,
+        "taxRate": 0
       },
       {
         "name": "Steven Durfey",
         "number": 8,
         "rate": 15.55
+      ,
+        "payRate": 15.55,
+        "taxRate": 0
       },
       {
         "name": "Van Bruno",
         "number": 9,
         "rate": 25.14
+      ,
+        "payRate": 25.14,
+        "taxRate": 0
       },
       {
         "name": "Employee #10",
         "number": 10,
         "rate": 22.0
+      ,
+        "payRate": 22.0,
+        "taxRate": 0
       },
       {
         "name": "Employee #11",
         "number": 11,
         "rate": 22.0
+      ,
+        "payRate": 22.0,
+        "taxRate": 0
       },
       {
         "name": "Employee #12",
         "number": 12,
         "rate": 22.0
+      ,
+        "payRate": 22.0,
+        "taxRate": 0
       },
       {
         "name": "Employee #13",
         "number": 13,
         "rate": 22.0
+      ,
+        "payRate": 22.0,
+        "taxRate": 0
       },
       {
         "name": "Employee #14",
         "number": 14,
         "rate": 22.0
+      ,
+        "payRate": 22.0,
+        "taxRate": 0
       },
       {
         "name": "Employee #15",
         "number": 15,
         "rate": 22.0
+      ,
+        "payRate": 22.0,
+        "taxRate": 0
       }
     ],
     "burden": [
@@ -10660,6 +10725,25 @@ window.BRUNO_SEED = {
       for (i = 0; i < s.personnel.burden.length; i++) {
         row = s.personnel.burden[i];
         if (row && typeof row === 'object') row.straight = asNum(row.straight);
+      }
+    }
+    if (s.personnel && Array.isArray(s.personnel.employees)) {
+      for (i = 0; i < s.personnel.employees.length; i++) {
+        row = s.personnel.employees[i];
+        if (!row || typeof row !== 'object') continue;
+        // payRate = gross hourly take-home estimate (separate from burden). Prefer payRate; fall back to legacy rate.
+        if (row.payRate == null || row.payRate === '') {
+          row.payRate = asNum(row.rate);
+        } else {
+          row.payRate = asNum(row.payRate);
+        }
+        // Keep legacy rate in sync for older exports/UI that still read rate.
+        row.rate = asNum(row.payRate);
+        // taxRate stored as percent 0–100 (UI). Default 0 so Pioneer demo math is untouched.
+        if (row.taxRate == null || row.taxRate === '') row.taxRate = 0;
+        else row.taxRate = asNum(row.taxRate);
+        if (row.taxRate < 0) row.taxRate = 0;
+        if (row.taxRate > 100) row.taxRate = 100;
       }
     }
     return s;
@@ -11335,11 +11419,29 @@ window.BRUNO_SEED = {
 
     var emp = state.personnel.employees || [];
     var eh = '';
+    var hoursDay = 8;
+    var hoursWeek = 40;
     for (var j = 0; j < emp.length; j++) {
-      eh += '<tr><td>' + esc(emp[j].number) + '</td><td>' + esc(emp[j].name) +
-        '</td><td class="num-cell">' + money(emp[j].rate) + '</td></tr>';
+      var e = emp[j] || {};
+      var gross = (e.payRate != null && e.payRate !== '') ? (Number(e.payRate) || 0) : (Number(e.rate) || 0);
+      var taxPct = Number(e.taxRate);
+      if (!isFinite(taxPct)) taxPct = 0;
+      if (taxPct < 0) taxPct = 0;
+      if (taxPct > 100) taxPct = 100;
+      var net = gross * (1 - taxPct / 100);
+      eh += '<tr data-emp-i="' + j + '">' +
+        '<td>' + esc(e.number) + '</td>' +
+        '<td>' + esc(e.name) + '</td>' +
+        '<td><input type="number" class="num emp-pay" step="0.01" min="0" value="' + gross + '" aria-label="Gross hourly wage" /></td>' +
+        '<td><input type="number" class="num emp-tax" step="0.1" min="0" max="100" value="' + taxPct + '" aria-label="Tax percent" /></td>' +
+        '<td class="num-cell">' + money(gross) + '</td>' +
+        '<td class="num-cell">' + money(net) + '</td>' +
+        '<td class="num-cell">' + money(gross * hoursDay) + '</td>' +
+        '<td class="num-cell">' + money(net * hoursDay) + '</td>' +
+        '<td class="num-cell">' + money(gross * hoursWeek) + '</td>' +
+        '<td class="num-cell">' + money(net * hoursWeek) + '</td></tr>';
     }
-    document.getElementById('emp-body').innerHTML = eh;
+    document.getElementById('emp-body').innerHTML = eh || '<tr><td colspan="10" style="color:var(--text-muted)">No workers yet</td></tr>';
   }
 
   function renderTM() {
@@ -11792,6 +11894,49 @@ window.BRUNO_SEED = {
         softRefresh();
         renderPersonnel();
       }
+    });
+
+    // Workers pay calculator — informational only; does NOT touch burden / Method A / Quote OH&P
+    on('emp-body', 'input', function (e) {
+      var tr = e.target.closest('tr[data-emp-i]');
+      if (!tr) return;
+      var i = +tr.getAttribute('data-emp-i');
+      var emp = (state.personnel.employees || [])[i];
+      if (!emp) return;
+      var changed = false;
+      if (e.target.classList.contains('emp-pay')) {
+        var pay = parseFloat(e.target.value);
+        if (!isFinite(pay) || pay < 0) pay = 0;
+        emp.payRate = pay;
+        emp.rate = pay; // legacy alias
+        changed = true;
+      } else if (e.target.classList.contains('emp-tax')) {
+        var tax = parseFloat(e.target.value);
+        if (!isFinite(tax)) tax = 0;
+        if (tax < 0) tax = 0;
+        if (tax > 100) tax = 100;
+        emp.taxRate = tax;
+        changed = true;
+      }
+      if (!changed) return;
+      save();
+      // Update computed cells in-place (preserve focus). Formula: net = gross × (1 − tax%/100)
+      var gross = Number(emp.payRate);
+      if (!isFinite(gross)) gross = 0;
+      var taxPct = Number(emp.taxRate);
+      if (!isFinite(taxPct)) taxPct = 0;
+      var net = gross * (1 - taxPct / 100);
+      var cells = tr.querySelectorAll('td.num-cell');
+      // columns: Before tax, After tax, Gross/day, Net/day, Gross/wk, Net/wk
+      if (cells.length >= 6) {
+        cells[0].textContent = money(gross);
+        cells[1].textContent = money(net);
+        cells[2].textContent = money(gross * 8);
+        cells[3].textContent = money(net * 8);
+        cells[4].textContent = money(gross * 40);
+        cells[5].textContent = money(net * 40);
+      }
+      // intentionally no softRefresh / calcAll — pay does not feed job costing
     });
 
     // T&M
@@ -12392,7 +12537,7 @@ window.BRUNO_SEED = {
       '<p class="fine">Jurisdiction: ' + esc(js.jurisdiction || '') +
         ' · NEC ' + esc(js.necEdition || '') +
         ' (informational — this quote is not auto-recalculated for a different NEC edition).' +
-        '<br>' + esc(companyDisplayName(c)) + ' · v1.4</p>';
+        '<br>' + esc(companyDisplayName(c)) + ' · v1.5</p>';
 
     var pq = document.getElementById('print-quote');
     if (pq) pq.innerHTML = quoteHtml;
@@ -12714,7 +12859,7 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.4';
+    if (badge && ship) badge.textContent = 'v1.5';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');

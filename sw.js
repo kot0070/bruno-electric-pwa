@@ -1,5 +1,5 @@
 /* Bruno Electric Estimating — app shell offline cache */
-const CACHE = 'bruno-electric-v14';
+const CACHE = 'bruno-electric-v15';
 const SHELL = [
   './',
   './index.html',

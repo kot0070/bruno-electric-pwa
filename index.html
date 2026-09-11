@@ -40,7 +40,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { font-size: 15px; }
+html { font-size: var(--ui-root-font, 15px); }
 body {
   margin: 0;
   font-family: var(--font);
@@ -825,7 +825,290 @@ main {
   }
 }
 html, body { min-height: 100vh; min-height: 100dvh; }
+
+/* ===== Theme (light) + UI prefs controls ===== */
+:root {
+  --header-bg: linear-gradient(180deg, #1e2836 0%, #16202c 100%);
+  --totals-bg: #141c26;
+  --banner-bg: #1a2433;
+  --chip-highlight-bg: linear-gradient(135deg, #2a2208, #1f2a18);
+  --chip-highlight-border: #6a5520;
+  --btn-hover-bg: #2a3648;
+  --btn-hover-border: #4a5d75;
+  --readonly-bg: #161e28;
+  --thead-bg: #16202c;
+  --stat-bg: #1a2430;
+  --nec-bg: #243044;
+  --nec-border: #3d5470;
+  --badge-bg: #2a3648;
+  --danger-btn-bg: #3a1f24;
+  --danger-btn-border: #6b3038;
+  --danger-btn-text: #ffb4b8;
+  --ui-root-font: 15px;
+}
+html { font-size: var(--ui-root-font, 15px); }
+html[data-theme="light"] {
+  --bg: #f4f6f9;
+  --bg-elev: #ffffff;
+  --bg-card: #ffffff;
+  --bg-input: #f8fafc;
+  --border: #c5d0de;
+  --border-focus: #2563eb;
+  --text: #152033;
+  --text-muted: #5a6b80;
+  --text-dim: #7a8a9c;
+  --accent: #c47a00;
+  --accent-2: #2563eb;
+  --success: #1a7f4f;
+  --danger: #c62828;
+  --warning: #b45309;
+  --shadow: 0 8px 24px rgba(21,32,51,.12);
+  --header-bg: linear-gradient(180deg, #ffffff 0%, #eef2f7 100%);
+  --totals-bg: #eef2f7;
+  --banner-bg: #e8eef6;
+  --chip-highlight-bg: linear-gradient(135deg, #fff6e0, #eef8f0);
+  --chip-highlight-border: #d4a017;
+  --btn-hover-bg: #e8eef6;
+  --btn-hover-border: #9aafc4;
+  --readonly-bg: #eef2f7;
+  --thead-bg: #e8eef6;
+  --stat-bg: #f0f4f8;
+  --nec-bg: #e0e8f2;
+  --nec-border: #a8b8cc;
+  --badge-bg: #e0e8f2;
+  --danger-btn-bg: #fde8ea;
+  --danger-btn-border: #e8a0a8;
+  --danger-btn-text: #9b1c1c;
+}
+html[data-theme="light"] .app-header {
+  background: var(--header-bg);
+  box-shadow: 0 1px 0 var(--border);
+}
+html[data-theme="light"] .live-totals,
+html[data-theme="light"] .live-totals {
+  background: var(--totals-bg);
+}
+@media (min-width: 768px) {
+  html[data-theme="light"] .live-totals { background: var(--totals-bg); }
+}
+html[data-theme="light"] .btn:hover { background: var(--btn-hover-bg); border-color: var(--btn-hover-border); }
+html[data-theme="light"] .btn-danger {
+  background: var(--danger-btn-bg);
+  border-color: var(--danger-btn-border);
+  color: var(--danger-btn-text);
+}
+html[data-theme="light"] .total-chip.highlight {
+  background: var(--chip-highlight-bg);
+  border-color: var(--chip-highlight-border);
+}
+html[data-theme="light"] .job-banner { background: var(--banner-bg); }
+html[data-theme="light"] .job-banner .nec-pill {
+  background: var(--nec-bg);
+  border-color: var(--nec-border);
+}
+html[data-theme="light"] .field .readonly-val { background: var(--readonly-bg); }
+html[data-theme="light"] table.data th { background: var(--thead-bg); }
+html[data-theme="light"] .stat { background: var(--stat-bg); }
+html[data-theme="light"] .badge { background: var(--badge-bg); }
+html[data-theme="light"] .status-draft { background: #e8eef6; color: var(--text-muted); }
+html[data-theme="light"] .status-submitted { background: #e0ecfa; color: #1d4f91; }
+html[data-theme="light"] .status-approved { background: #d8f3e4; color: #146c43; }
+html[data-theme="light"] .status-rejected,
+html[data-theme="light"] .status-void { background: #fde8ea; color: #9b1c1c; }
+html[data-theme="light"] .badge-active {
+  background: rgba(22,163,74,.15);
+  color: #15803d;
+}
+html[data-theme="light"] table.data th {
+  color: var(--text-muted);
+  border-bottom-color: var(--border);
+}
+html[data-theme="light"] table.data td {
+  border-bottom-color: var(--border);
+}
+.toast {
+  bottom: 6.75rem;
+}
+@media (max-width: 767.98px) {
+  .toast {
+    left: 1rem;
+    right: 1rem;
+    bottom: 5.75rem;
+  }
+}
+html[data-theme="light"] .section-help {
+  background: rgba(37,99,235,.06);
+  border-color: rgba(37,99,235,.22);
+}
+html[data-theme="light"] .quote-preview {
+  background: #fafbfd;
+  color: #1a1a1a;
+  border: 1px solid var(--border);
+}
+/* Solid light surfaces — override dark hardcodes that cause washed/ghost UI */
+html[data-theme="light"] .app-header {
+  background: linear-gradient(180deg, #ffffff 0%, #eef2f7 100%) !important;
+  color: var(--text);
+}
+html[data-theme="light"] .live-totals {
+  background: var(--totals-bg) !important;
+  color: var(--text);
+}
+html[data-theme="light"] .btn {
+  background: var(--bg-card);
+  color: var(--text);
+  border-color: var(--border);
+}
+html[data-theme="light"] .btn:hover {
+  background: var(--btn-hover-bg) !important;
+  border-color: var(--btn-hover-border) !important;
+}
+html[data-theme="light"] .btn-accent,
+html[data-theme="light"] .btn-primary {
+  color: #1a1200;
+}
+html[data-theme="light"] .field input,
+html[data-theme="light"] .field select,
+html[data-theme="light"] .field textarea,
+html[data-theme="light"] table.data input,
+html[data-theme="light"] table.data select {
+  background: var(--bg-input) !important;
+  color: var(--text) !important;
+  border-color: var(--border);
+}
+html[data-theme="light"] table.data th {
+  background: var(--thead-bg) !important;
+  color: var(--text-muted) !important;
+}
+html[data-theme="light"] .section-help {
+  background: #eaf1fc !important;
+  color: var(--text) !important;
+  border-color: #b7c9e8 !important;
+}
+html[data-theme="light"] .section-help strong { color: var(--text); }
+html[data-theme="light"] .hint,
+html[data-theme="light"] .brand-text p { color: var(--text-muted); }
+html[data-theme="light"] .nav-tabs {
+  background: var(--bg) !important;
+  border-bottom-color: var(--border);
+}
+html[data-theme="light"] .nav-tab {
+  background: var(--bg-elev);
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+html[data-theme="light"] .nav-tab.active {
+  background: var(--bg-card);
+  color: var(--text);
+}
+html[data-theme="light"] .ui-prefs-btn {
+  background: var(--bg-card);
+  color: var(--text);
+  border-color: var(--border);
+}
+html[data-theme="light"] .panel {
+  background: transparent;
+  color: var(--text);
+}
+/* Quote preview stays paper-like in both themes */
+.quote-preview { /* unchanged intentional light paper */ }
+
+.ui-prefs {
+  position: fixed;
+  right: max(0.75rem, env(safe-area-inset-right, 0px));
+  bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  z-index: 220;
+  font-size: 13px;
+  line-height: 1.2;
+}
+.ui-prefs-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.55rem 0.65rem;
+  background: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  min-width: 168px;
+}
+.ui-prefs-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.ui-prefs-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  min-width: 2.6rem;
+}
+.ui-prefs-btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  border-radius: 8px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.35rem 0.55rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+.ui-prefs-btn:hover { background: var(--btn-hover-bg); border-color: var(--btn-hover-border); }
+.ui-prefs-btn:active { transform: scale(.98); }
+.ui-prefs-theme {
+  width: 100%;
+  justify-content: flex-start;
+  padding-left: 0.65rem;
+  padding-right: 0.65rem;
+}
+.ui-prefs-theme .ico { font-size: 1rem; line-height: 1; }
+.ui-prefs-zoom-val {
+  min-width: 3.4rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.ui-prefs-fab {
+  display: none;
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  border-radius: 999px;
+  min-width: 48px;
+  min-height: 48px;
+  box-shadow: var(--shadow);
+  font-size: 1.15rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.ui-prefs-fab:hover { background: var(--btn-hover-bg); }
+@media (max-width: 767.98px) {
+  .ui-prefs:not(.is-open) .ui-prefs-panel { display: none; }
+  .ui-prefs:not(.is-open) .ui-prefs-fab { display: inline-flex; align-items: center; justify-content: center; }
+  .ui-prefs.is-open .ui-prefs-fab { display: none; }
+  .ui-prefs.is-open .ui-prefs-panel { display: flex; margin-bottom: 0.35rem; }
+}
+@media print {
+  .ui-prefs { display: none !important; }
+  html { font-size: 15px !important; }
+}
 </style>
+  <script>/* ui-prefs early */
+  (function(){try{var r=localStorage.getItem('bruno-electric-ui-prefs-v1');if(!r)return;var p=JSON.parse(r);if(p&&p.theme==='light')document.documentElement.setAttribute('data-theme','light');var z=Number(p&&p.zoom);if(isFinite(z)&&z>=80&&z<=150)document.documentElement.style.setProperty('--ui-root-font',(15*z/100)+'px');}catch(e){}})();
+  </script>
 </head>
 <body class="ship-mode">
 <header class="app-header">
@@ -833,7 +1116,7 @@ html, body { min-height: 100vh; min-height: 100dvh; }
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.2.2</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.3.1</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -1404,8 +1687,15 @@ html, body { min-height: 100vh; min-height: 100dvh; }
       </div>
 
       <div class="card">
+        <h3>Theme &amp; Zoom</h3>
+        <ul class="help-list">
+          <li><strong>Theme &amp; Zoom:</strong> Use the bottom-right controls to switch Dark/Light and adjust Zoom (saved on this device).</li>
+        </ul>
+      </div>
+
+      <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.2.2<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.3.1<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
       </div>
     </section>
 
@@ -1414,6 +1704,22 @@ html, body { min-height: 100vh; min-height: 100dvh; }
   <footer class="app-foot no-print">
     Bruno Electric Services LLC · Estimating · Offline
   </footer>
+
+  <div class="ui-prefs no-print" id="ui-prefs" aria-label="Theme and zoom">
+    <button type="button" class="ui-prefs-fab" id="ui-prefs-fab" aria-expanded="false" aria-controls="ui-prefs-panel" title="Theme &amp; zoom">Aa</button>
+    <div class="ui-prefs-panel" id="ui-prefs-panel">
+      <button type="button" class="ui-prefs-btn ui-prefs-theme" id="ui-prefs-theme" title="Toggle theme" aria-label="Toggle theme">
+        <span class="ico" id="ui-prefs-theme-ico" aria-hidden="true">🌙</span>
+        <span id="ui-prefs-theme-label">Theme: Dark</span>
+      </button>
+      <div class="ui-prefs-row" role="group" aria-label="Zoom">
+        <span class="ui-prefs-label">Zoom</span>
+        <button type="button" class="ui-prefs-btn" id="ui-prefs-zoom-out" title="Zoom out" aria-label="Zoom out">−</button>
+        <span class="ui-prefs-zoom-val" id="ui-prefs-zoom-val" aria-live="polite">100%</span>
+        <button type="button" class="ui-prefs-btn" id="ui-prefs-zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
+      </div>
+    </div>
+  </div>
   <div class="toast no-print" id="toast"></div>
   <div id="print-root" aria-hidden="true">
     <article id="print-quote" class="print-doc"></article>
@@ -9714,6 +10020,120 @@ window.BRUNO_SEED = {
 
   var STORAGE_KEY = 'bruno-electric-v1';
   var PROFILES_KEY = 'bruno-electric-profiles-v1';
+
+  var UI_PREFS_KEY = 'bruno-electric-ui-prefs-v1';
+  var UI_ZOOM_STEPS = [80, 85, 100, 110, 125, 150];
+  var UI_ROOT_BASE_PX = 15;
+
+  function clampZoom(z) {
+    z = Math.round(Number(z) || 100);
+    if (z < 80) z = 80;
+    if (z > 150) z = 150;
+    return z;
+  }
+  function nearestZoomStep(z) {
+    z = clampZoom(z);
+    var best = UI_ZOOM_STEPS[0], bestD = Math.abs(best - z), i;
+    for (i = 1; i < UI_ZOOM_STEPS.length; i++) {
+      var d = Math.abs(UI_ZOOM_STEPS[i] - z);
+      if (d < bestD) { best = UI_ZOOM_STEPS[i]; bestD = d; }
+    }
+    return best;
+  }
+  function loadUiPrefs() {
+    var out = { theme: 'dark', zoom: 100 };
+    try {
+      var raw = localStorage.getItem(UI_PREFS_KEY);
+      if (!raw) return out;
+      var p = JSON.parse(raw);
+      if (p && (p.theme === 'light' || p.theme === 'dark')) out.theme = p.theme;
+      if (p && p.zoom != null) out.zoom = nearestZoomStep(p.zoom);
+    } catch (e) {}
+    return out;
+  }
+  function saveUiPrefs(prefs) {
+    try {
+      localStorage.setItem(UI_PREFS_KEY, JSON.stringify({
+        theme: prefs.theme === 'light' ? 'light' : 'dark',
+        zoom: clampZoom(prefs.zoom)
+      }));
+    } catch (e) {}
+  }
+  function applyUiTheme(theme) {
+    var root = document.documentElement;
+    if (!root) return;
+    if (theme === 'light') root.setAttribute('data-theme', 'light');
+    else root.removeAttribute('data-theme');
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f4f6f9' : '#0f1419');
+    var ico = document.getElementById('ui-prefs-theme-ico');
+    var lab = document.getElementById('ui-prefs-theme-label');
+    var btn = document.getElementById('ui-prefs-theme');
+    if (ico) ico.textContent = theme === 'light' ? '☀️' : '🌙';
+    if (lab) lab.textContent = theme === 'light' ? 'Theme: Light' : 'Theme: Dark';
+    if (btn) btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+  }
+  function applyUiZoom(zoom) {
+    zoom = clampZoom(zoom);
+    var root = document.documentElement;
+    if (root) root.style.setProperty('--ui-root-font', (UI_ROOT_BASE_PX * zoom / 100) + 'px');
+    var val = document.getElementById('ui-prefs-zoom-val');
+    if (val) val.textContent = zoom + '%';
+  }
+  function setupUiPrefs() {
+    var prefs = loadUiPrefs();
+    applyUiTheme(prefs.theme);
+    applyUiZoom(prefs.zoom);
+
+    var themeBtn = document.getElementById('ui-prefs-theme');
+    var zoomIn = document.getElementById('ui-prefs-zoom-in');
+    var zoomOut = document.getElementById('ui-prefs-zoom-out');
+    var fab = document.getElementById('ui-prefs-fab');
+    var cluster = document.getElementById('ui-prefs');
+
+    if (themeBtn) {
+      themeBtn.addEventListener('click', function () {
+        prefs.theme = prefs.theme === 'light' ? 'dark' : 'light';
+        applyUiTheme(prefs.theme);
+        saveUiPrefs(prefs);
+      });
+    }
+    if (zoomIn) {
+      zoomIn.addEventListener('click', function () {
+        var i, next = 150;
+        for (i = 0; i < UI_ZOOM_STEPS.length; i++) {
+          if (UI_ZOOM_STEPS[i] > prefs.zoom) { next = UI_ZOOM_STEPS[i]; break; }
+        }
+        prefs.zoom = next;
+        applyUiZoom(prefs.zoom);
+        saveUiPrefs(prefs);
+      });
+    }
+    if (zoomOut) {
+      zoomOut.addEventListener('click', function () {
+        var i, next = 80;
+        for (i = UI_ZOOM_STEPS.length - 1; i >= 0; i--) {
+          if (UI_ZOOM_STEPS[i] < prefs.zoom) { next = UI_ZOOM_STEPS[i]; break; }
+        }
+        prefs.zoom = next;
+        applyUiZoom(prefs.zoom);
+        saveUiPrefs(prefs);
+      });
+    }
+    if (fab && cluster) {
+      fab.addEventListener('click', function () {
+        cluster.classList.add('is-open');
+        fab.setAttribute('aria-expanded', 'true');
+      });
+      document.addEventListener('click', function (ev) {
+        if (!cluster.classList.contains('is-open')) return;
+        if (cluster.contains(ev.target)) return;
+        cluster.classList.remove('is-open');
+        fab.setAttribute('aria-expanded', 'false');
+      });
+    }
+  }
+
   var profilesVault = null;
   var editingProfileId = null;
   var state = null;
@@ -11940,7 +12360,7 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.2.2';
+    if (badge && ship) badge.textContent = 'v1.3.1';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');
@@ -11961,6 +12381,7 @@ window.BRUNO_SEED = {
       return;
     }
     applyShipMode();
+    try { setupUiPrefs(); } catch (err) { console.error('[Bruno] ui prefs', err); }
     demoSeed = deepClone(window.BRUNO_SEED);
     var stored = loadFromStorage();
     state = normalizeState(stored ? stored : deepClone(demoSeed));

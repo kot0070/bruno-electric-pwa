@@ -208,6 +208,29 @@ main {
 .help-list strong { color: var(--text); font-weight: 600; }
 .help-list em { color: var(--text); font-style: italic; }
 
+
+.ref-jump {
+  display: flex; flex-wrap: wrap; gap: .4rem;
+  margin: 0 0 1.1rem;
+}
+.ref-jump a { text-decoration: none; }
+.ref-block { margin-bottom: 1.25rem; }
+.ref-block h3 { margin: 0 0 .15rem; font-size: 1.02rem; }
+.ref-table-wrap { max-height: 420px; overflow: auto; }
+table.data.ref-tbl { font-size: .82rem; }
+table.data.ref-tbl th { white-space: nowrap; }
+table.data.ref-tbl caption {
+  caption-side: top; text-align: left; font-weight: 600;
+  padding: .35rem 0; color: var(--text);
+}
+.st-group td {
+  background: var(--bg-elev);
+  font-weight: 700; font-size: .75rem;
+  text-transform: uppercase; letter-spacing: .04em;
+  color: var(--text-muted);
+}
+.mat-split-hint { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+
 body.ship-mode [data-ship-hide="1"] { display: none !important; }
 body.ship-mode .brand-text p .ver-badge { letter-spacing: .02em; }
 .card.company-profile h3 { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; flex-wrap: wrap; }
@@ -473,6 +496,41 @@ footer.app-foot {
   border-top: 2px solid #c47a00;
   color: #1a1a1a;
 }
+.quote-preview .qp-meta {
+  display: flex; flex-wrap: wrap; gap: .75rem 1.5rem;
+  margin: .85rem 0 1rem; padding: .65rem .85rem;
+  background: #fff; border: 1px solid #e2d4b0; border-radius: 8px;
+}
+.quote-preview .qp-meta .qp-item { display: flex; flex-direction: column; min-width: 8rem; }
+.quote-preview .qp-meta .qp-lbl {
+  font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; color: #666; font-weight: 700;
+}
+.quote-preview .qp-meta .qp-val { font-size: 1.08rem; font-weight: 800; color: #1a1a1a; }
+.quote-preview .quote-close {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem 1.5rem;
+  align-items: flex-end; margin-top: .85rem;
+}
+.quote-preview .quote-valid {
+  flex: 1; min-width: 14rem; margin: 0;
+  font-size: .92rem; color: #333; font-weight: 600;
+}
+.quote-preview .quote-sign {
+  min-width: 16rem; flex: 0 1 42%;
+  border: 1px solid #ccc; border-radius: 8px; padding: .65rem .8rem; background: #fff;
+}
+.quote-preview .quote-sign .sign-lbl {
+  font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; color: #666; font-weight: 700;
+}
+.quote-preview .quote-sign .sign-name { font-size: 1.05rem; font-weight: 800; margin: .2rem 0 .15rem; }
+.quote-preview .quote-sign .sign-rule {
+  border-bottom: 1px solid #333; height: 1.5rem; margin: .25rem 0 .35rem;
+}
+.quote-accept { margin-top: 1rem; }
+.quote-accept .quote-valid-ui { margin: 0 0 .4rem; }
+.quote-sign-ui .sign-lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); font-weight: 700; }
+.quote-sign-ui .sign-name { font-size: 1.05rem; font-weight: 800; margin: .2rem 0; }
+.quote-sign-ui .sign-org { font-size: .82rem; color: var(--text-muted); }
+
 
 /* ===== Version badge / extras ===== */
 .ver-badge {
@@ -734,6 +792,18 @@ main {
 }
 .print-doc .lh-name { font-size: 1.35rem; font-weight: 800; color: #1a1a1a; }
 .print-doc .lh-meta { font-size: .85rem; color: #444; line-height: 1.45; text-align: right; }
+.print-doc .lh-date { font-size: 1.08rem; font-weight: 800; color: #1a1a1a; margin-bottom: .2rem; }
+.print-doc .lh-job { font-size: 1rem; font-weight: 700; color: #1a1a1a; margin-bottom: .35rem; }
+.print-doc .quote-close {
+  display: flex; justify-content: space-between; gap: 1.25rem; flex-wrap: wrap;
+  align-items: flex-start; margin-top: .75rem;
+}
+.print-doc .quote-valid { flex: 1; min-width: 14rem; font-size: .92rem; font-weight: 600; margin: .15rem 0 0; }
+.print-doc .sign-block { min-width: 15rem; flex: 0 1 42%; }
+.print-doc .sign-block .sign-lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: #555; font-weight: 700; }
+.print-doc .sign-rule { border-bottom: 1px solid #222; height: 1.75rem; margin: .3rem 0 .35rem; }
+.print-doc .sign-name { font-weight: 700; }
+
 .print-doc h1 {
   font-size: 1.15rem;
   margin: 0 0 .75rem;
@@ -1116,7 +1186,7 @@ html[data-theme="light"] .panel {
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.3.1</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.4</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -1151,13 +1221,15 @@ html[data-theme="light"] .panel {
   <nav class="nav-tabs no-print" role="tablist" id="nav-tabs">
     <button type="button" class="nav-tab" data-tab="profiles" aria-selected="false">Profiles</button>
     <button type="button" class="nav-tab active" data-tab="quote" aria-selected="true">Quote</button>
-    <button type="button" class="nav-tab" data-tab="materials">Materials</button>
+    <button type="button" class="nav-tab" data-tab="materials">Job materials</button>
+    <button type="button" class="nav-tab" data-tab="catalog">Catalog</button>
     <button type="button" class="nav-tab" data-tab="labor">Labor &amp; Equip</button>
     <button type="button" class="nav-tab" data-tab="summary">Summary</button>
     <button type="button" class="nav-tab" data-tab="cos">Change Orders</button>
     <button type="button" class="nav-tab" data-tab="personnel">Personnel</button>
     <button type="button" class="nav-tab" data-tab="tm">T&amp;M Invoice</button>
     <button type="button" class="nav-tab" data-tab="pnl">Profit &amp; Loss</button>
+    <button type="button" class="nav-tab" data-tab="reference">Reference</button>
     <button type="button" class="nav-tab" data-tab="help">Help</button>
   </nav>
 
@@ -1246,7 +1318,8 @@ html[data-theme="light"] .panel {
       <div class="card">
         <h3>Job header</h3>
         <div class="grid grid-2">
-          <div class="field"><label>Date</label><input type="date" id="q-date" /></div>
+          <div class="field"><label>Quote date</label><input type="date" id="q-date" /></div>
+          <div class="field"><label>Job #</label><input type="text" id="q-job" placeholder="Job number" /></div>
           <div class="field"><label>Proposal #</label><input type="text" id="q-proposal" /></div>
           <div class="field"><label>P.O.#</label><input type="text" id="q-po" /></div>
           <div class="field"><label>Work Order #</label><input type="text" id="q-wo" /></div>
@@ -1273,26 +1346,40 @@ html[data-theme="light"] .panel {
         <div class="stat"><div class="lbl">Approved COs</div><div class="val" id="q-cos">$0</div></div>
         <div class="stat"><div class="lbl">Quote Total</div><div class="val big" id="q-total">$0</div></div>
       </div>
+      <div class="card quote-accept">
+        <div class="grid grid-2">
+          <div>
+            <p class="quote-valid-ui"><strong>Validity:</strong> This quote is valid for 15 days from the quote date.</p>
+            <p class="hint" style="margin:0;color:var(--text-muted);font-size:.85rem">Quote date: <span id="q-date-display">—</span> · Job #: <span id="q-job-display">—</span></p>
+          </div>
+          <div class="quote-sign-ui">
+            <div class="sign-lbl">Quoted by / Authorized signature</div>
+            <div class="sign-name" id="q-sign-name">—</div>
+            <div class="sign-org" id="q-sign-org">Bruno Electric Services LLC personnel</div>
+          </div>
+        </div>
+      </div>
       <div class="quote-preview" id="quote-preview"></div>
     </section>
 
-    <!-- MATERIALS -->
+    <!-- JOB MATERIALS -->
     <section class="panel" id="panel-materials" role="tabpanel">
       <div class="panel-head">
-        <h2>Materials</h2>
-        <span class="hint">line = qty × unitCost · no material markup (OH/profit on Summary)</span>
+        <h2>Job materials</h2>
+        <span class="hint">qty on this job · line = qty × unitCost · no material markup</span>
       </div>
-      <p class="section-help"><strong>Job materials:</strong> Add lines or pull from the catalog. Extension = Qty × Unit Cost. No extra material markup — OH and profit apply only on the Summary tab. CSV import accepts flexible column names.</p>
+      <p class="section-help"><strong>On this job:</strong> Quantities used for the estimate. Extension = Qty × Unit Cost. Pull items from the <strong>Catalog</strong> tab or import CSV. No extra material markup — OH and profit apply only on Summary.</p>
       <div class="note-box ok">
         <strong>Single margin layer:</strong> Material markup stays <code>0</code>.
         OH/profit apply only in Summary (Method A).
         Extension = Qty × Unit Cost → sum = Material Cost.
       </div>
       <div class="card">
-        <h3>Job materials <span class="sub">lines with qty &gt; 0 + editable</span></h3>
+        <h3>Materials on this job <span class="sub">editable lines</span></h3>
         <div class="toolbar">
           <button type="button" class="btn btn-primary btn-sm" id="mat-add-blank">+ Add line</button>
           <button type="button" class="btn btn-sm" id="mat-stamp-prices">Stamp prices today</button>
+          <button type="button" class="btn btn-sm" id="mat-open-catalog">Browse catalog</button>
           <label class="btn btn-sm" style="cursor:pointer;margin:0">
             Import CSV
             <input type="file" id="mat-csv" accept=".csv,text/csv,text/plain" class="sr-only" />
@@ -1338,13 +1425,25 @@ html[data-theme="light"] .panel {
           <div class="stat"><div class="lbl">Material markup</div><div class="val">0% (locked)</div></div>
         </div>
       </div>
+    </section>
+
+    <!-- CATALOG -->
+    <section class="panel" id="panel-catalog" role="tabpanel">
+      <div class="panel-head">
+        <h2>Catalog</h2>
+        <span class="hint">full materials list · search · add to this job</span>
+      </div>
+      <p class="section-help"><strong>General materials list:</strong> Search the shop catalog (~676 items). <strong>Add</strong> sends a line to <strong>Job materials</strong> with qty 1 (edit qty there). Catalog is kept when you start a blank job.</p>
       <div class="card">
-        <h3>Catalog <span class="sub">search · add to job</span></h3>
+        <h3>Materials catalog <span class="sub">search · add to job</span></h3>
+        <div class="toolbar">
+          <button type="button" class="btn btn-sm" id="cat-open-job">View job materials</button>
+        </div>
         <div class="search-bar">
           <input type="search" id="cat-search" placeholder="Search item, part #, vendor…" />
           <span class="badge" id="cat-count">0</span>
         </div>
-        <div class="table-wrap" style="max-height:360px;overflow:auto">
+        <div class="table-wrap" style="max-height:70vh;overflow:auto">
           <table class="data">
             <thead>
               <tr>
@@ -1368,7 +1467,7 @@ html[data-theme="light"] .panel {
         <h2>Labor &amp; Equip</h2>
         <span class="hint">Labor rates from Personnel (burden)</span>
       </div>
-      <p class="section-help"><strong>Costs that feed Summary:</strong> Equipment rows, small tools, subcontractors, and labor blocks (burden rates come from Personnel). Suggested hours from materials are informational.</p>
+      <p class="section-help"><strong>Costs that feed Summary:</strong> Equipment rows, <strong>small tools line items</strong> (qty × unit cost, summed into Equip Cost), subcontractors, and labor blocks (burden rates come from Personnel). Suggested hours from materials are informational.</p>
       <div class="card">
         <h3>Equipment / other costs</h3>
         <div class="toolbar">
@@ -1380,10 +1479,36 @@ html[data-theme="light"] .panel {
             <tbody id="equip-body"></tbody>
           </table>
         </div>
-        <div class="grid grid-3" style="margin-top:.75rem">
-          <div class="field"><label>Small Tools</label><input type="number" id="le-small-tools" step="0.01" min="0" /></div>
-          <div class="field"><label>Equipment cost total</label><div class="readonly-val" id="le-equip-total">$0</div></div>
+        <div class="grid grid-2" style="margin-top:.75rem">
+          <div class="field"><label>Equipment cost total <span class="sub">(includes small tools)</span></label><div class="readonly-val" id="le-equip-total">$0</div></div>
           <div class="field"><label>Suggested hrs (from materials)</label><div class="readonly-val" id="le-suggested-hrs">—</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Small Tools <span class="sub">qty × unit cost · feeds Equip Cost on Summary</span></h3>
+        <p class="section-help" style="margin-top:0">Safety / lockout list from the workbook <strong>Small Tools</strong> sheet. Set qty on this job (defaults 0). Extension = Qty × Unit Cost. The sum is the small-tools dollar amount previously entered as a single field, and is included in <strong>Equip Cost</strong> on Summary.</p>
+        <div class="toolbar">
+          <button type="button" class="btn btn-sm btn-primary" id="st-add">+ Add line</button>
+          <button type="button" class="btn btn-sm" id="st-restore">Restore safety list</button>
+        </div>
+        <div class="table-wrap" style="max-height:420px;overflow:auto">
+          <table class="data" id="st-table">
+            <thead>
+              <tr>
+                <th class="col-qty">Qty</th>
+                <th>Description</th>
+                <th>Supplier</th>
+                <th>Part #</th>
+                <th class="col-cost">Unit cost</th>
+                <th class="col-ext">Extension</th>
+                <th class="col-actions"></th>
+              </tr>
+            </thead>
+            <tbody id="st-body"></tbody>
+          </table>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="lbl">Small tools total</div><div class="val big" id="le-st-total">$0</div></div>
         </div>
       </div>
       <div class="card">
@@ -1610,6 +1735,31 @@ html[data-theme="light"] .panel {
     </section>
 
 
+    <!-- REFERENCE -->
+    <section class="panel" id="panel-reference" role="tabpanel">
+      <div class="panel-head">
+        <h2>Reference</h2>
+        <span class="hint">NEC tables from the workbook · informational</span>
+      </div>
+      <p class="section-help"><strong>Lookup only:</strong> Ampacity, adjustment factors, conduit fill, box fill, grounding, transformers, and motors extracted from the Excel <strong>Reference</strong> sheet. These tables do <strong>not</strong> auto-change labor hours, fill, ampacity in calcs, or OH%. Same rule as the NEC edition selector — pick the AHJ edition and apply code by hand.</p>
+      <div class="note-box warn">
+        Historical workbook numbering (Table 310-16 / 310-15). Confirm against the edition your AHJ enforces (2020 / 2023 / 2026). Do not mix a 2026 label with 2020 math.
+      </div>
+      <nav class="ref-jump" aria-label="Reference tables"><a class="btn btn-sm" href="#ref-ampacity">Table 310-16</a><a class="btn btn-sm" href="#ref-adjust">Table 310-15(B)(2)(A)</a><a class="btn btn-sm" href="#ref-dwelling">Table 310-15(B)(6)</a><a class="btn btn-sm" href="#ref-conduit">Maximum Conductors in Trade Size Conduit</a><a class="btn btn-sm" href="#ref-box">Metal Box Fill</a><a class="btn btn-sm" href="#ref-egc">Grounding Raceway and Equipment</a><a class="btn btn-sm" href="#ref-xf-3">Transformer Full-Load Current</a><a class="btn btn-sm" href="#ref-xf-1">Transformer Full-Load Current</a><a class="btn btn-sm" href="#ref-motor-3">Three-Phase AC Motors</a><a class="btn btn-sm" href="#ref-motor-1">Single-Phase AC Motors</a><a class="btn btn-sm" href="#ref-encl">Enclosure Types</a><a class="btn btn-sm" href="#ref-haz">Hazardous Locations (overview)</a></nav>
+<article class="ref-block card" id="ref-ampacity"><h3>Table 310-16 — Allowable Ampacities</h3><p class="section-help" style="margin-top:.35rem">Insulated conductors rated 0–2000 V, 75°C / 90°C. Not more than three current-carrying conductors in a raceway, cable, or earth (directly buried). Based on ambient 30°C (86°F). From the workbook Reference sheet (historical NEC numbering).</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>Size AWG / kcmil</th><th>Copper 75°C (RHW, THHW, THW)</th><th>Copper 90°C (THHN, XHHW, THWN, RHW)</th><th>AL / Cu-clad 75°C (RHW, THHW, THW)</th><th>AL / Cu-clad 90°C (THHN, XHHW, THWN, RHW)</th></tr></thead><tbody><tr><td>18</td><td class="num-cell">-</td><td class="num-cell">14</td><td class="num-cell">-</td><td class="num-cell">-</td></tr><tr><td>16</td><td class="num-cell">-</td><td class="num-cell">18</td><td class="num-cell">-</td><td class="num-cell">-</td></tr><tr><td>14</td><td class="num-cell">20</td><td class="num-cell">25</td><td class="num-cell">-</td><td class="num-cell">-</td></tr><tr><td>12</td><td class="num-cell">25</td><td class="num-cell">30</td><td class="num-cell">20</td><td class="num-cell">25</td></tr><tr><td>10</td><td class="num-cell">35</td><td class="num-cell">40</td><td class="num-cell">30</td><td class="num-cell">35</td></tr><tr><td>8</td><td class="num-cell">50</td><td class="num-cell">55</td><td class="num-cell">40</td><td class="num-cell">45</td></tr><tr><td>6</td><td class="num-cell">65</td><td class="num-cell">75</td><td class="num-cell">50</td><td class="num-cell">60</td></tr><tr><td>4</td><td class="num-cell">85</td><td class="num-cell">95</td><td class="num-cell">65</td><td class="num-cell">75</td></tr><tr><td>3</td><td class="num-cell">100</td><td class="num-cell">110</td><td class="num-cell">75</td><td class="num-cell">85</td></tr><tr><td>2</td><td class="num-cell">115</td><td class="num-cell">130</td><td class="num-cell">90</td><td class="num-cell">100</td></tr><tr><td>1</td><td class="num-cell">130</td><td class="num-cell">150</td><td class="num-cell">100</td><td class="num-cell">115</td></tr><tr><td>1/0</td><td class="num-cell">150</td><td class="num-cell">170</td><td class="num-cell">120</td><td class="num-cell">135</td></tr><tr><td>2/0</td><td class="num-cell">175</td><td class="num-cell">195</td><td class="num-cell">135</td><td class="num-cell">150</td></tr><tr><td>3/0</td><td class="num-cell">200</td><td class="num-cell">225</td><td class="num-cell">155</td><td class="num-cell">175</td></tr><tr><td>4/0</td><td class="num-cell">230</td><td class="num-cell">260</td><td class="num-cell">180</td><td class="num-cell">205</td></tr><tr><td>250</td><td class="num-cell">255</td><td class="num-cell">290</td><td class="num-cell">205</td><td class="num-cell">230</td></tr><tr><td>300</td><td class="num-cell">285</td><td class="num-cell">320</td><td class="num-cell">230</td><td class="num-cell">255</td></tr><tr><td>350</td><td class="num-cell">310</td><td class="num-cell">350</td><td class="num-cell">250</td><td class="num-cell">280</td></tr><tr><td>400</td><td class="num-cell">335</td><td class="num-cell">380</td><td class="num-cell">270</td><td class="num-cell">305</td></tr><tr><td>500</td><td class="num-cell">380</td><td class="num-cell">430</td><td class="num-cell">310</td><td class="num-cell">350</td></tr><tr><td>600</td><td class="num-cell">420</td><td class="num-cell">475</td><td class="num-cell">340</td><td class="num-cell">385</td></tr><tr><td>700</td><td class="num-cell">460</td><td class="num-cell">520</td><td class="num-cell">375</td><td class="num-cell">420</td></tr><tr><td>780</td><td class="num-cell">475</td><td class="num-cell">535</td><td class="num-cell">385</td><td class="num-cell">435</td></tr><tr><td>800</td><td class="num-cell">490</td><td class="num-cell">555</td><td class="num-cell">395</td><td class="num-cell">450</td></tr><tr><td>900</td><td class="num-cell">520</td><td class="num-cell">585</td><td class="num-cell">425</td><td class="num-cell">480</td></tr><tr><td>1000</td><td class="num-cell">545</td><td class="num-cell">615</td><td class="num-cell">445</td><td class="num-cell">500</td></tr><tr><td>1250</td><td class="num-cell">590</td><td class="num-cell">665</td><td class="num-cell">485</td><td class="num-cell">545</td></tr><tr><td>1500</td><td class="num-cell">625</td><td class="num-cell">705</td><td class="num-cell">520</td><td class="num-cell">585</td></tr><tr><td>1750</td><td class="num-cell">650</td><td class="num-cell">735</td><td class="num-cell">545</td><td class="num-cell">615</td></tr><tr><td>2000</td><td class="num-cell">665</td><td class="num-cell">750</td><td class="num-cell">560</td><td class="num-cell">630</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-adjust"><h3>Table 310-15(B)(2)(A) — Adjustment Factors</h3><p class="section-help" style="margin-top:.35rem">More than three current-carrying conductors in a raceway. Apply this percent to Table 310-16 / 310-19 values (after ambient adjustment if needed).</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th># current-carrying conductors</th><th>Percent of Table 310-16/19</th><th>Factor</th></tr></thead><tbody><tr><td>4-6</td><td class="num-cell">80%</td><td class="num-cell">0.8</td></tr><tr><td>7-9</td><td class="num-cell">70%</td><td class="num-cell">0.7</td></tr><tr><td>10-20</td><td class="num-cell">50%</td><td class="num-cell">0.5</td></tr><tr><td>21-30</td><td class="num-cell">45%</td><td class="num-cell">0.45</td></tr><tr><td>31-40</td><td class="num-cell">40%</td><td class="num-cell">0.4</td></tr><tr><td>41-above</td><td class="num-cell">35%</td><td class="num-cell">0.35</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-dwelling"><h3>Table 310-15(B)(6) — Dwelling Services &amp; Feeders</h3><p class="section-help" style="margin-top:.35rem">Conductor types and sizes for 120/240 V, 3-wire, single-phase dwelling services and feeders. Aluminum / copper-clad aluminum vs service/feeder rating.</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>AL / Cu-clad AL size</th><th>Service / feeder rating (A)</th></tr></thead><tbody><tr><td>2</td><td class="num-cell">100</td></tr><tr><td>1</td><td class="num-cell">110</td></tr><tr><td>1/0</td><td class="num-cell">125</td></tr><tr><td>2/0</td><td class="num-cell">150</td></tr><tr><td>3/0</td><td class="num-cell">175</td></tr><tr><td>4/0</td><td class="num-cell">200</td></tr><tr><td>250</td><td class="num-cell">225</td></tr><tr><td>300</td><td class="num-cell">250</td></tr><tr><td>350</td><td class="num-cell">300</td></tr><tr><td>500</td><td class="num-cell">350</td></tr><tr><td>600</td><td class="num-cell">400</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-conduit"><h3>Maximum Conductors in Trade Size Conduit / Tubing</h3><p class="section-help" style="margin-top:.35rem">THHN or XHHW. Where a cell shows two numbers (e.g. 4 / 3), the workbook listed both counts for that size.</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>Type</th><th>Wire size</th><th>1/2&quot;</th><th>3/4&quot;</th><th>1&quot;</th><th>1-1/4&quot;</th><th>1-1/2&quot;</th><th>2&quot;</th><th>2-1/2&quot;</th><th>3&quot;</th><th>3-1/2&quot;</th><th>4&quot;</th><th>5&quot;</th><th>6&quot;</th></tr></thead><tbody><tr><td>THHN or</td><td class="num-cell">14</td><td class="num-cell">13</td><td class="num-cell">24</td><td class="num-cell">39</td><td class="num-cell">69</td><td class="num-cell">94</td><td class="num-cell">154</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td></tr><tr><td>XHHW</td><td class="num-cell">12</td><td class="num-cell">10</td><td class="num-cell">18</td><td class="num-cell">29</td><td class="num-cell">51</td><td class="num-cell">70</td><td class="num-cell">114</td><td class="num-cell">164</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td></tr><tr><td>XHHW</td><td class="num-cell">10</td><td class="num-cell">6</td><td class="num-cell">11</td><td class="num-cell">18</td><td class="num-cell">32</td><td class="num-cell">44</td><td class="num-cell">73</td><td class="num-cell">104</td><td class="num-cell">160</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td></tr><tr><td>XHHW</td><td class="num-cell">8</td><td class="num-cell">3</td><td class="num-cell">5</td><td class="num-cell">9</td><td class="num-cell">16</td><td class="num-cell">22</td><td class="num-cell">36</td><td class="num-cell">51</td><td class="num-cell">79</td><td class="num-cell">106</td><td class="num-cell">136</td><td class="num-cell">-</td><td class="num-cell">-</td></tr><tr><td>XHHW</td><td class="num-cell">6</td><td class="num-cell">1</td><td class="num-cell">4 / 3</td><td class="num-cell">6 / 5</td><td class="num-cell">11 / 9</td><td class="num-cell">15 / 13</td><td class="num-cell">26 / 21</td><td class="num-cell">37 / 30</td><td class="num-cell">57 / 47</td><td class="num-cell">76 / 63</td><td class="num-cell">98 / 81</td><td class="num-cell">154 / 128</td><td class="num-cell">185</td></tr><tr><td>XHHW</td><td class="num-cell">4</td><td class="num-cell">1</td><td class="num-cell">2</td><td class="num-cell">4</td><td class="num-cell">7</td><td class="num-cell">9</td><td class="num-cell">16</td><td class="num-cell">22</td><td class="num-cell">35</td><td class="num-cell">47</td><td class="num-cell">60</td><td class="num-cell">94</td><td class="num-cell">137</td></tr><tr><td>XHHW</td><td class="num-cell">3</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">3</td><td class="num-cell">6</td><td class="num-cell">8</td><td class="num-cell">13</td><td class="num-cell">19</td><td class="num-cell">29</td><td class="num-cell">39</td><td class="num-cell">51</td><td class="num-cell">80</td><td class="num-cell">116</td></tr><tr><td>XHHW</td><td class="num-cell">2</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">3</td><td class="num-cell">5</td><td class="num-cell">7</td><td class="num-cell">11</td><td class="num-cell">16</td><td class="num-cell">25</td><td class="num-cell">33</td><td class="num-cell">43</td><td class="num-cell">67</td><td class="num-cell">97</td></tr><tr><td>XHHW</td><td class="num-cell">1</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">3</td><td class="num-cell">5</td><td class="num-cell">8</td><td class="num-cell">12</td><td class="num-cell">18</td><td class="num-cell">25</td><td class="num-cell">32</td><td class="num-cell">50</td><td class="num-cell">72</td></tr><tr><td>XHHW</td><td class="num-cell">1/0</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">3</td><td class="num-cell">4</td><td class="num-cell">7</td><td class="num-cell">10</td><td class="num-cell">15</td><td class="num-cell">21</td><td class="num-cell">27</td><td class="num-cell">42</td><td class="num-cell">61</td></tr><tr><td>XHHW</td><td class="num-cell">2/0</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">2</td><td class="num-cell">3</td><td class="num-cell">6</td><td class="num-cell">8</td><td class="num-cell">13</td><td class="num-cell">17</td><td class="num-cell">22</td><td class="num-cell">35</td><td class="num-cell">51</td></tr><tr><td>XHHW</td><td class="num-cell">3/0</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">3</td><td class="num-cell">5</td><td class="num-cell">7</td><td class="num-cell">11</td><td class="num-cell">14</td><td class="num-cell">18</td><td class="num-cell">29</td><td class="num-cell">42</td></tr><tr><td>XHHW</td><td class="num-cell">4/0</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">2</td><td class="num-cell">4</td><td class="num-cell">6</td><td class="num-cell">9</td><td class="num-cell">12</td><td class="num-cell">15</td><td class="num-cell">24</td><td class="num-cell">35</td></tr><tr><td>XHHW</td><td class="num-cell">250</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">3</td><td class="num-cell">4</td><td class="num-cell">7</td><td class="num-cell">10</td><td class="num-cell">12</td><td class="num-cell">20</td><td class="num-cell">28</td></tr><tr><td>XHHW</td><td class="num-cell">300</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">3</td><td class="num-cell">4</td><td class="num-cell">6</td><td class="num-cell">8</td><td class="num-cell">11</td><td class="num-cell">17</td><td class="num-cell">24</td></tr><tr><td>XHHW</td><td class="num-cell">350</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">2</td><td class="num-cell">3</td><td class="num-cell">5</td><td class="num-cell">7</td><td class="num-cell">9</td><td class="num-cell">15</td><td class="num-cell">21</td></tr><tr><td>XHHW</td><td class="num-cell">400</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">3</td><td class="num-cell">5</td><td class="num-cell">6</td><td class="num-cell">8</td><td class="num-cell">13</td><td class="num-cell">19</td></tr><tr><td>XHHW</td><td class="num-cell">500</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">2</td><td class="num-cell">4</td><td class="num-cell">5</td><td class="num-cell">7</td><td class="num-cell">11</td><td class="num-cell">16</td></tr><tr><td>XHHW</td><td class="num-cell">600</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">3</td><td class="num-cell">4</td><td class="num-cell">5</td><td class="num-cell">9</td><td class="num-cell">13</td></tr><tr><td>XHHW</td><td class="num-cell">700</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">3</td><td class="num-cell">4</td><td class="num-cell">5</td><td class="num-cell">8</td><td class="num-cell">11</td></tr><tr><td>XHHW</td><td class="num-cell">750</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">-</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">1</td><td class="num-cell">2</td><td class="num-cell">3</td><td class="num-cell">4</td><td class="num-cell">7</td><td class="num-cell">11 / 10</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-box"><h3>Metal Box Fill</h3><p class="section-help" style="margin-top:.35rem">Maximum number of conductors by AWG for common metal boxes.</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>Box</th><th>18 awg</th><th>16 awg</th><th>14 awg</th><th>12 awg</th><th>10 awg</th><th>8 awg</th><th>6 awg</th></tr></thead><tbody><tr><td>4 x 1-1/4 Round or Octagonal</td><td class="num-cell">8</td><td class="num-cell">7</td><td class="num-cell">6</td><td class="num-cell">5</td><td class="num-cell">5</td><td class="num-cell">4</td><td class="num-cell">2</td></tr><tr><td>4 x 1-1/2 Round or Octagonal</td><td class="num-cell">10</td><td class="num-cell">8</td><td class="num-cell">7</td><td class="num-cell">6</td><td class="num-cell">6</td><td class="num-cell">5</td><td class="num-cell">3</td></tr><tr><td>4 x 2-1/8 Round or Octagonal</td><td class="num-cell">14</td><td class="num-cell">12</td><td class="num-cell">10</td><td class="num-cell">9</td><td class="num-cell">8</td><td class="num-cell">7</td><td class="num-cell">4</td></tr><tr><td>4 x 1-1/4 Square</td><td class="num-cell">12</td><td class="num-cell">10</td><td class="num-cell">9</td><td class="num-cell">8</td><td class="num-cell">7</td><td class="num-cell">6</td><td class="num-cell">3</td></tr><tr><td>4 x 1-1/2 Square</td><td class="num-cell">14</td><td class="num-cell">12</td><td class="num-cell">10</td><td class="num-cell">9</td><td class="num-cell">8</td><td class="num-cell">7</td><td class="num-cell">4</td></tr><tr><td>4 x 2-1/8 Square</td><td class="num-cell">20</td><td class="num-cell">17</td><td class="num-cell">15</td><td class="num-cell">13</td><td class="num-cell">12</td><td class="num-cell">10</td><td class="num-cell">6</td></tr><tr><td>4 11/16 x 1-1/4 Square</td><td class="num-cell">17</td><td class="num-cell">14</td><td class="num-cell">12</td><td class="num-cell">11</td><td class="num-cell">10</td><td class="num-cell">8</td><td class="num-cell">5</td></tr><tr><td>4 11/16 x 1-1/2 Square</td><td class="num-cell">19</td><td class="num-cell">16</td><td class="num-cell">14</td><td class="num-cell">13</td><td class="num-cell">11</td><td class="num-cell">9</td><td class="num-cell">5</td></tr><tr><td>4 11/16 x 2-1/8 Square</td><td class="num-cell">28</td><td class="num-cell">24</td><td class="num-cell">21</td><td class="num-cell">18</td><td class="num-cell">16</td><td class="num-cell">14</td><td class="num-cell">8</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-egc"><h3>Grounding Raceway and Equipment</h3><p class="section-help" style="margin-top:.35rem">Size of copper equipment grounding conductor vs rating/setting of the automatic overcurrent device ahead of the equipment (amperes).</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>OCPD rating (A)</th><th>Copper EGC (AWG / kcmil)</th></tr></thead><tbody><tr><td>15</td><td class="num-cell">14</td></tr><tr><td>20</td><td class="num-cell">12</td></tr><tr><td>30</td><td class="num-cell">10</td></tr><tr><td>40</td><td class="num-cell">10</td></tr><tr><td>60</td><td class="num-cell">10</td></tr><tr><td>100</td><td class="num-cell">8</td></tr><tr><td>200</td><td class="num-cell">6</td></tr><tr><td>300</td><td class="num-cell">4</td></tr><tr><td>400</td><td class="num-cell">3</td></tr><tr><td>500</td><td class="num-cell">2</td></tr><tr><td>600</td><td class="num-cell">1</td></tr><tr><td>800</td><td class="num-cell">1/0</td></tr><tr><td>1000</td><td class="num-cell">2/0</td></tr><tr><td>1200</td><td class="num-cell">3/0</td></tr><tr><td>1600</td><td class="num-cell">4/0</td></tr><tr><td>2000</td><td class="num-cell">250</td></tr><tr><td>2500</td><td class="num-cell">350</td></tr><tr><td>3000</td><td class="num-cell">400</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-xf-3"><h3>Transformer Full-Load Current — Three Phase</h3><p class="section-help" style="margin-top:.35rem">Line-to-line voltages. KVA = (E × I × 1.73) / 1000.</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>kVA</th><th>208 V</th><th>240 V</th><th>480 V</th><th>2400 V</th><th>4160 V</th></tr></thead><tbody><tr><td>3</td><td class="num-cell">8.3</td><td class="num-cell">7.2</td><td class="num-cell">3.6</td><td class="num-cell">.72</td><td class="num-cell">.415</td></tr><tr><td>6</td><td class="num-cell">16.6</td><td class="num-cell">14.4</td><td class="num-cell">7.2</td><td class="num-cell">1.44</td><td class="num-cell">.83</td></tr><tr><td>9</td><td class="num-cell">25</td><td class="num-cell">21.6</td><td class="num-cell">10.8</td><td class="num-cell">2.16</td><td class="num-cell">1.25</td></tr><tr><td>15</td><td class="num-cell">41.6</td><td class="num-cell">36</td><td class="num-cell">18</td><td class="num-cell">3.6</td><td class="num-cell">2.1</td></tr><tr><td>30</td><td class="num-cell">83</td><td class="num-cell">72</td><td class="num-cell">36</td><td class="num-cell">7.2</td><td class="num-cell">4.15</td></tr><tr><td>45</td><td class="num-cell">125</td><td class="num-cell">108</td><td class="num-cell">54</td><td class="num-cell">10.8</td><td class="num-cell">6.25</td></tr><tr><td>75</td><td class="num-cell">208</td><td class="num-cell">180</td><td class="num-cell">90</td><td class="num-cell">18</td><td class="num-cell">10.4</td></tr><tr><td>100</td><td class="num-cell">278</td><td class="num-cell">241</td><td class="num-cell">120</td><td class="num-cell">24</td><td class="num-cell">13.9</td></tr><tr><td>150</td><td class="num-cell">416</td><td class="num-cell">360</td><td class="num-cell">180</td><td class="num-cell">36</td><td class="num-cell">20.8</td></tr><tr><td>225</td><td class="num-cell">625</td><td class="num-cell">542</td><td class="num-cell">271</td><td class="num-cell">54</td><td class="num-cell">31.2</td></tr><tr><td>300</td><td class="num-cell">830</td><td class="num-cell">720</td><td class="num-cell">360</td><td class="num-cell">72</td><td class="num-cell">41.5</td></tr><tr><td>500</td><td class="num-cell">1390</td><td class="num-cell">1200</td><td class="num-cell">600</td><td class="num-cell">120</td><td class="num-cell">69.4</td></tr><tr><td>750</td><td class="num-cell">2080</td><td class="num-cell">1800</td><td class="num-cell">900</td><td class="num-cell">180</td><td class="num-cell">104</td></tr><tr><td>1000</td><td class="num-cell">2775</td><td class="num-cell">2400</td><td class="num-cell">1200</td><td class="num-cell">240</td><td class="num-cell">139</td></tr><tr><td>1500</td><td class="num-cell">4150</td><td class="num-cell">3600</td><td class="num-cell">1800</td><td class="num-cell">360</td><td class="num-cell">208</td></tr><tr><td>2000</td><td class="num-cell">5550</td><td class="num-cell">4800</td><td class="num-cell">2400</td><td class="num-cell">480</td><td class="num-cell">277</td></tr><tr><td>2500</td><td class="num-cell">6950</td><td class="num-cell">6000</td><td class="num-cell">3000</td><td class="num-cell">600</td><td class="num-cell">346</td></tr><tr><td>5000</td><td class="num-cell">13900</td><td class="num-cell">12000</td><td class="num-cell">6000</td><td class="num-cell">1200</td><td class="num-cell">694</td></tr><tr><td>7500</td><td class="num-cell">20800</td><td class="num-cell">18000</td><td class="num-cell">9000</td><td class="num-cell">1800</td><td class="num-cell">1040</td></tr><tr><td>10000</td><td class="num-cell">27750</td><td class="num-cell">24000</td><td class="num-cell">12000</td><td class="num-cell">2400</td><td class="num-cell">1386</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-xf-1"><h3>Transformer Full-Load Current — Single Phase</h3><p class="section-help" style="margin-top:.35rem">KVA = (E × I) / 1000.</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>kVA</th><th>120 V</th><th>208 V</th><th>240 V</th><th>480 V</th><th>2400 V</th></tr></thead><tbody><tr><td>1</td><td class="num-cell">8.34</td><td class="num-cell">4.8</td><td class="num-cell">4.16</td><td class="num-cell">2.08</td><td class="num-cell">0.42</td></tr><tr><td>3</td><td class="num-cell">25</td><td class="num-cell">14.4</td><td class="num-cell">12.5</td><td class="num-cell">6.25</td><td class="num-cell">1.25</td></tr><tr><td>5</td><td class="num-cell">41.7</td><td class="num-cell">24</td><td class="num-cell">20.8</td><td class="num-cell">10.4</td><td class="num-cell">2.08</td></tr><tr><td>7.5</td><td class="num-cell">62.5</td><td class="num-cell">36</td><td class="num-cell">31.2</td><td class="num-cell">15.6</td><td class="num-cell">3.12</td></tr><tr><td>10</td><td class="num-cell">83.4</td><td class="num-cell">48</td><td class="num-cell">41.6</td><td class="num-cell">20.8</td><td class="num-cell">4.16</td></tr><tr><td>15</td><td class="num-cell">125</td><td class="num-cell">72</td><td class="num-cell">62.5</td><td class="num-cell">31.2</td><td class="num-cell">6.25</td></tr><tr><td>25</td><td class="num-cell">208</td><td class="num-cell">120</td><td class="num-cell">104</td><td class="num-cell">52</td><td class="num-cell">10.4</td></tr><tr><td>37.5</td><td class="num-cell">312</td><td class="num-cell">180</td><td class="num-cell">156</td><td class="num-cell">48</td><td class="num-cell">15.6</td></tr><tr><td>50</td><td class="num-cell">417</td><td class="num-cell">240</td><td class="num-cell">208</td><td class="num-cell">140</td><td class="num-cell">20.8</td></tr><tr><td>75</td><td class="num-cell">625</td><td class="num-cell">361</td><td class="num-cell">312</td><td class="num-cell">156</td><td class="num-cell">31.2</td></tr><tr><td>100</td><td class="num-cell">834</td><td class="num-cell">480</td><td class="num-cell">416</td><td class="num-cell">208</td><td class="num-cell">41.6</td></tr><tr><td>125</td><td class="num-cell">1042</td><td class="num-cell">600</td><td class="num-cell">520</td><td class="num-cell">260</td><td class="num-cell">52</td></tr><tr><td>167.5</td><td class="num-cell">1396</td><td class="num-cell">805</td><td class="num-cell">698</td><td class="num-cell">349</td><td class="num-cell">70</td></tr><tr><td>200</td><td class="num-cell">1666</td><td class="num-cell">960</td><td class="num-cell">833</td><td class="num-cell">416</td><td class="num-cell">83</td></tr><tr><td>250</td><td class="num-cell">2080</td><td class="num-cell">1200</td><td class="num-cell">1040</td><td class="num-cell">520</td><td class="num-cell">104</td></tr><tr><td>333</td><td class="num-cell">2776</td><td class="num-cell">1600</td><td class="num-cell">1388</td><td class="num-cell">694</td><td class="num-cell">139</td></tr><tr><td>500</td><td class="num-cell">4170</td><td class="num-cell">2400</td><td class="num-cell">2080</td><td class="num-cell">1040</td><td class="num-cell">208</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-motor-3"><h3>Three-Phase AC Motors — Full-Load Current &amp; Related</h3><p class="section-help" style="margin-top:.35rem">Workbook estimating guide: FLA, breaker, starter, heater, wire, and conduit. Verify against the motor nameplate and the AHJ edition of the NEC.</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>HP</th><th>Voltage</th><th>FLA</th><th>Breaker</th><th>Starter</th><th>Heater A</th><th>Wire</th><th>Conduit</th></tr></thead><tbody><tr><td>1/2</td><td class="num-cell">230v</td><td class="num-cell">2</td><td class="num-cell">15</td><td class="num-cell">00</td><td class="num-cell">3</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>1/2</td><td class="num-cell">460v</td><td class="num-cell">1</td><td class="num-cell">15</td><td class="num-cell">00</td><td class="num-cell">2</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>3/4</td><td class="num-cell">230v</td><td class="num-cell">2.8</td><td class="num-cell">15</td><td class="num-cell">00</td><td class="num-cell">4</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>3/4</td><td class="num-cell">460v</td><td class="num-cell">1.4</td><td class="num-cell">15</td><td class="num-cell">00</td><td class="num-cell">3</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>1</td><td class="num-cell">230v</td><td class="num-cell">3.6</td><td class="num-cell">15</td><td class="num-cell">00</td><td class="num-cell">5</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>1</td><td class="num-cell">460v</td><td class="num-cell">1.8</td><td class="num-cell">15</td><td class="num-cell">00</td><td class="num-cell">3</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>1-1/2</td><td class="num-cell">230v</td><td class="num-cell">5.2</td><td class="num-cell">15</td><td class="num-cell">00</td><td class="num-cell">8</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>1-1/2</td><td class="num-cell">460v</td><td class="num-cell">2.6</td><td class="num-cell">15</td><td class="num-cell">00</td><td class="num-cell">4</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>2</td><td class="num-cell">230v</td><td class="num-cell">6.8</td><td class="num-cell">15</td><td class="num-cell">0</td><td class="num-cell">9</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>2</td><td class="num-cell">460v</td><td class="num-cell">3.4</td><td class="num-cell">15</td><td class="num-cell">00</td><td class="num-cell">5</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>3</td><td class="num-cell">230v</td><td class="num-cell">9.6</td><td class="num-cell">15</td><td class="num-cell">0</td><td class="num-cell">12</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>3</td><td class="num-cell">460v</td><td class="num-cell">4.8</td><td class="num-cell">15</td><td class="num-cell">0</td><td class="num-cell">7</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>5</td><td class="num-cell">230v</td><td class="num-cell">15.2</td><td class="num-cell">15</td><td class="num-cell">1</td><td class="num-cell">20</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>5</td><td class="num-cell">460v</td><td class="num-cell">7.6</td><td class="num-cell">15</td><td class="num-cell">0</td><td class="num-cell">10</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>7-1/2</td><td class="num-cell">230v</td><td class="num-cell">22</td><td class="num-cell">40</td><td class="num-cell">1</td><td class="num-cell">30</td><td class="num-cell">10</td><td class="num-cell">3/4</td></tr><tr><td>7-1/2</td><td class="num-cell">460v</td><td class="num-cell">11</td><td class="num-cell">30</td><td class="num-cell">1</td><td class="num-cell">15</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>10</td><td class="num-cell">230v</td><td class="num-cell">28</td><td class="num-cell">50</td><td class="num-cell">2</td><td class="num-cell">35</td><td class="num-cell">10</td><td class="num-cell">3/4</td></tr><tr><td>10</td><td class="num-cell">460v</td><td class="num-cell">14</td><td class="num-cell">30</td><td class="num-cell">1</td><td class="num-cell">20</td><td class="num-cell">12</td><td class="num-cell">3/4</td></tr><tr><td>15</td><td class="num-cell">230v</td><td class="num-cell">42</td><td class="num-cell">70</td><td class="num-cell">2</td><td class="num-cell">50</td><td class="num-cell">8</td><td class="num-cell">1</td></tr><tr><td>15</td><td class="num-cell">460v</td><td class="num-cell">21</td><td class="num-cell">40</td><td class="num-cell">2</td><td class="num-cell">25</td><td class="num-cell">10</td><td class="num-cell">3/4</td></tr><tr><td>20</td><td class="num-cell">230v</td><td class="num-cell">54</td><td class="num-cell">100</td><td class="num-cell">3</td><td class="num-cell">70</td><td class="num-cell">6</td><td class="num-cell">1</td></tr><tr><td>20</td><td class="num-cell">460v</td><td class="num-cell">27</td><td class="num-cell">50</td><td class="num-cell">2</td><td class="num-cell">35</td><td class="num-cell">10</td><td class="num-cell">3/4</td></tr><tr><td>25</td><td class="num-cell">230v</td><td class="num-cell">68</td><td class="num-cell">100</td><td class="num-cell">3</td><td class="num-cell">80</td><td class="num-cell">4</td><td class="num-cell">1-1/2</td></tr><tr><td>25</td><td class="num-cell">460v</td><td class="num-cell">34</td><td class="num-cell">50</td><td class="num-cell">2</td><td class="num-cell">40</td><td class="num-cell">8</td><td class="num-cell">1</td></tr><tr><td>30</td><td class="num-cell">230v</td><td class="num-cell">80</td><td class="num-cell">125</td><td class="num-cell">3</td><td class="num-cell">100</td><td class="num-cell">3</td><td class="num-cell">1-1/2</td></tr><tr><td>30</td><td class="num-cell">460v</td><td class="num-cell">40</td><td class="num-cell">70</td><td class="num-cell">3</td><td class="num-cell">50</td><td class="num-cell">8</td><td class="num-cell">1</td></tr><tr><td>40</td><td class="num-cell">230v</td><td class="num-cell">104</td><td class="num-cell">175</td><td class="num-cell">4</td><td class="num-cell">150</td><td class="num-cell">1</td><td class="num-cell">1-1/2</td></tr><tr><td>40</td><td class="num-cell">460v</td><td class="num-cell">52</td><td class="num-cell">100</td><td class="num-cell">3</td><td class="num-cell">70</td><td class="num-cell">6</td><td class="num-cell">1</td></tr><tr><td>50</td><td class="num-cell">230v</td><td class="num-cell">130</td><td class="num-cell">200</td><td class="num-cell">4</td><td class="num-cell">175</td><td class="num-cell">1/0</td><td class="num-cell">2</td></tr><tr><td>50</td><td class="num-cell">460v</td><td class="num-cell">65</td><td class="num-cell">150</td><td class="num-cell">3</td><td class="num-cell">80</td><td class="num-cell">4</td><td class="num-cell">1-1/2</td></tr><tr><td>60</td><td class="num-cell">230v</td><td class="num-cell">154</td><td class="num-cell">250</td><td class="num-cell">5</td><td class="num-cell">200</td><td class="num-cell">3/0</td><td class="num-cell">2</td></tr><tr><td>60</td><td class="num-cell">460v</td><td class="num-cell">77</td><td class="num-cell">200</td><td class="num-cell">4</td><td class="num-cell">100</td><td class="num-cell">3</td><td class="num-cell">1-1/2</td></tr><tr><td>75</td><td class="num-cell">230v</td><td class="num-cell">192</td><td class="num-cell">300</td><td class="num-cell">5</td><td class="num-cell">250</td><td class="num-cell">4/0</td><td class="num-cell">2-1/2</td></tr><tr><td>75</td><td class="num-cell">460v</td><td class="num-cell">96</td><td class="num-cell">200</td><td class="num-cell">4</td><td class="num-cell">125</td><td class="num-cell">2</td><td class="num-cell">1-1/2</td></tr><tr><td>100</td><td class="num-cell">230v</td><td class="num-cell">248</td><td class="num-cell">400</td><td class="num-cell">5</td><td class="num-cell">300</td><td class="num-cell">350</td><td class="num-cell">3</td></tr><tr><td>100</td><td class="num-cell">460v</td><td class="num-cell">124</td><td class="num-cell">200</td><td class="num-cell">4</td><td class="num-cell">175</td><td class="num-cell">1/0</td><td class="num-cell">2</td></tr><tr><td>125</td><td class="num-cell">230v</td><td class="num-cell">312</td><td class="num-cell">500</td><td class="num-cell">6</td><td class="num-cell">400</td><td class="num-cell">500</td><td class="num-cell">3</td></tr><tr><td>125</td><td class="num-cell">460v</td><td class="num-cell">156</td><td class="num-cell">250</td><td class="num-cell">5</td><td class="num-cell">200</td><td class="num-cell">3/0</td><td class="num-cell">2</td></tr><tr><td>150</td><td class="num-cell">230v</td><td class="num-cell">360</td><td class="num-cell">600</td><td class="num-cell">6</td><td class="num-cell">450</td><td class="num-cell">700</td><td class="num-cell">4</td></tr><tr><td>150</td><td class="num-cell">460v</td><td class="num-cell">180</td><td class="num-cell">300</td><td class="num-cell">5</td><td class="num-cell">225</td><td class="num-cell">4/0</td><td class="num-cell">2-1/2</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-motor-1"><h3>Single-Phase AC Motors — Full-Load Current</h3><p class="section-help" style="margin-top:.35rem">Full-load current in amperes.</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>HP</th><th>115 V</th><th>208 V</th><th>230 V</th></tr></thead><tbody><tr><td>1/6</td><td class="num-cell">4.4</td><td class="num-cell">2.4</td><td class="num-cell">2.2</td></tr><tr><td>1/4</td><td class="num-cell">5.8</td><td class="num-cell">3.2</td><td class="num-cell">2.9</td></tr><tr><td>1/3</td><td class="num-cell">7.2</td><td class="num-cell">4</td><td class="num-cell">3.6</td></tr><tr><td>1/2</td><td class="num-cell">9.8</td><td class="num-cell">5.4</td><td class="num-cell">4.9</td></tr><tr><td>3/4</td><td class="num-cell">13.8</td><td class="num-cell">7.6</td><td class="num-cell">6.9</td></tr><tr><td>1</td><td class="num-cell">16</td><td class="num-cell">8.8</td><td class="num-cell">8</td></tr><tr><td>1-1/2</td><td class="num-cell">20</td><td class="num-cell">11</td><td class="num-cell">10</td></tr><tr><td>2</td><td class="num-cell">24</td><td class="num-cell">13.2</td><td class="num-cell">12</td></tr><tr><td>3</td><td class="num-cell">34</td><td class="num-cell">18.7</td><td class="num-cell">17</td></tr><tr><td>5</td><td class="num-cell">56</td><td class="num-cell">30.8</td><td class="num-cell">28</td></tr><tr><td>7-1/2</td><td class="num-cell">80</td><td class="num-cell">44</td><td class="num-cell">40</td></tr><tr><td>10</td><td class="num-cell">100</td><td class="num-cell">55</td><td class="num-cell">50</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-encl"><h3>Enclosure Types</h3><p class="section-help" style="margin-top:.35rem">From Electrical Construction Equipment Directory notes in the workbook.</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>Type</th><th>Provides a degree of protection against</th></tr></thead><tbody><tr><td>1</td><td class="num-cell">Indoor use</td></tr><tr><td>2</td><td class="num-cell">Indoor use, limited amounts of falling water</td></tr><tr><td>3R</td><td class="num-cell">Outdoor use, undamaged by formation of ice</td></tr><tr><td>3</td><td class="num-cell">Same as 3R plus windblown dust</td></tr><tr><td>3S</td><td class="num-cell">Same as 3R plus windblown dust; external mechanisms remain operable while ice-laden</td></tr><tr><td>4</td><td class="num-cell">Outdoor use: splashing water, windblown dust, hose-directed water; undamaged by ice</td></tr><tr><td>4X</td><td class="num-cell">Same as 4 plus corrosion resistant</td></tr><tr><td>5</td><td class="num-cell">Indoor: settling airborne dust, falling dirt, dripping non-corrosive liquids</td></tr><tr><td>6</td><td class="num-cell">Same as 3R plus temporary submersion at a limited depth</td></tr><tr><td>6P</td><td class="num-cell">Same as 3R plus prolonged submersion at a limited depth</td></tr><tr><td>12, 12K</td><td class="num-cell">Indoor use, dust, dripping non-corrosive liquids</td></tr><tr><td>13</td><td class="num-cell">Indoor use, dust, spraying water, oil, and non-corrosive coolants</td></tr></tbody></table></div></article>
+<article class="ref-block card" id="ref-haz"><h3>Hazardous Locations (overview)</h3><p class="section-help" style="margin-top:.35rem">Install intrinsically safe systems with a seal-off when entering/exiting. Seal-offs within 18&quot; of a device or when entering/exiting an explosion-proof enclosure. Informational only.</p><div class="table-wrap ref-table-wrap"><table class="data ref-tbl"><thead><tr><th>Classification</th><th>Meaning</th></tr></thead><tbody><tr><td>Class I</td><td class="num-cell">Explosion hazards may exist due to flammable gases, vapors, or flammable liquids</td></tr><tr><td>Class II</td><td class="num-cell">Explosion hazards may exist due to combustible dusts</td></tr><tr><td>Class III</td><td class="num-cell">Explosion hazards may exist due to ignitable fibers or flyings</td></tr><tr><td>Zone I</td><td class="num-cell">A location where an explosive atmosphere is present under normal operating conditions</td></tr><tr><td>Zone II</td><td class="num-cell">A location where an explosive atmosphere is present only under abnormal operating conditions</td></tr></tbody></table></div></article>
+    </section>
+
     <section class="panel" id="panel-help" role="tabpanel">
       <div class="panel-head">
         <h2>Help &amp; About</h2>
@@ -1621,8 +1771,8 @@ html[data-theme="light"] .panel {
         <h3>Quick start</h3>
         <ol class="help-list">
           <li>Open <strong>Profiles</strong> and set your shop letterhead (legal name, address, phone, email, license). Print Quote and Print Invoice use the active profile.</li>
-          <li>Enter job header fields (customer, proposal #, site address, scope description).</li>
-          <li>Add materials on <strong>Materials</strong>, then labor/equipment on <strong>Labor &amp; Equip</strong>.</li>
+          <li>Enter job header fields (quote date, <strong>Job #</strong>, customer, site address, scope). Quote date, Job #, a 15-day validity note, and the quoted-by signature appear on the Quote sheet and Print Quote.</li>
+          <li>Add materials on <strong>Job materials</strong> (or pull from <strong>Catalog</strong>), then labor, equipment, and small tools on <strong>Labor &amp; Equip</strong>. Use <strong>Reference</strong> for NEC ampacity tables (informational — does not change calcs).</li>
           <li>Set overhead and profit on <strong>Summary</strong> — that is the only margin layer for a fixed-price quote.</li>
           <li>Use <strong>Print Quote</strong> (header or Quote tab) and choose <strong>Save as PDF</strong> in the print dialog.</li>
         </ol>
@@ -1641,19 +1791,21 @@ html[data-theme="light"] .panel {
       <div class="card">
         <h3>Build a fixed-price quote</h3>
         <ul class="help-list">
-          <li><strong>Materials:</strong> Add lines or pull from the catalog. Extension = Qty × Unit Cost. Do <em>not</em> mark up materials here.</li>
-          <li><strong>Labor &amp; Equip:</strong> Equipment, small tools, subcontractors, and labor hours. Burden rates come from <strong>Personnel</strong>.</li>
+          <li><strong>Job materials:</strong> Quantities on this job. Extension = Qty × Unit Cost. Do <em>not</em> mark up materials here.</li>
+          <li><strong>Catalog:</strong> Search the full materials list and add lines to the job.</li>
+          <li><strong>Reference:</strong> NEC ampacity / adjustment / fill tables for lookup. Informational only — does not auto-change calculations.</li>
+          <li><strong>Labor &amp; Equip:</strong> Equipment, <strong>small tools line items</strong> (qty × unit cost, summed into Equip Cost on Summary), subcontractors, and labor hours. Burden rates come from <strong>Personnel</strong>.</li>
           <li><strong>Summary (OH &amp; profit):</strong> Adjust overhead and profit of sales (Method A). Final sales price is rounded for the base quote. This is the single margin layer.</li>
-          <li><strong>Quote Total:</strong> ROUND(Summary final sales) + <strong>approved</strong> Change Orders. Live chips at the top always show the running total.</li>
+          <li><strong>Quote Total:</strong> ROUND(Summary final sales) + <strong>approved</strong> Change Orders. Next to the price: this quote is valid for 15 days from the quote date, plus Quoted by / Authorized signature for Bruno Electric personnel.</li>
         </ul>
       </div>
 
       <div class="card">
         <h3>Fixed quote vs T&amp;M invoice</h3>
         <ul class="help-list">
-          <li><strong>Fixed quote (tabs 1–5):</strong> Customer price = Summary Method A (with OH &amp; profit) + approved COs. Use <strong>Print Quote</strong>.</li>
-          <li><strong>T&amp;M Invoice (tab 7):</strong> Invoice total comes from T&amp;M equipment/labor lines plus materials and sub on that page — <em>not</em> from Summary OH&amp;P. Empty detail means T&amp;M total = $0 (honest T&amp;M). Use <strong>Print Invoice</strong>.</li>
-          <li><strong>Profit &amp; Loss (tab 8):</strong> Compare Quoted (Summary sales) vs Billed (T&amp;M) vs Actual spend for job variance after work starts.</li>
+          <li><strong>Fixed quote</strong> (Quote, Job materials, Catalog, Labor &amp; Equip, Summary + Change Orders): Customer price = Summary Method A (with OH &amp; profit) + approved COs. Use <strong>Print Quote</strong>.</li>
+          <li><strong>T&amp;M Invoice:</strong> Invoice total comes from T&amp;M equipment/labor lines plus materials and sub on that page — <em>not</em> from Summary OH&amp;P. Empty detail means T&amp;M total = $0 (honest T&amp;M). Use <strong>Print Invoice</strong>.</li>
+          <li><strong>Profit &amp; Loss:</strong> Compare Quoted (Summary sales) vs Billed (T&amp;M) vs Actual spend for job variance after work starts.</li>
         </ul>
       </div>
 
@@ -1674,7 +1826,7 @@ html[data-theme="light"] .panel {
       <div class="card">
         <h3>Reset demo · Export / Import</h3>
         <ul class="help-list">
-          <li><strong>New blank job:</strong> Clears the current job to zeros (materials, labor, equipment, COs, T&amp;M, customer fields). Keeps employee rates, material catalog, and the profiles vault (letterhead stays).</li>
+          <li><strong>New blank job:</strong> Clears the current job to zeros (job materials, labor, equipment, small-tool <em>quantities</em>, COs, T&amp;M, customer fields). Keeps employee rates, material catalog, small-tool templates, and the profiles vault (letterhead stays).</li>
           <li><strong>Reset demo:</strong> Restores the sample Pioneer Farms job. Does not wipe profiles; ensures Bruno seed letterhead exists and sets it active.</li>
           <li><strong>Export JSON:</strong> Saves a backup of the current job to a file you choose.</li>
           <li><strong>Import JSON:</strong> Loads a previously exported backup (size-capped; invalid files are rejected).</li>
@@ -1695,7 +1847,7 @@ html[data-theme="light"] .panel {
 
       <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.3.1<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.4<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
       </div>
     </section>
 
@@ -1729,6 +1881,7 @@ html[data-theme="light"] .panel {
   <script>
 /* SHIP_MODE: true = customer product UI. */
 window.BRUNO_SHIP_MODE = true;
+window.BRUNO_SMALL_TOOLS_TEMPLATE = [{"qty": 0, "description": "Safety Glasses", "supplier": "Grainger", "part": "5XN14", "unitCost": 7.12, "group": "Safety Related"}, {"qty": 0, "description": "Steel Toed Shoes", "supplier": "", "part": "", "unitCost": 100.0, "group": "Safety Related"}, {"qty": 0, "description": "Arm Sleeves", "supplier": "Grainger", "part": "KVS-2-10", "unitCost": 2.14, "group": "Safety Related"}, {"qty": 0, "description": "Safety Harness", "supplier": "United Rental", "part": "110200", "unitCost": 59.99, "group": "Safety Related"}, {"qty": 0, "description": "Extra Lanyard for Safety Harness", "supplier": "United Rental", "part": "T5111", "unitCost": 27.99, "group": "Safety Related"}, {"qty": 0, "description": "Beam Wrap for Tie Off of Safety Harness", "supplier": "United Rental", "part": "8183", "unitCost": 34.99, "group": "Safety Related"}, {"qty": 0, "description": "Gloves", "supplier": "United Rental", "part": "710Q", "unitCost": 1.69, "group": "Safety Related"}, {"qty": 0, "description": "Hard Hat", "supplier": "United Rental", "part": "818064", "unitCost": 9.99, "group": "Safety Related"}, {"qty": 0, "description": "Rubber Boots", "supplier": "Grainger", "part": "4T272", "unitCost": 19.42, "group": "Safety Related"}, {"qty": 0, "description": "High Voltage Gloves", "supplier": "Grainger", "part": "E318RB", "unitCost": 128.13, "group": "Safety Related"}, {"qty": 0, "description": "Face Shield for live voltage work", "supplier": "United Rental", "part": "SEP27900TQ", "unitCost": 11.99, "group": "Safety Related"}, {"qty": 0, "description": "Kevlar Full body Suit for live voltage work", "supplier": "", "part": "", "unitCost": 500.0, "group": "Safety Related"}, {"qty": 0, "description": "Kevlar Hood for live voltage work", "supplier": "", "part": "", "unitCost": 250.0, "group": "Safety Related"}, {"qty": 0, "description": "Yellow \"CAUTION\" tape 2\" width", "supplier": "United Rental", "part": "15992", "unitCost": 9.0, "group": "Safety Related"}, {"qty": 0, "description": "Orange Pylons for blocking off area (Typically for lift)", "supplier": "Grainger", "part": "2W697", "unitCost": 11.73, "group": "Safety Related"}, {"qty": 0, "description": "Electrical Meter for verifying electric is off (up to 600v)", "supplier": "Grainger", "part": "5XU79", "unitCost": 250.0, "group": "Safety Related"}, {"qty": 0, "description": "Circuit Tracer", "supplier": "Lowe's", "part": "93820", "unitCost": 29.75, "group": "Safety Related"}, {"qty": 0, "description": "GFCI Extension Chord Device Protector", "supplier": "", "part": "", "unitCost": 30.0, "group": "Safety Related"}, {"qty": 0, "description": "Temporary Lighting (three wire grounded system lights)", "supplier": "Grainger", "part": "323123", "unitCost": 152.5, "group": "Safety Related"}, {"qty": 0, "description": "Flood light and stand", "supplier": "Lowe's", "part": "22565", "unitCost": 54.9, "group": "Safety Related"}, {"qty": 0, "description": "Flashlight", "supplier": "Lowe's", "part": "60097", "unitCost": 6.97, "group": "Safety Related"}, {"qty": 0, "description": "Paint Suit", "supplier": "Grainger", "part": "5HH51", "unitCost": 29.4, "group": "Safety Related"}, {"qty": 0, "description": "Individual keyed locks with ID Label", "supplier": "Dickman", "part": "", "unitCost": 5.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Lock out tagout tag identified for user", "supplier": "Granger", "part": "65502", "unitCost": 50.51, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Lock out tagout hasps", "supplier": "Granger", "part": "1V177", "unitCost": 4.46, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Lock out Box (for multiple users on one area)", "supplier": "Granger", "part": "32M52", "unitCost": 51.45, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for single pole small breaker", "supplier": "Granger", "part": "3T986", "unitCost": 19.18, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for double pole small breaker", "supplier": "Granger", "part": "1D671", "unitCost": 39.53, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for three pole small breaker", "supplier": "Granger", "part": "1D671", "unitCost": 39.53, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for single pole large breaker", "supplier": "Granger", "part": "3TM25", "unitCost": 49.46, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for double pole large breaker", "supplier": "", "part": "", "unitCost": 60.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for three pole large breaker", "supplier": "", "part": "", "unitCost": 60.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Switch cover style switch lock (long 10X24X1 1/4\" bolts)", "supplier": "Granger", "part": "2AF98", "unitCost": 42.48, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Cord cover lock out (Small plug)", "supplier": "Granger", "part": "2AM71", "unitCost": 12.73, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Cord cover lock out (Large plug)", "supplier": "Granger", "part": "2AF60", "unitCost": 15.42, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Fiberglass Hot Stick?????Name????", "supplier": "", "part": "", "unitCost": 350.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Fuse Lock out Device", "supplier": "Granger", "part": "6T859", "unitCost": 44.45, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Pneumatic Lock out Device", "supplier": "Granger", "part": "32G17", "unitCost": 14.36, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Ball Valve Lock out Device", "supplier": "Granger", "part": "1D708", "unitCost": 53.41, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Gate Valve Lock out Device", "supplier": "Granger", "part": "4VJ29", "unitCost": 36.28, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Burn Permit (for welding or cadwelds)", "supplier": "", "part": "", "unitCost": 1.0, "group": "Lockout / Tagout"}];
 /* Demo seed data — Bruno Electric Estimating */
 window.BRUNO_SEED = {
   "company": {
@@ -1748,6 +1901,7 @@ window.BRUNO_SEED = {
   "quote": {
     "date": "2026-09-09",
     "proposal": "0926C4432",
+    "jobNumber": "0926C4432",
     "po": "",
     "workOrder": "",
     "contact": "Michael",
@@ -9881,6 +10035,7 @@ window.BRUNO_SEED = {
       }
     ],
     "smallTools": 0,
+    "smallToolsLines": [{"qty": 0, "description": "Safety Glasses", "supplier": "Grainger", "part": "5XN14", "unitCost": 7.12, "group": "Safety Related"}, {"qty": 0, "description": "Steel Toed Shoes", "supplier": "", "part": "", "unitCost": 100.0, "group": "Safety Related"}, {"qty": 0, "description": "Arm Sleeves", "supplier": "Grainger", "part": "KVS-2-10", "unitCost": 2.14, "group": "Safety Related"}, {"qty": 0, "description": "Safety Harness", "supplier": "United Rental", "part": "110200", "unitCost": 59.99, "group": "Safety Related"}, {"qty": 0, "description": "Extra Lanyard for Safety Harness", "supplier": "United Rental", "part": "T5111", "unitCost": 27.99, "group": "Safety Related"}, {"qty": 0, "description": "Beam Wrap for Tie Off of Safety Harness", "supplier": "United Rental", "part": "8183", "unitCost": 34.99, "group": "Safety Related"}, {"qty": 0, "description": "Gloves", "supplier": "United Rental", "part": "710Q", "unitCost": 1.69, "group": "Safety Related"}, {"qty": 0, "description": "Hard Hat", "supplier": "United Rental", "part": "818064", "unitCost": 9.99, "group": "Safety Related"}, {"qty": 0, "description": "Rubber Boots", "supplier": "Grainger", "part": "4T272", "unitCost": 19.42, "group": "Safety Related"}, {"qty": 0, "description": "High Voltage Gloves", "supplier": "Grainger", "part": "E318RB", "unitCost": 128.13, "group": "Safety Related"}, {"qty": 0, "description": "Face Shield for live voltage work", "supplier": "United Rental", "part": "SEP27900TQ", "unitCost": 11.99, "group": "Safety Related"}, {"qty": 0, "description": "Kevlar Full body Suit for live voltage work", "supplier": "", "part": "", "unitCost": 500.0, "group": "Safety Related"}, {"qty": 0, "description": "Kevlar Hood for live voltage work", "supplier": "", "part": "", "unitCost": 250.0, "group": "Safety Related"}, {"qty": 0, "description": "Yellow \"CAUTION\" tape 2\" width", "supplier": "United Rental", "part": "15992", "unitCost": 9.0, "group": "Safety Related"}, {"qty": 0, "description": "Orange Pylons for blocking off area (Typically for lift)", "supplier": "Grainger", "part": "2W697", "unitCost": 11.73, "group": "Safety Related"}, {"qty": 0, "description": "Electrical Meter for verifying electric is off (up to 600v)", "supplier": "Grainger", "part": "5XU79", "unitCost": 250.0, "group": "Safety Related"}, {"qty": 0, "description": "Circuit Tracer", "supplier": "Lowe's", "part": "93820", "unitCost": 29.75, "group": "Safety Related"}, {"qty": 0, "description": "GFCI Extension Chord Device Protector", "supplier": "", "part": "", "unitCost": 30.0, "group": "Safety Related"}, {"qty": 0, "description": "Temporary Lighting (three wire grounded system lights)", "supplier": "Grainger", "part": "323123", "unitCost": 152.5, "group": "Safety Related"}, {"qty": 0, "description": "Flood light and stand", "supplier": "Lowe's", "part": "22565", "unitCost": 54.9, "group": "Safety Related"}, {"qty": 0, "description": "Flashlight", "supplier": "Lowe's", "part": "60097", "unitCost": 6.97, "group": "Safety Related"}, {"qty": 0, "description": "Paint Suit", "supplier": "Grainger", "part": "5HH51", "unitCost": 29.4, "group": "Safety Related"}, {"qty": 0, "description": "Individual keyed locks with ID Label", "supplier": "Dickman", "part": "", "unitCost": 5.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Lock out tagout tag identified for user", "supplier": "Granger", "part": "65502", "unitCost": 50.51, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Lock out tagout hasps", "supplier": "Granger", "part": "1V177", "unitCost": 4.46, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Lock out Box (for multiple users on one area)", "supplier": "Granger", "part": "32M52", "unitCost": 51.45, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for single pole small breaker", "supplier": "Granger", "part": "3T986", "unitCost": 19.18, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for double pole small breaker", "supplier": "Granger", "part": "1D671", "unitCost": 39.53, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for three pole small breaker", "supplier": "Granger", "part": "1D671", "unitCost": 39.53, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for single pole large breaker", "supplier": "Granger", "part": "3TM25", "unitCost": 49.46, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for double pole large breaker", "supplier": "", "part": "", "unitCost": 60.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for three pole large breaker", "supplier": "", "part": "", "unitCost": 60.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Switch cover style switch lock (long 10X24X1 1/4\" bolts)", "supplier": "Granger", "part": "2AF98", "unitCost": 42.48, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Cord cover lock out (Small plug)", "supplier": "Granger", "part": "2AM71", "unitCost": 12.73, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Cord cover lock out (Large plug)", "supplier": "Granger", "part": "2AF60", "unitCost": 15.42, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Fiberglass Hot Stick?????Name????", "supplier": "", "part": "", "unitCost": 350.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Fuse Lock out Device", "supplier": "Granger", "part": "6T859", "unitCost": 44.45, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Pneumatic Lock out Device", "supplier": "Granger", "part": "32G17", "unitCost": 14.36, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Ball Valve Lock out Device", "supplier": "Granger", "part": "1D708", "unitCost": 53.41, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Gate Valve Lock out Device", "supplier": "Granger", "part": "4VJ29", "unitCost": 36.28, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Burn Permit (for welding or cadwelds)", "supplier": "", "part": "", "unitCost": 1.0, "group": "Lockout / Tagout"}],
     "subcontractors": [],
     "estimationHours": 0,
     "blocks": [
@@ -10235,11 +10390,44 @@ window.BRUNO_SEED = {
     };
   }
 
+  function smallToolsLineExt(line) {
+    if (!line) return 0;
+    return (Number(line.qty) || 0) * (Number(line.unitCost) || 0);
+  }
+  function smallToolsCost(s) {
+    var le = (s && s.laborEquip) || {};
+    var lines = le.smallToolsLines;
+    if (Array.isArray(lines) && lines.length) {
+      var sum = 0;
+      for (var i = 0; i < lines.length; i++) sum += smallToolsLineExt(lines[i]);
+      le.smallTools = sum;
+      return sum;
+    }
+    return Number(le.smallTools) || 0;
+  }
+  function cloneSmallToolsTemplate(src) {
+    var list = (src && src.length) ? src : (window.BRUNO_SMALL_TOOLS_TEMPLATE || []);
+    var out = [];
+    for (var i = 0; i < list.length; i++) {
+      var t = list[i] || {};
+      out.push({
+        qty: 0,
+        description: t.description || '',
+        unitCost: Number(t.unitCost) || 0,
+        supplier: t.supplier || '',
+        part: t.part != null ? String(t.part) : '',
+        group: t.group || ''
+      });
+    }
+    return out;
+  }
+
   function calcLaborEquip(s) {
     var equipSum = 0;
-    var eqs = s.laborEquip.equipment || [];
+    var eqs = (s.laborEquip && s.laborEquip.equipment) || [];
     for (var i = 0; i < eqs.length; i++) equipSum += Number(eqs[i].cost) || 0;
-    equipSum += Number(s.laborEquip.smallTools) || 0;
+    var stCost = smallToolsCost(s);
+    equipSum += stCost;
 
     var subSum = 0;
     var subs = s.laborEquip.subcontractors || [];
@@ -10259,6 +10447,7 @@ window.BRUNO_SEED = {
     // Estimation time left at 0 in demo (would use bill rate — avoid double OH)
     return {
       equipCost: equipSum,
+      smallToolsCost: stCost,
       subCost: subSum,
       laborCost: laborSum,
       laborHrs: hrsSum,
@@ -10368,12 +10557,45 @@ window.BRUNO_SEED = {
     if (!Array.isArray(s.laborEquip.equipment)) s.laborEquip.equipment = [];
     if (!Array.isArray(s.laborEquip.blocks)) s.laborEquip.blocks = [];
     s.laborEquip.smallTools = asNum(s.laborEquip.smallTools);
+    if (!Array.isArray(s.laborEquip.smallToolsLines) || s.laborEquip.smallToolsLines.length === 0) {
+      var stLegacy = s.laborEquip.smallTools;
+      s.laborEquip.smallToolsLines = cloneSmallToolsTemplate();
+      if (stLegacy) {
+        s.laborEquip.smallToolsLines.push({
+          qty: 1,
+          description: 'Misc small tools (legacy)',
+          unitCost: stLegacy,
+          supplier: '',
+          part: '',
+          group: ''
+        });
+      }
+    } else {
+      var sti;
+      for (sti = 0; sti < s.laborEquip.smallToolsLines.length; sti++) {
+        row = s.laborEquip.smallToolsLines[sti];
+        if (!row || typeof row !== 'object') {
+          s.laborEquip.smallToolsLines[sti] = { qty: 0, description: '', unitCost: 0, supplier: '', part: '', group: '' };
+          continue;
+        }
+        row.qty = asNum(row.qty);
+        row.unitCost = asNum(row.unitCost);
+        if (row.description == null) row.description = '';
+        if (row.supplier == null) row.supplier = '';
+        if (row.part == null) row.part = '';
+        else row.part = String(row.part);
+        if (row.group == null) row.group = '';
+      }
+    }
+    s.laborEquip.smallTools = smallToolsCost(s);
     if (s.pnl == null || typeof s.pnl !== 'object' || Array.isArray(s.pnl)) s.pnl = {};
     if (s.pnl.linkMaterial === undefined) s.pnl.linkMaterial = true;
     s.pnl.actualLabor = asNum(s.pnl.actualLabor);
     s.pnl.actualEquip = asNum(s.pnl.actualEquip);
     s.pnl.actualSub = asNum(s.pnl.actualSub);
     if (s.pnl.actualMaterial != null && s.pnl.actualMaterial !== '') s.pnl.actualMaterial = asNum(s.pnl.actualMaterial);
+    if (!s.quote || typeof s.quote !== 'object' || Array.isArray(s.quote)) s.quote = {};
+    if (!s.quote.jobNumber) s.quote.jobNumber = s.quote.proposal || '';
     if (!s.jobSettings) s.jobSettings = {};
     if (!s.jobSettings.jurisdiction) s.jobSettings.jurisdiction = 'Texas / Austin area';
     if (!s.jobSettings.necEdition) s.jobSettings.necEdition = '2023';
@@ -10858,6 +11080,8 @@ window.BRUNO_SEED = {
   function bindQuote() {
     var q = state.quote;
     document.getElementById('q-date').value = q.date || '';
+    var jobEl = document.getElementById('q-job');
+    if (jobEl) jobEl.value = q.jobNumber || q.proposal || '';
     document.getElementById('q-proposal').value = q.proposal || '';
     document.getElementById('q-po').value = q.po || '';
     document.getElementById('q-wo').value = q.workOrder || '';
@@ -10873,6 +11097,8 @@ window.BRUNO_SEED = {
   function readQuote() {
     var q = state.quote;
     q.date = document.getElementById('q-date').value;
+    var jobInp = document.getElementById('q-job');
+    if (jobInp) q.jobNumber = jobInp.value;
     q.proposal = document.getElementById('q-proposal').value;
     q.po = document.getElementById('q-po').value;
     q.workOrder = document.getElementById('q-wo').value;
@@ -10885,6 +11111,26 @@ window.BRUNO_SEED = {
     q.description = document.getElementById('q-desc').value.split('\n');
   }
 
+  function formatQuoteDate(iso) {
+    var s = String(iso || '').trim();
+    if (!s) return '';
+    var parts = s.split('-');
+    if (parts.length !== 3) return s;
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var m = Number(parts[1]) - 1;
+    var d = Number(parts[2]);
+    var y = parts[0];
+    if (m < 0 || m > 11 || !d) return s;
+    return months[m] + ' ' + d + ', ' + y;
+  }
+  function quoteJobNumber(q) {
+    q = q || {};
+    var jn = String(q.jobNumber || '').trim();
+    if (jn) return jn;
+    return String(q.proposal || '').trim();
+  }
+  var QUOTE_VALID_TXT = 'This quote is valid for 15 days from the quote date.';
+
   function renderQuotePreview(calc) {
     var q = state.quote;
     var c = letterheadCompany();
@@ -10893,12 +11139,21 @@ window.BRUNO_SEED = {
     if (c.address1 || c.address) addrBits.push(c.address1 || c.address);
     if (c.address2) addrBits.push(c.address2);
     if (cityLine) addrBits.push(cityLine);
+    var jobNo = quoteJobNumber(q);
+    var dateDisp = formatQuoteDate(q.date) || (q.date || '\u2014');
+    var byName = q.quotedBy || '\u2014';
+    var shop = companyDisplayName(c) || 'Bruno Electric Services LLC';
     var html = '<div class="company">' + esc(companyDisplayName(c)) + '</div>' +
       (c.dba ? '<div class="muted">DBA: ' + esc(c.dba) + '</div>' : '') +
-      '<div class="muted">' + esc(addrBits.join(' · ')) + (c.phone ? ' · ' + esc(c.phone) : '') + '</div>' +
-      '<div class="muted">' + esc(c.license || c.tecl || '') + (c.email ? ' · ' + esc(c.email) : '') +
-        (c.website ? ' · ' + esc(c.website) : '') + '</div>' +
-      '<h3 style="margin-top:1rem">Proposal ' + esc(q.proposal) + ' · ' + esc(q.date) + '</h3>' +
+      '<div class="muted">' + esc(addrBits.join(' \u00b7 ')) + (c.phone ? ' \u00b7 ' + esc(c.phone) : '') + '</div>' +
+      '<div class="muted">' + esc(c.license || c.tecl || '') + (c.email ? ' \u00b7 ' + esc(c.email) : '') +
+        (c.website ? ' \u00b7 ' + esc(c.website) : '') + '</div>' +
+      '<div class="qp-meta">' +
+        '<div class="qp-item"><span class="qp-lbl">Date</span><span class="qp-val">' + esc(dateDisp) + '</span></div>' +
+        '<div class="qp-item"><span class="qp-lbl">Job #</span><span class="qp-val">' + esc(jobNo || '\u2014') + '</span></div>' +
+        (q.proposal ? '<div class="qp-item"><span class="qp-lbl">Proposal #</span><span class="qp-val">' + esc(q.proposal) + '</span></div>' : '') +
+      '</div>' +
+      '<h3>Quote</h3>' +
       '<p><strong>' + esc(q.customer) + '</strong><br>' +
       esc(q.jobAddress1) + '<br>' + esc(q.jobAddress2) + '<br>Contact: ' + esc(q.contact) + '</p>' +
       '<p class="muted"><em>Ref: ' + esc(q.reference) + '</em></p>' +
@@ -10907,11 +11162,29 @@ window.BRUNO_SEED = {
         (calc.cos.approved ? ' + approved COs ' + money(calc.cos.approved) : '') +
         '</div>' +
       '<div class="total-line">Quote Total: ' + money0(calc.quoteTotal) + '</div>' +
-      '<p class="muted">Quoted by: ' + esc(q.quotedBy) +
-        ' · ' + esc((state.jobSettings || {}).jurisdiction || '') +
-        ' · NEC ' + esc((state.jobSettings || {}).necEdition || '') +
+      '<div class="quote-close">' +
+        '<p class="quote-valid">' + QUOTE_VALID_TXT + '</p>' +
+        '<div class="quote-sign">' +
+          '<div class="sign-lbl">Quoted by / Authorized signature</div>' +
+          '<div class="sign-name">' + esc(byName) + '</div>' +
+          '<div class="sign-rule"></div>' +
+          '<div class="muted">' + esc(shop) + ' personnel</div>' +
+          '<div class="muted">Date: ' + esc(dateDisp) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<p class="muted" style="margin-top:.75rem">' +
+        esc((state.jobSettings || {}).jurisdiction || '') +
+        ' \u00b7 NEC ' + esc((state.jobSettings || {}).necEdition || '') +
         ' (informational)</p>';
     document.getElementById('quote-preview').innerHTML = html;
+    var dd = document.getElementById('q-date-display');
+    if (dd) dd.textContent = dateDisp;
+    var jd = document.getElementById('q-job-display');
+    if (jd) jd.textContent = jobNo || '\u2014';
+    var sn = document.getElementById('q-sign-name');
+    if (sn) sn.textContent = byName;
+    var so = document.getElementById('q-sign-org');
+    if (so) so.textContent = shop + ' personnel';
   }
 
   function renderMaterials() {
@@ -10970,7 +11243,33 @@ window.BRUNO_SEED = {
         '<td><button type="button" class="btn btn-sm btn-danger eq-del">×</button></td></tr>';
     }
     document.getElementById('equip-body').innerHTML = html;
-    document.getElementById('le-small-tools').value = state.laborEquip.smallTools || 0;
+  }
+
+  function renderSmallTools() {
+    var tbody = document.getElementById('st-body');
+    if (!tbody) return;
+    var rows = (state.laborEquip && state.laborEquip.smallToolsLines) || [];
+    var html = '';
+    var lastGroup = null;
+    for (var i = 0; i < rows.length; i++) {
+      var m = rows[i];
+      var grp = m.group || '';
+      if (grp && grp !== lastGroup) {
+        html += '<tr class="st-group"><td colspan="7">' + esc(grp) + '</td></tr>';
+        lastGroup = grp;
+      }
+      var ext = smallToolsLineExt(m);
+      html += '<tr data-i="' + i + '">' +
+        '<td><input type="number" class="num st-qty" step="any" min="0" value="' + (Number(m.qty) || 0) + '" /></td>' +
+        '<td><input type="text" class="st-desc" value="' + esc(m.description) + '" /></td>' +
+        '<td><input type="text" class="st-supplier" value="' + esc(m.supplier) + '" /></td>' +
+        '<td><input type="text" class="st-part" value="' + esc(m.part) + '" /></td>' +
+        '<td><input type="number" class="num st-cost" step="0.01" min="0" value="' + (Number(m.unitCost) || 0) + '" /></td>' +
+        '<td class="num-cell st-ext">' + money(ext) + '</td>' +
+        '<td class="col-actions"><button type="button" class="btn btn-sm btn-danger st-del" title="Remove">×</button></td>' +
+        '</tr>';
+    }
+    tbody.innerHTML = html || '<tr><td colspan="7" style="color:var(--text-muted);padding:1rem">No small-tool lines — Restore safety list or + Add line</td></tr>';
   }
 
   function renderSubs() {
@@ -11165,6 +11464,8 @@ window.BRUNO_SEED = {
     document.getElementById('mat-sum').textContent = money(calc.mats.cost);
 
     document.getElementById('le-equip-total').textContent = money(calc.le.equipCost);
+    var stTot = document.getElementById('le-st-total');
+    if (stTot) stTot.textContent = money(calc.le.smallToolsCost || 0);
     document.getElementById('le-sub-total').textContent = money(calc.le.subCost);
     document.getElementById('le-hrs').textContent = calc.le.laborHrs.toFixed(1);
     document.getElementById('le-labor-total').textContent = money(calc.le.laborCost);
@@ -11203,6 +11504,7 @@ window.BRUNO_SEED = {
       if (!opts.skipTables) {
         renderMaterials();
         renderEquip();
+        renderSmallTools();
         renderSubs();
         renderLaborBlocks(calc);
         renderPersonnel();
@@ -11244,6 +11546,10 @@ window.BRUNO_SEED = {
     measureSticky();
     if (name === 'quote' || name === 'tm') buildPrintDocs(calcAll(state));
     if (name === 'profiles') { renderProfilesList(); bindCompany(); }
+    if (name === 'catalog') {
+      var cs = document.getElementById('cat-search');
+      renderCatalog(cs ? cs.value : '');
+    }
   }
 
   function setupTabs() {
@@ -11265,7 +11571,7 @@ window.BRUNO_SEED = {
   }
 
   function setupQuoteListeners() {
-    ['q-date','q-proposal','q-po','q-wo','q-by','q-contact','q-customer','q-ref','q-addr1','q-addr2','q-desc'].forEach(function (id) {
+    ['q-date','q-job','q-proposal','q-po','q-wo','q-by','q-contact','q-customer','q-ref','q-addr1','q-addr2','q-desc'].forEach(function (id) {
       on(id, 'input', function () { readQuote(); save(); renderQuotePreview(calcAll(state)); });
       on(id, 'change', function () { readQuote(); save(); });
     });
@@ -11311,6 +11617,8 @@ window.BRUNO_SEED = {
       refresh();
     });
     on('cat-search', 'input', function () { renderCatalog(this.value); });
+    on('mat-open-catalog', 'click', function () { activateTab('catalog'); });
+    on('cat-open-job', 'click', function () { activateTab('materials'); });
   }
 
   // Fix catalog add: store id on button
@@ -11380,9 +11688,39 @@ window.BRUNO_SEED = {
       state.laborEquip.equipment.push({ name: '', cost: 0, vendor: '' });
       refresh();
     });
-    on('le-small-tools', 'input', function () {
-      state.laborEquip.smallTools = parseFloat(this.value) || 0;
+    on('st-body', 'input', function (e) {
+      var tr = e.target.closest('tr[data-i]');
+      if (!tr) return;
+      var i = +tr.getAttribute('data-i');
+      var line = state.laborEquip.smallToolsLines[i];
+      if (!line) return;
+      if (e.target.classList.contains('st-qty')) line.qty = parseFloat(e.target.value) || 0;
+      if (e.target.classList.contains('st-desc')) line.description = e.target.value;
+      if (e.target.classList.contains('st-supplier')) line.supplier = e.target.value;
+      if (e.target.classList.contains('st-part')) line.part = e.target.value;
+      if (e.target.classList.contains('st-cost')) line.unitCost = parseFloat(e.target.value) || 0;
+      var extCell = tr.querySelector('.st-ext');
+      if (extCell) extCell.textContent = money(smallToolsLineExt(line));
       softRefresh();
+    });
+    on('st-body', 'click', function (e) {
+      if (!e.target.classList.contains('st-del')) return;
+      var tr = e.target.closest('tr[data-i]');
+      if (!tr) return;
+      state.laborEquip.smallToolsLines.splice(+tr.getAttribute('data-i'), 1);
+      refresh();
+    });
+    on('st-add', 'click', function () {
+      if (!Array.isArray(state.laborEquip.smallToolsLines)) state.laborEquip.smallToolsLines = [];
+      state.laborEquip.smallToolsLines.push({
+        qty: 0, description: 'New small tool', unitCost: 0, supplier: '', part: '', group: ''
+      });
+      refresh();
+    });
+    on('st-restore', 'click', function () {
+      if (!confirm('Replace the small-tools list with the workbook safety / lockout template? Current qtys on this list will be lost.')) return;
+      state.laborEquip.smallToolsLines = cloneSmallToolsTemplate();
+      refresh();
     });
 
     on('sub-body', 'input', function (e) {
@@ -11579,6 +11917,7 @@ window.BRUNO_SEED = {
         quote: {
           date: iso,
           proposal: '',
+          jobNumber: '',
           po: '',
           workOrder: '',
           contact: '',
@@ -11594,6 +11933,7 @@ window.BRUNO_SEED = {
         laborEquip: {
           equipment: [],
           smallTools: 0,
+          smallToolsLines: cloneSmallToolsTemplate(keep.smallToolsLines || (state && state.laborEquip && state.laborEquip.smallToolsLines)),
           subcontractors: [],
           estimationHours: 0,
           blocks: []
@@ -11639,12 +11979,13 @@ window.BRUNO_SEED = {
         company: state && state.company,
         catalog: state && state.catalog,
         personnel: state && state.personnel,
-        summary: state && state.summary
+        summary: state && state.summary,
+        smallToolsLines: state && state.laborEquip && state.laborEquip.smallToolsLines
       });
       applyActiveProfileToState();
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
       renderAll();
-      toast('Blank job — totals $0 · letterhead kept');
+      toast('Blank job — totals $0 · catalog & tool templates kept');
     });
     on('btn-reset', 'click', function () {
       if (!confirm('Reset to demo data (Pioneer Farms)? Local job changes will be lost. Profiles are kept.')) return;
@@ -11685,7 +12026,8 @@ window.BRUNO_SEED = {
     bindQuote();
     bindJobSettings();
     renderBanner();
-    renderCatalogFixed(document.getElementById('cat-search').value);
+    var _cs = document.getElementById('cat-search');
+    renderCatalogFixed(_cs ? _cs.value : '');
   }
 
   function renderAll() {
@@ -11983,6 +12325,8 @@ window.BRUNO_SEED = {
           '<div class="muted">' + addrHtml + '</div>' +
         '</div>' +
         '<div class="lh-meta">' +
+          '<div class="lh-date">Date: ' + esc(formatQuoteDate(q.date) || q.date || '—') + '</div>' +
+          '<div class="lh-job">Job #: ' + esc(quoteJobNumber(q) || '—') + '</div>' +
           metaBits.join('<br>') +
         '</div>' +
       '</div>';
@@ -12001,8 +12345,9 @@ window.BRUNO_SEED = {
     var termsHtml = (q.terms || []).map(esc).join('<br>');
 
     var quoteHtml = letter +
-      '<h1>Quote / Proposal ' + esc(q.proposal) + '</h1>' +
-      '<p><strong>Date:</strong> ' + esc(q.date) +
+      '<h1>Quote' + (q.proposal ? ' / Proposal ' + esc(q.proposal) : '') + '</h1>' +
+      '<p><strong>Date:</strong> ' + esc(formatQuoteDate(q.date) || q.date || '—') +
+        ' &nbsp;·&nbsp; <strong>Job #:</strong> ' + esc(quoteJobNumber(q) || '—') +
         ' &nbsp;·&nbsp; <strong>P.O.</strong> ' + esc(q.po || '—') +
         ' &nbsp;·&nbsp; <strong>W.O.</strong> ' + esc(q.workOrder || '—') + '</p>' +
       '<p><strong>' + esc(q.customer) + '</strong><br>' +
@@ -12033,12 +12378,21 @@ window.BRUNO_SEED = {
       : '<p>' + termsHtml + '</p>';
     quoteHtml +=
       '<div class="grand">Quote Total: $' + (Math.round(calc.quoteTotal)).toLocaleString('en-US') + '</div>' +
-      '<p class="muted">Quoted by: ' + esc(q.quotedBy) + '</p>' +
+      '<div class="quote-close">' +
+        '<p class="quote-valid">' + QUOTE_VALID_TXT + '</p>' +
+        '<div class="sign-block">' +
+          '<div class="sign-lbl">Quoted by / Authorized signature</div>' +
+          '<div class="sign-rule"></div>' +
+          '<div class="sign-name">' + esc(q.quotedBy || '—') + '</div>' +
+          '<div class="muted">' + esc(companyDisplayName(c) || 'Bruno Electric Services LLC') + ' personnel</div>' +
+          '<div class="muted">Date: ' + esc(formatQuoteDate(q.date) || q.date || '—') + '</div>' +
+        '</div>' +
+      '</div>' +
       footerHtml +
       '<p class="fine">Jurisdiction: ' + esc(js.jurisdiction || '') +
         ' · NEC ' + esc(js.necEdition || '') +
         ' (informational — this quote is not auto-recalculated for a different NEC edition).' +
-        '<br>' + esc(companyDisplayName(c)) + ' · v1</p>';
+        '<br>' + esc(companyDisplayName(c)) + ' · v1.4</p>';
 
     var pq = document.getElementById('print-quote');
     if (pq) pq.innerHTML = quoteHtml;
@@ -12360,7 +12714,7 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.3.1';
+    if (badge && ship) badge.textContent = 'v1.4';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');

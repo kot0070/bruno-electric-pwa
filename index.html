@@ -1186,7 +1186,7 @@ html[data-theme="light"] .panel {
       <div class="brand-mark">BE</div>
       <div class="brand-text">
         <h1>Bruno Electric Services LLC</h1>
-        <p>Estimating · offline · <span class="ver-badge">v1.5</span></p>
+        <p>Estimating · offline · <span class="ver-badge">v1.6</span></p>
       </div>
     </div>
     <div class="header-actions no-print">
@@ -1368,7 +1368,7 @@ html[data-theme="light"] .panel {
         <h2>Job materials</h2>
         <span class="hint">qty on this job · line = qty × unitCost · no material markup</span>
       </div>
-      <p class="section-help"><strong>On this job:</strong> Quantities used for the estimate. Extension = Qty × Unit Cost. Pull items from the <strong>Catalog</strong> tab or import CSV. No extra material markup — OH and profit apply only on Summary.</p>
+      <p class="section-help"><strong>On this job:</strong> Each line has <strong>Qty</strong>, <strong>Description</strong>, Part #, Units, <strong>Unit price</strong>, and <strong>Extension (Qty × Price)</strong>. Pull from <strong>Catalog</strong> or CSV. No material markup here — OH &amp; profit only on Summary.</p>
       <div class="note-box ok">
         <strong>Single margin layer:</strong> Material markup stays <code>0</code>.
         OH/profit apply only in Summary (Method A).
@@ -1407,12 +1407,12 @@ html[data-theme="light"] .panel {
             <thead>
               <tr>
                 <th class="col-qty">Qty</th>
-                <th>Item</th>
+                <th>Description</th>
                 <th>Part #</th>
                 <th>Units</th>
-                <th class="col-cost">Unit cost</th>
+                <th class="col-cost">Unit price</th>
                 <th>Price updated</th>
-                <th class="col-ext">Extension</th>
+                <th class="col-ext">Extension (Qty × Price)</th>
                 <th class="col-actions"></th>
               </tr>
             </thead>
@@ -1433,26 +1433,26 @@ html[data-theme="light"] .panel {
         <h2>Catalog</h2>
         <span class="hint">full materials list · search · add to this job</span>
       </div>
-      <p class="section-help"><strong>General materials list:</strong> Search the shop catalog (~676 items). <strong>Add</strong> sends a line to <strong>Job materials</strong> with qty 1 (edit qty there). Catalog is kept when you start a blank job.</p>
+      <p class="section-help"><strong>General materials list:</strong> Search by description / part / vendor (try <em>LED</em>, <em>lamp</em>, <em>fixture</em>). Columns: Description, Part #, Vendor, Units, Unit price. <strong>Add to job</strong> copies the line to <strong>Job materials</strong> with Qty 1 — edit Qty and Unit price there (Extension = Qty × Price). Some workbook lighting lines ship at $0 until you set a price. Catalog is kept on blank job.</p>
       <div class="card">
         <h3>Materials catalog <span class="sub">search · add to job</span></h3>
         <div class="toolbar">
           <button type="button" class="btn btn-sm" id="cat-open-job">View job materials</button>
         </div>
         <div class="search-bar">
-          <input type="search" id="cat-search" placeholder="Search item, part #, vendor…" />
+          <input type="search" id="cat-search" placeholder="Search description, part #, vendor (try: LED, lamp, fixture)…" />
           <span class="badge" id="cat-count">0</span>
         </div>
         <div class="table-wrap" style="max-height:70vh;overflow:auto">
           <table class="data">
             <thead>
               <tr>
-                <th>Item</th>
+                <th>Description</th>
                 <th>Part #</th>
                 <th>Vendor</th>
                 <th>Units</th>
-                <th class="col-cost">Unit cost</th>
-                <th class="col-actions">Add</th>
+                <th class="col-cost">Unit price</th>
+                <th class="col-actions">Add to job</th>
               </tr>
             </thead>
             <tbody id="cat-body"></tbody>
@@ -1867,7 +1867,7 @@ html[data-theme="light"] .panel {
 
       <div class="card">
         <h3>About this build</h3>
-        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.5<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
+        <p class="section-help" style="margin-top:0">Bruno Electric Estimating · Offline · v1.6<br/>Bruno Electric Services LLC<br/>Works offline in the browser or Home Screen app. English UI.</p>
       </div>
     </section>
 
@@ -9937,6 +9937,1634 @@ window.BRUNO_SEED = {
       "crew": 1.0,
       "prod": 1.2,
       "prodUnit": "Day"
+    },
+    {
+      "id": "c-light-2883",
+      "item": "4ft Flourescent Task Lt 120v T5 2lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 2XX STEB5-120V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2884",
+      "item": "4ft Flourescent Task Lt 120v T5 3lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 3XX STEB5-120V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2885",
+      "item": "4ft Flourescent Task Lt 120v T5 4lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 4XX STEB5-120V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2886",
+      "item": "4ft Flourescent Task Lt 277v T5 2lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 2XX STEB5-277V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2887",
+      "item": "4ft Flourescent Task Lt 277v T5 3lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 3XX STEB5-277V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2888",
+      "item": "4ft Flourescent Task Lt 277v T5 4lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 4XX STEB5-277V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2889",
+      "item": "4ft Flourescent Task Lt 120v T8 2lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 232 STEB8-120v",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2890",
+      "item": "4ft Flourescent Task Lt 120v T8 3lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 332 STEB8-120V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2891",
+      "item": "4ft Flourescent Task Lt 120v T8 3lamp Industrial Shade 2ballast Std Output",
+      "part": "COL KL4 332 STEB82-120V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2892",
+      "item": "4ft Flourescent Task Lt 120v T8 4lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 432 STEB8-120V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2893",
+      "item": "4ft Flourescent Task Lt 120v T8 4lamp Industrial Shade 2ballast Std Output",
+      "part": "COL KL4 432 STEB82-120V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2894",
+      "item": "4ft Flourescent Task Lt 277v T8 2lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 232 STEB8-277v",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2895",
+      "item": "4ft Flourescent Task Lt 277v T8 3lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 332 STEB8-277V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2896",
+      "item": "4ft Flourescent Task Lt 277v T8 3lamp Industrial Shade 2ballast Std Output",
+      "part": "COL KL4 332 STEB82-277V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2897",
+      "item": "4ft Flourescent Task Lt 277v T8 4lamp Industrial Shade 1ballast Std Output",
+      "part": "COL KL4 432 STEB8-277V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2898",
+      "item": "4ft Flourescent Task Lt 277v T8 4lamp Industrial Shade 2ballast Std Output",
+      "part": "COL KL4 432 STEB82-277V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2899",
+      "item": "8ft Flourescent Task Lt 120v T8 2lamp Industrial Shade 1ballast Std Output",
+      "part": "IC 296 T8 120V EB81",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 2.0,
+      "prod": 8.8,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2900",
+      "item": "8ft Flourescent Task Lt 120v T8 4lamp Industrial Shade 1ballast Std Output",
+      "part": "IC 440 T8 120V EB81",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.75,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2901",
+      "item": "8ft Flourescent Task Lt 277v T8 2lamp Industrial Shade 1ballast Std Output",
+      "part": "IC 296 T8 277V EB81",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 2.0,
+      "prod": 8.8,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2902",
+      "item": "8ft Flourescent Task Lt 277v T8 4lamp Industrial Shade 1ballast Std Output",
+      "part": "IC 440 T8 277V EB81",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 2.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2903",
+      "item": "4ft Flourescent Task Lt 120v T12 2lamp Industrial Shade 1ballast HO Output",
+      "part": "IC 240 T12 120V HO EB81",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2904",
+      "item": "4ft Flourescent Task Lt 120v T12 3lamp Industrial Shade 1ballast HO Output",
+      "part": "IC 340 T12 120V HO EB81",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2905",
+      "item": "4ft Flourescent Task Lt 277v T12 2lamp Industrial Shade 1ballast HO Output",
+      "part": "IC 240 T12 277V HO EB81",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2906",
+      "item": "4ft Flourescent Task Lt 277v T12 3lamp Industrial Shade 1ballast HO Output",
+      "part": "IC 340 T12 277V HO EB81",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2907",
+      "item": "8ft Flourescent Task Lt 120v T12 2lamp Industrial Shade 1ballast HO Output",
+      "part": "IC 296 HO 120V LE3",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 2.0,
+      "prod": 8.8,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2908",
+      "item": "8ft Flourescent Task Lt 120v T12 4lamp Industrial Shade 1ballast HO Output",
+      "part": "IC 440 HO 120V LE3",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 2.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2909",
+      "item": "8ft Flourescent Task Lt 277v T12 2lamp Industrial Shade 1ballast HO Output",
+      "part": "IC 296 HO 277V LE3",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 2.0,
+      "prod": 8.8,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2910",
+      "item": "8ft Flourescent Task Lt 277v T12 4lamp Industrial Shade 1ballast HO Output",
+      "part": "IC 440 HO 277V LE3",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 2.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2911",
+      "item": "Optional Industrial Shade for 4ft fixture with Solid Apperature",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2912",
+      "item": "Optional Industrial Shade for 8ft fixture with Solid Apperature",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2913",
+      "item": "Mercury Vapor Light (for on pole) 75W 120v with shade and mounting arm",
+      "part": "LUM SV 70",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 2.9,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2914",
+      "item": "Mercury Vapor Light (for on pole) 100W 120v with shade and mounting arm",
+      "part": "LUM SV 10",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 2.9,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2915",
+      "item": "Mercury Vapor Light (for on pole) 150W 120v with shade and mounting arm",
+      "part": "LUM SV 15",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 2.9,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2916",
+      "item": "Mercury Vapor Light (for on pole) 175W 120v with shade and mounting arm",
+      "part": "LUM SV 17",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 44.94,
+      "crew": 1.0,
+      "prod": 2.9,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2917",
+      "item": "Quartz Floodlight 500w 120v knuckle arm w/ 1/2\" NPT",
+      "part": "LUM QB 500W 500W",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 23.4,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2918",
+      "item": "Quartz Floodlight 1500w 120v knuckle arm w/ 1/2\" NPT",
+      "part": "LUM QB 1500",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2919",
+      "item": "FloodLight",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2920",
+      "item": "High Bay Light-multi tap ballast with 15\" reflector (open) 250W Metal Halide",
+      "part": "LUM MHSS 25 5T",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 2.0,
+      "prod": 4.6,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2921",
+      "item": "High Bay Light-multi tap ballast with 15\" reflector (open) 400W Metal Halide",
+      "part": "LUM MHSS 40 5T",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 73.2,
+      "crew": 2.0,
+      "prod": 4.6,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2922",
+      "item": "High Bay Lights",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.6,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2923",
+      "item": "MEI High Bay Lithonia Hi-Tek 400W 277v TH 400M277 HICS HSG w/M59 bulb",
+      "part": "TH400W277HICSHSGw/M59Lamp",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 2.0,
+      "prod": 4.6,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2924",
+      "item": "Low Bay Lights 250 w   alum. Reflector",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 3.2,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2925",
+      "item": "Low Bay Lights 400w  alum. Reflector",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 2.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2926",
+      "item": "Low Bay Lights",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2927",
+      "item": "Wall pack light 75w multi-tap ballast without photo eye",
+      "part": "LUM  MH GP 70 HD TLL",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 130.8,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2928",
+      "item": "Wall pack light 150w multi-tap ballast without photo eye",
+      "part": "LUM PM25 250 MH",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 143.94,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2929",
+      "item": "Wall pack light 250w multi-tap ballast without photo eye",
+      "part": "LUM PM 40 400 MH",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 120.0,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2930",
+      "item": "Exit Light LED 120v with signplate battery backup",
+      "part": "LPX 70 RWH",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2931",
+      "item": "Exit Light/Egress light dual head combo LED 12v Lts battery backup",
+      "part": "LPX 70 RWH DH",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2932",
+      "item": "Exit Light/Egress light dual head combo LED 12v Lts Extra battery backup for remote head",
+      "part": "LPX H 70RWH DH",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2933",
+      "item": "Remote Egress light with enclosure (box) 12v",
+      "part": "SUR 6X9WGY",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2934",
+      "item": "Egress Light with dual lights 12v with battery backup",
+      "part": "SUR CC2",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2935",
+      "item": "MEI Egress Lt for warehouse ELU-4 (complete fixture)",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2936",
+      "item": "MEI Egress Lt for warehouse ELB0610 or ELB0612 (Battery Only)",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2937",
+      "item": "2 X 4 Troffer Light 120v 2lamp 1ballast acrylic lense",
+      "part": "2GR 8 32 E12 120V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.3,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2938",
+      "item": "2 X 4 Troffer Light 120v 3lamp 1ballast acrylic lense",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2939",
+      "item": "2 X 4 Troffer Light 120v 4lamp 1ballast acrylic lense",
+      "part": "2GR 8 432 E12 120V",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.7,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2940",
+      "item": "2 X 4 Troffer Light 120v 4lamp 2ballast acrylic lense",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.7,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2941",
+      "item": "2 X 2 Troffer Light 120v 2 lamp 1 ballast acrylic lense",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.7,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2942",
+      "item": "2 X 4 Troffer Light 277v 2lamp 1ballast acrylic lense",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.3,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2943",
+      "item": "2 X 4 Troffer Light 277v 3lamp 1ballast acrylic lense",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2944",
+      "item": "2 X 4 Troffer Light 277v 4lamp 1ballast acrylic lense",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.7,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2945",
+      "item": "2 X 4 Troffer Light 277v 4lamp 2ballast acrylic lense",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 4.7,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2946",
+      "item": "2 X 2 Troffer Light 277v 2 lamp 1 ballast acrylic lense",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.7,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2947",
+      "item": "Optional Lense",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 6.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2948",
+      "item": "Replacement Ballast Kit for  2  40w",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 9.4,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2949",
+      "item": "Replacement Ballast Kit for  2 F96 Slimline",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2950",
+      "item": "Replacement Ballast Kit for",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 5.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2951",
+      "item": "Light Bulbs",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2952",
+      "item": "F032/735",
+      "part": "SYLF032735",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 1.8,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2953",
+      "item": "F032/741",
+      "part": "SYLF032741",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 1.8,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2954",
+      "item": "F32T8/SP30",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 1.48,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2955",
+      "item": "F32T8/SP35",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 1.48,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2956",
+      "item": "F32T8/SP36",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2957",
+      "item": "F32T8/SP41",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 9.22,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2958",
+      "item": "LU 400",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 13.57,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2959",
+      "item": "F40CW/RS/WM",
+      "part": "SYLF40CWX",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 2.48,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2960",
+      "item": "F48T12/SP41/HO",
+      "part": "SYLF48T12CWVHO",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 12.09,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2961",
+      "item": "F48T12/CW/VHO",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2962",
+      "item": "20W 120v tubular lamp",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 1.91,
+      "crew": 1.0,
+      "prod": 2.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2963",
+      "item": "F96T12/SP41/HO/WM",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 5.11,
+      "crew": 1.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2964",
+      "item": "F96T12/CW/HO/EW",
+      "part": "25248",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 10.53,
+      "crew": 1.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2965",
+      "item": "F96T12/CW/HO/WM",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 4.4,
+      "crew": 1.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2966",
+      "item": "F96T12/CW/1500WM",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 7.15,
+      "crew": 1.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2967",
+      "item": "F96T12/CW/WM",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 2.97,
+      "crew": 1.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2968",
+      "item": "F96T12/CW/HO/SS",
+      "part": "SYLF96T12CWHOSS",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 4.13,
+      "crew": 1.0,
+      "prod": 8.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2969",
+      "item": "18W spring flourescent lamp",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 12.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2970",
+      "item": "F32T8-SP30-U-6",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 5.17,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2971",
+      "item": "F32T8/SP35-U-6",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 5.17,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2972",
+      "item": "F40 CW-U-6-WM",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 4.38,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2973",
+      "item": "MVR 400 V BULBS",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 13.63,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2974",
+      "item": "FB031/835",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2975",
+      "item": "FB-32T8/TL835/6",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2976",
+      "item": "SYLFB0328416",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 8.4,
+      "crew": 1.0,
+      "prod": 10.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2977",
+      "item": "AFC 2 32 277 GEB 10 GLR J4-44 Turret",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2978",
+      "item": "AFC 2 48 HO 277 CW20 GLR J4-43 Turret",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2979",
+      "item": "AF 2 40 277 ES-4 Turret",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2980",
+      "item": "AF 2 48 HO 120 CW 20-2 Turret",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2981",
+      "item": "AFR 48 J4-116 Turret",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2982",
+      "item": "AFST 2 32 277 ADIC GLR-1&2 Turret",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 61.25,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2983",
+      "item": "AFST 2 32 277 GEB GLR Turret",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 47.8,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2984",
+      "item": "AFSTR 48 SSR J4-40 Turret",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2985",
+      "item": "AFSTR 48 J4-56 Turret",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2986",
+      "item": "2 GT 4 32 A!2 277 1/4 GEB-1 Troffer",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 38.25,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2987",
+      "item": "2 GT 4 32 A12 277 GEB-9 Troffer",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 52.15,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2988",
+      "item": "2 GT 4 32 A12 120 1/4 GEB-13 Troffer",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 38.25,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2989",
+      "item": "2 GT 4 40 A12 277 ES LPESCW-1 Troffer",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 42.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2990",
+      "item": "2 SPG 4 32 A12 277 1/4 GEB 10 LPGSP35-2 Troffer",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 58.75,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2991",
+      "item": "2 SPG 2 32 A12 277 1/4 GEB 10 LPGSP35-3 Troffer",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 53.25,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2992",
+      "item": "2 SPG 2 32 A12 120 GEB 10-3 Troffer",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 49.25,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2993",
+      "item": "2 GT 4 40 A12 277 ESW LPESCW-1 Grid Troffer",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 42.15,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2994",
+      "item": "4' 2 lamp T8 277v Task Light",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2995",
+      "item": "4' 4 lamp T12 120v Task Light",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2996",
+      "item": "LB 2 32 277 GEB-2 LP Wrap-around",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 41.15,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2997",
+      "item": "LB 2 40 120 ES-4 LP Wrap-around",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 31.75,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2998",
+      "item": "LB 4 32 277 1/4 GEB-8  LP Wrap-around",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 60.75,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-2999",
+      "item": "EJA 140 277 ES-10 LP Wrap-around",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 32.8,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3000",
+      "item": "SM 2 40 120 ES-1 Strip Light",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 23.15,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3001",
+      "item": "W2 32 277 GEB 10-2 Triangle Light",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 115.15,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3002",
+      "item": "UN 2 96 HO 120 CW20",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 37.15,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3003",
+      "item": "EJA 2 96 HO 120 CW20",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 48.15,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3004",
+      "item": "LB 2 40 120ES",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 31.25,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3005",
+      "item": "MET2GR82U6T8A277VE",
+      "part": "",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 40.42,
+      "crew": 1.0,
+      "prod": 1.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3006",
+      "item": "LED High Bay 150W 120-277V",
+      "part": "LED-HB-150",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3007",
+      "item": "LED High Bay 200W 120-277V",
+      "part": "LED-HB-200",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3008",
+      "item": "LED Troffer 2x4 40W",
+      "part": "LED-TR-2X4-40",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3009",
+      "item": "LED Troffer 2x2 30W",
+      "part": "LED-TR-2X2-30",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3010",
+      "item": "LED Flat Panel 2x4",
+      "part": "LED-FP-2X4",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3011",
+      "item": "LED Flat Panel 1x4",
+      "part": "LED-FP-1X4",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3012",
+      "item": "LED Downlight 6\" 15W",
+      "part": "LED-DL-6-15",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3013",
+      "item": "LED Downlight 4\" 10W",
+      "part": "LED-DL-4-10",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3014",
+      "item": "LED Wall Pack 40W",
+      "part": "LED-WP-40",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3015",
+      "item": "LED Wall Pack 80W",
+      "part": "LED-WP-80",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3016",
+      "item": "LED Flood Light 50W",
+      "part": "LED-FL-50",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3017",
+      "item": "LED Flood Light 100W",
+      "part": "LED-FL-100",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3018",
+      "item": "LED Strip Light 4ft",
+      "part": "LED-ST-4",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3019",
+      "item": "LED Strip Light 8ft",
+      "part": "LED-ST-8",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3020",
+      "item": "LED Exit Sign (red) battery backup",
+      "part": "LED-EX-R",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3021",
+      "item": "LED Exit Sign (green) battery backup",
+      "part": "LED-EX-G",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3022",
+      "item": "LED Emergency Light twin-head",
+      "part": "LED-EM-2",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3023",
+      "item": "LED A19 Bulb 9W 2700K",
+      "part": "LED-A19-9",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3024",
+      "item": "LED A19 Bulb 9W 4000K",
+      "part": "LED-A19-9-40",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3025",
+      "item": "LED T8 Tube 4ft Type A",
+      "part": "LED-T8-4-A",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3026",
+      "item": "LED T8 Tube 4ft Type B",
+      "part": "LED-T8-4-B",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3027",
+      "item": "Occupancy Sensor ceiling PIR",
+      "part": "OCC-PIR-C",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3028",
+      "item": "Vacancy Sensor wall",
+      "part": "VAC-WALL",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3029",
+      "item": "Photocell outdoor",
+      "part": "PC-OUT",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
+    },
+    {
+      "id": "c-light-3030",
+      "item": "0-10V Dimmer switch",
+      "part": "DIM-010",
+      "vendor": "-",
+      "units": "EA",
+      "unitCost": 0.0,
+      "crew": 1.0,
+      "prod": 0.0,
+      "prodUnit": "EA"
     }
   ],
   "personnel": {
@@ -9944,120 +11572,105 @@ window.BRUNO_SEED = {
       {
         "name": "Allen Nquyen",
         "number": 1,
-        "rate": 21.83
-      ,
+        "rate": 21.83,
         "payRate": 21.83,
         "taxRate": 0
       },
       {
         "name": "Brittany Morales",
         "number": 2,
-        "rate": 15.97
-      ,
+        "rate": 15.97,
         "payRate": 15.97,
         "taxRate": 0
       },
       {
         "name": "Dominic Bruno",
         "number": 3,
-        "rate": 18.34
-      ,
+        "rate": 18.34,
         "payRate": 18.34,
         "taxRate": 0
       },
       {
         "name": "Karl Kieffer",
         "number": 4,
-        "rate": 19.74
-      ,
+        "rate": 19.74,
         "payRate": 19.74,
         "taxRate": 0
       },
       {
         "name": "Lana Bruno",
         "number": 5,
-        "rate": 16.91
-      ,
+        "rate": 16.91,
         "payRate": 16.91,
         "taxRate": 0
       },
       {
         "name": "Noe Cueves",
         "number": 6,
-        "rate": 18.34
-      ,
+        "rate": 18.34,
         "payRate": 18.34,
         "taxRate": 0
       },
       {
         "name": "Roger Vazquez",
         "number": 7,
-        "rate": 31.11
-      ,
+        "rate": 31.11,
         "payRate": 31.11,
         "taxRate": 0
       },
       {
         "name": "Steven Durfey",
         "number": 8,
-        "rate": 15.55
-      ,
+        "rate": 15.55,
         "payRate": 15.55,
         "taxRate": 0
       },
       {
         "name": "Van Bruno",
         "number": 9,
-        "rate": 25.14
-      ,
+        "rate": 25.14,
         "payRate": 25.14,
         "taxRate": 0
       },
       {
         "name": "Employee #10",
         "number": 10,
-        "rate": 22.0
-      ,
+        "rate": 22.0,
         "payRate": 22.0,
         "taxRate": 0
       },
       {
         "name": "Employee #11",
         "number": 11,
-        "rate": 22.0
-      ,
+        "rate": 22.0,
         "payRate": 22.0,
         "taxRate": 0
       },
       {
         "name": "Employee #12",
         "number": 12,
-        "rate": 22.0
-      ,
+        "rate": 22.0,
         "payRate": 22.0,
         "taxRate": 0
       },
       {
         "name": "Employee #13",
         "number": 13,
-        "rate": 22.0
-      ,
+        "rate": 22.0,
         "payRate": 22.0,
         "taxRate": 0
       },
       {
         "name": "Employee #14",
         "number": 14,
-        "rate": 22.0
-      ,
+        "rate": 22.0,
         "payRate": 22.0,
         "taxRate": 0
       },
       {
         "name": "Employee #15",
         "number": 15,
-        "rate": 22.0
-      ,
+        "rate": 22.0,
         "payRate": 22.0,
         "taxRate": 0
       }
@@ -10100,7 +11713,336 @@ window.BRUNO_SEED = {
       }
     ],
     "smallTools": 0,
-    "smallToolsLines": [{"qty": 0, "description": "Safety Glasses", "supplier": "Grainger", "part": "5XN14", "unitCost": 7.12, "group": "Safety Related"}, {"qty": 0, "description": "Steel Toed Shoes", "supplier": "", "part": "", "unitCost": 100.0, "group": "Safety Related"}, {"qty": 0, "description": "Arm Sleeves", "supplier": "Grainger", "part": "KVS-2-10", "unitCost": 2.14, "group": "Safety Related"}, {"qty": 0, "description": "Safety Harness", "supplier": "United Rental", "part": "110200", "unitCost": 59.99, "group": "Safety Related"}, {"qty": 0, "description": "Extra Lanyard for Safety Harness", "supplier": "United Rental", "part": "T5111", "unitCost": 27.99, "group": "Safety Related"}, {"qty": 0, "description": "Beam Wrap for Tie Off of Safety Harness", "supplier": "United Rental", "part": "8183", "unitCost": 34.99, "group": "Safety Related"}, {"qty": 0, "description": "Gloves", "supplier": "United Rental", "part": "710Q", "unitCost": 1.69, "group": "Safety Related"}, {"qty": 0, "description": "Hard Hat", "supplier": "United Rental", "part": "818064", "unitCost": 9.99, "group": "Safety Related"}, {"qty": 0, "description": "Rubber Boots", "supplier": "Grainger", "part": "4T272", "unitCost": 19.42, "group": "Safety Related"}, {"qty": 0, "description": "High Voltage Gloves", "supplier": "Grainger", "part": "E318RB", "unitCost": 128.13, "group": "Safety Related"}, {"qty": 0, "description": "Face Shield for live voltage work", "supplier": "United Rental", "part": "SEP27900TQ", "unitCost": 11.99, "group": "Safety Related"}, {"qty": 0, "description": "Kevlar Full body Suit for live voltage work", "supplier": "", "part": "", "unitCost": 500.0, "group": "Safety Related"}, {"qty": 0, "description": "Kevlar Hood for live voltage work", "supplier": "", "part": "", "unitCost": 250.0, "group": "Safety Related"}, {"qty": 0, "description": "Yellow \"CAUTION\" tape 2\" width", "supplier": "United Rental", "part": "15992", "unitCost": 9.0, "group": "Safety Related"}, {"qty": 0, "description": "Orange Pylons for blocking off area (Typically for lift)", "supplier": "Grainger", "part": "2W697", "unitCost": 11.73, "group": "Safety Related"}, {"qty": 0, "description": "Electrical Meter for verifying electric is off (up to 600v)", "supplier": "Grainger", "part": "5XU79", "unitCost": 250.0, "group": "Safety Related"}, {"qty": 0, "description": "Circuit Tracer", "supplier": "Lowe's", "part": "93820", "unitCost": 29.75, "group": "Safety Related"}, {"qty": 0, "description": "GFCI Extension Chord Device Protector", "supplier": "", "part": "", "unitCost": 30.0, "group": "Safety Related"}, {"qty": 0, "description": "Temporary Lighting (three wire grounded system lights)", "supplier": "Grainger", "part": "323123", "unitCost": 152.5, "group": "Safety Related"}, {"qty": 0, "description": "Flood light and stand", "supplier": "Lowe's", "part": "22565", "unitCost": 54.9, "group": "Safety Related"}, {"qty": 0, "description": "Flashlight", "supplier": "Lowe's", "part": "60097", "unitCost": 6.97, "group": "Safety Related"}, {"qty": 0, "description": "Paint Suit", "supplier": "Grainger", "part": "5HH51", "unitCost": 29.4, "group": "Safety Related"}, {"qty": 0, "description": "Individual keyed locks with ID Label", "supplier": "Dickman", "part": "", "unitCost": 5.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Lock out tagout tag identified for user", "supplier": "Granger", "part": "65502", "unitCost": 50.51, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Lock out tagout hasps", "supplier": "Granger", "part": "1V177", "unitCost": 4.46, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Lock out Box (for multiple users on one area)", "supplier": "Granger", "part": "32M52", "unitCost": 51.45, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for single pole small breaker", "supplier": "Granger", "part": "3T986", "unitCost": 19.18, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for double pole small breaker", "supplier": "Granger", "part": "1D671", "unitCost": 39.53, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for three pole small breaker", "supplier": "Granger", "part": "1D671", "unitCost": 39.53, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for single pole large breaker", "supplier": "Granger", "part": "3TM25", "unitCost": 49.46, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for double pole large breaker", "supplier": "", "part": "", "unitCost": 60.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Breaker lock for three pole large breaker", "supplier": "", "part": "", "unitCost": 60.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Switch cover style switch lock (long 10X24X1 1/4\" bolts)", "supplier": "Granger", "part": "2AF98", "unitCost": 42.48, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Cord cover lock out (Small plug)", "supplier": "Granger", "part": "2AM71", "unitCost": 12.73, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Cord cover lock out (Large plug)", "supplier": "Granger", "part": "2AF60", "unitCost": 15.42, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Fiberglass Hot Stick?????Name????", "supplier": "", "part": "", "unitCost": 350.0, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Fuse Lock out Device", "supplier": "Granger", "part": "6T859", "unitCost": 44.45, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Pneumatic Lock out Device", "supplier": "Granger", "part": "32G17", "unitCost": 14.36, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Ball Valve Lock out Device", "supplier": "Granger", "part": "1D708", "unitCost": 53.41, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Gate Valve Lock out Device", "supplier": "Granger", "part": "4VJ29", "unitCost": 36.28, "group": "Lockout / Tagout"}, {"qty": 0, "description": "Burn Permit (for welding or cadwelds)", "supplier": "", "part": "", "unitCost": 1.0, "group": "Lockout / Tagout"}],
+    "smallToolsLines": [
+      {
+        "qty": 0,
+        "description": "Safety Glasses",
+        "supplier": "Grainger",
+        "part": "5XN14",
+        "unitCost": 7.12,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Steel Toed Shoes",
+        "supplier": "",
+        "part": "",
+        "unitCost": 100.0,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Arm Sleeves",
+        "supplier": "Grainger",
+        "part": "KVS-2-10",
+        "unitCost": 2.14,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Safety Harness",
+        "supplier": "United Rental",
+        "part": "110200",
+        "unitCost": 59.99,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Extra Lanyard for Safety Harness",
+        "supplier": "United Rental",
+        "part": "T5111",
+        "unitCost": 27.99,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Beam Wrap for Tie Off of Safety Harness",
+        "supplier": "United Rental",
+        "part": "8183",
+        "unitCost": 34.99,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Gloves",
+        "supplier": "United Rental",
+        "part": "710Q",
+        "unitCost": 1.69,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Hard Hat",
+        "supplier": "United Rental",
+        "part": "818064",
+        "unitCost": 9.99,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Rubber Boots",
+        "supplier": "Grainger",
+        "part": "4T272",
+        "unitCost": 19.42,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "High Voltage Gloves",
+        "supplier": "Grainger",
+        "part": "E318RB",
+        "unitCost": 128.13,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Face Shield for live voltage work",
+        "supplier": "United Rental",
+        "part": "SEP27900TQ",
+        "unitCost": 11.99,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Kevlar Full body Suit for live voltage work",
+        "supplier": "",
+        "part": "",
+        "unitCost": 500.0,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Kevlar Hood for live voltage work",
+        "supplier": "",
+        "part": "",
+        "unitCost": 250.0,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Yellow \"CAUTION\" tape 2\" width",
+        "supplier": "United Rental",
+        "part": "15992",
+        "unitCost": 9.0,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Orange Pylons for blocking off area (Typically for lift)",
+        "supplier": "Grainger",
+        "part": "2W697",
+        "unitCost": 11.73,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Electrical Meter for verifying electric is off (up to 600v)",
+        "supplier": "Grainger",
+        "part": "5XU79",
+        "unitCost": 250.0,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Circuit Tracer",
+        "supplier": "Lowe's",
+        "part": "93820",
+        "unitCost": 29.75,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "GFCI Extension Chord Device Protector",
+        "supplier": "",
+        "part": "",
+        "unitCost": 30.0,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Temporary Lighting (three wire grounded system lights)",
+        "supplier": "Grainger",
+        "part": "323123",
+        "unitCost": 152.5,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Flood light and stand",
+        "supplier": "Lowe's",
+        "part": "22565",
+        "unitCost": 54.9,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Flashlight",
+        "supplier": "Lowe's",
+        "part": "60097",
+        "unitCost": 6.97,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Paint Suit",
+        "supplier": "Grainger",
+        "part": "5HH51",
+        "unitCost": 29.4,
+        "group": "Safety Related"
+      },
+      {
+        "qty": 0,
+        "description": "Individual keyed locks with ID Label",
+        "supplier": "Dickman",
+        "part": "",
+        "unitCost": 5.0,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Lock out tagout tag identified for user",
+        "supplier": "Granger",
+        "part": "65502",
+        "unitCost": 50.51,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Lock out tagout hasps",
+        "supplier": "Granger",
+        "part": "1V177",
+        "unitCost": 4.46,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Lock out Box (for multiple users on one area)",
+        "supplier": "Granger",
+        "part": "32M52",
+        "unitCost": 51.45,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Breaker lock for single pole small breaker",
+        "supplier": "Granger",
+        "part": "3T986",
+        "unitCost": 19.18,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Breaker lock for double pole small breaker",
+        "supplier": "Granger",
+        "part": "1D671",
+        "unitCost": 39.53,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Breaker lock for three pole small breaker",
+        "supplier": "Granger",
+        "part": "1D671",
+        "unitCost": 39.53,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Breaker lock for single pole large breaker",
+        "supplier": "Granger",
+        "part": "3TM25",
+        "unitCost": 49.46,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Breaker lock for double pole large breaker",
+        "supplier": "",
+        "part": "",
+        "unitCost": 60.0,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Breaker lock for three pole large breaker",
+        "supplier": "",
+        "part": "",
+        "unitCost": 60.0,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Switch cover style switch lock (long 10X24X1 1/4\" bolts)",
+        "supplier": "Granger",
+        "part": "2AF98",
+        "unitCost": 42.48,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Cord cover lock out (Small plug)",
+        "supplier": "Granger",
+        "part": "2AM71",
+        "unitCost": 12.73,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Cord cover lock out (Large plug)",
+        "supplier": "Granger",
+        "part": "2AF60",
+        "unitCost": 15.42,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Fiberglass Hot Stick?????Name????",
+        "supplier": "",
+        "part": "",
+        "unitCost": 350.0,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Fuse Lock out Device",
+        "supplier": "Granger",
+        "part": "6T859",
+        "unitCost": 44.45,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Pneumatic Lock out Device",
+        "supplier": "Granger",
+        "part": "32G17",
+        "unitCost": 14.36,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Ball Valve Lock out Device",
+        "supplier": "Granger",
+        "part": "1D708",
+        "unitCost": 53.41,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Gate Valve Lock out Device",
+        "supplier": "Granger",
+        "part": "4VJ29",
+        "unitCost": 36.28,
+        "group": "Lockout / Tagout"
+      },
+      {
+        "qty": 0,
+        "description": "Burn Permit (for welding or cadwelds)",
+        "supplier": "",
+        "part": "",
+        "unitCost": 1.0,
+        "group": "Lockout / Tagout"
+      }
+    ],
     "subcontractors": [],
     "estimationHours": 0,
     "blocks": [
@@ -10745,6 +12687,58 @@ window.BRUNO_SEED = {
         if (row.taxRate < 0) row.taxRate = 0;
         if (row.taxRate > 100) row.taxRate = 100;
       }
+    }
+    // Merge new seed catalog rows (e.g. lighting) into saved jobs without wiping custom prices.
+    if (!Array.isArray(s.catalog)) s.catalog = [];
+    try {
+      var seedCat = (window.BRUNO_SEED && window.BRUNO_SEED.catalog) || [];
+      if (seedCat.length) {
+        var have = {};
+        for (i = 0; i < s.catalog.length; i++) {
+          row = s.catalog[i];
+          if (!row) continue;
+          if (row.id) have['id:' + row.id] = true;
+          if (row.item) have['item:' + String(row.item).toLowerCase()] = true;
+        }
+        var added = 0;
+        for (i = 0; i < seedCat.length; i++) {
+          row = seedCat[i];
+          if (!row || !row.item) continue;
+          var idKey = row.id ? ('id:' + row.id) : '';
+          var itemKey = 'item:' + String(row.item).toLowerCase();
+          if ((idKey && have[idKey]) || have[itemKey]) continue;
+          s.catalog.push({
+            id: row.id || ('c-m-' + Date.now() + '-' + i),
+            item: String(row.item),
+            part: row.part != null ? String(row.part) : '',
+            vendor: row.vendor != null ? String(row.vendor) : '-',
+            units: row.units != null ? String(row.units) : 'EA',
+            unitCost: asNum(row.unitCost),
+            crew: asNum(row.crew) || 1,
+            prod: asNum(row.prod),
+            prodUnit: row.prodUnit != null ? String(row.prodUnit) : 'EA'
+          });
+          if (idKey) have[idKey] = true;
+          have[itemKey] = true;
+          added++;
+        }
+        if (added) {
+          try { console.info('[Bruno] catalog merge +' + added + ' (now ' + s.catalog.length + ')'); } catch (e0) {}
+        }
+      }
+    } catch (eMerge) {
+      try { console.error('[Bruno] catalog merge', eMerge); } catch (e1) {}
+    }
+    for (i = 0; i < s.catalog.length; i++) {
+      row = s.catalog[i];
+      if (!row || typeof row !== 'object') continue;
+      row.unitCost = asNum(row.unitCost);
+      row.crew = asNum(row.crew) || 1;
+      row.prod = asNum(row.prod);
+      if (row.item == null) row.item = '';
+      if (row.part == null) row.part = '';
+      if (row.vendor == null) row.vendor = '-';
+      if (row.units == null || row.units === '') row.units = 'EA';
     }
     return s;
   }
@@ -12537,7 +14531,7 @@ window.BRUNO_SEED = {
       '<p class="fine">Jurisdiction: ' + esc(js.jurisdiction || '') +
         ' · NEC ' + esc(js.necEdition || '') +
         ' (informational — this quote is not auto-recalculated for a different NEC edition).' +
-        '<br>' + esc(companyDisplayName(c)) + ' · v1.5</p>';
+        '<br>' + esc(companyDisplayName(c)) + ' · v1.6</p>';
 
     var pq = document.getElementById('print-quote');
     if (pq) pq.innerHTML = quoteHtml;
@@ -12859,7 +14853,7 @@ window.BRUNO_SEED = {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.5';
+    if (badge && ship) badge.textContent = 'v1.6';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');

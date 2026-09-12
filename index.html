@@ -1308,6 +1308,7 @@ html[data-theme="light"] .panel {
     <button type="button" class="nav-tab active" data-tab="quote" aria-selected="true">Quote</button>
     <button type="button" class="nav-tab" data-tab="materials">Job materials</button>
     <button type="button" class="nav-tab" data-tab="catalog">Catalog</button>
+    <button type="button" class="nav-tab" data-tab="margins">Margins</button>
     <button type="button" class="nav-tab" data-tab="labor">Labor &amp; Equip</button>
     <button type="button" class="nav-tab" data-tab="summary">Summary</button>
     <button type="button" class="nav-tab" data-tab="cos">Change Orders</button>
@@ -1537,6 +1538,44 @@ html[data-theme="light"] .panel {
     </section>
 
     <!-- LABOR & EQUIP -->
+    
+    <section class="panel" id="panel-margins" role="tabpanel">
+      <div class="panel-head">
+        <h2>Margins</h2>
+        <span class="hint">Informational · quotes still use Customer price only</span>
+      </div>
+      <p class="section-help"><strong>Customer price</strong> = shop / quote price (feeds Job materials &amp; Method A). <strong>Your cost</strong> = what you pay after supplier discount (custom $ or % off customer price). If both match, margin is $0 / 0%. This tab does <strong>not</strong> change Quote Total.</p>
+      <div class="chip-row" id="margins-chips" style="margin:.75rem 0;display:flex;flex-wrap:wrap;gap:.5rem">
+        <div class="chip"><span class="k">Catalog customer $</span><strong id="mrg-cust-sum">$0</strong></div>
+        <div class="chip"><span class="k">Your cost $</span><strong id="mrg-cost-sum">$0</strong></div>
+        <div class="chip"><span class="k">Margin $</span><strong id="mrg-diff-sum">$0</strong></div>
+        <div class="chip"><span class="k">Margin %</span><strong id="mrg-pct-sum">0%</strong></div>
+      </div>
+      <div class="grid-2" style="margin-bottom:.75rem;align-items:end">
+        <div class="field"><label>Bulk discount % off customer → your cost</label>
+          <input type="number" id="mrg-bulk-pct" class="num" step="0.1" min="0" max="100" placeholder="e.g. 15" />
+        </div>
+        <div>
+          <button type="button" class="btn btn-sm" id="mrg-apply-bulk">Apply % to filtered rows</button>
+          <button type="button" class="btn btn-sm" id="mrg-cost-eq-cust" title="Set your cost = customer price">Zero margins</button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:.5rem"><label>Filter</label><input type="search" id="mrg-search" placeholder="Search catalog…" /></div>
+      <div class="table-wrap" style="max-height:60vh;overflow:auto">
+        <table class="data" id="margins-table">
+          <thead><tr>
+            <th>Description</th><th>Part</th>
+            <th class="col-cost">Customer $</th>
+            <th class="col-cost">Disc %</th>
+            <th class="col-cost">Your cost $</th>
+            <th class="col-cost">Margin $</th>
+            <th class="col-cost">Margin %</th>
+          </tr></thead>
+          <tbody id="margins-body"></tbody>
+        </table>
+      </div>
+    </section>
+
     <section class="panel" id="panel-labor" role="tabpanel">
       <div class="panel-head">
         <h2>Labor &amp; Equip</h2>
@@ -1544,7 +1583,9 @@ html[data-theme="light"] .panel {
       </div>
       <p class="section-help"><strong>Costs that feed Summary:</strong> Equipment rows, <strong>small tools line items</strong> (qty × unit cost, summed into Equip Cost), subcontractors, and labor blocks (burden rates come from Workers). Suggested hours from materials are informational.</p>
       <div class="card">
-        <h3>Equipment / other costs</h3>
+        <h3>Margins</h3>
+      <p><strong>Customer price</strong> (shop) is used in all quote / Method A math. <strong>Your cost</strong> is what you pay (custom $ or % off customer). The Margins tab shows $ and % difference only — it does not change Quote Total. Equal prices → $0 / 0%.</p>
+      <h3>Equipment / other costs</h3>
         <div class="toolbar">
           <button type="button" class="btn btn-sm btn-primary" id="equip-add">+ Add equipment</button>
         </div>
@@ -12840,7 +12881,47 @@ window.BRUNO_SEED = {
   }
 
   
-  function catalogPricesKey() {
+  
+  function catalogCostsKey() {
+    try {
+      var k = String((typeof BRAND !== 'undefined' && BRAND.storage && BRAND.storage.job) || 'bruno-job-v1');
+      return k.replace(/-v\d+$/, '') + '-catalog-costs-v1';
+    } catch (e) { return 'bruno-catalog-costs-v1'; }
+  }
+  function loadCatalogCostMap() {
+    try {
+      var raw = localStorage.getItem(catalogCostsKey());
+      if (!raw) return {};
+      var o = JSON.parse(raw);
+      return o && typeof o === 'object' && !Array.isArray(o) ? o : {};
+    } catch (e) { return {}; }
+  }
+  function saveCatalogCostMapFromState() {
+    try {
+      var cat = (state && state.catalog) || [];
+      var map = {};
+      for (var i = 0; i < cat.length; i++) {
+        if (cat[i] && cat[i].id != null && cat[i].yourCost != null && cat[i].yourCost !== '') {
+          map[String(cat[i].id)] = Number(cat[i].yourCost) || 0;
+        }
+      }
+      localStorage.setItem(catalogCostsKey(), JSON.stringify(map));
+    } catch (e) {}
+  }
+  function applyCatalogCostMap(s) {
+    if (!s || !Array.isArray(s.catalog)) return s;
+    var map = loadCatalogCostMap();
+    for (var i = 0; i < s.catalog.length; i++) {
+      var row = s.catalog[i];
+      if (!row || row.id == null) continue;
+      var id = String(row.id);
+      if (Object.prototype.hasOwnProperty.call(map, id)) row.yourCost = Number(map[id]) || 0;
+      else if (row.yourCost == null || row.yourCost === '') row.yourCost = Number(row.unitCost) || 0;
+    }
+    return s;
+  }
+
+function catalogPricesKey() {
     try {
       var k = String((typeof BRAND !== 'undefined' && BRAND.storage && BRAND.storage.job) || 'bruno-job-v1');
       return k.replace(/-v\d+$/, '') + '-catalog-prices-v1';
@@ -13006,6 +13087,7 @@ function normalizeState(s) {
     // Merge new seed catalog rows (e.g. lighting) into saved jobs without wiping custom prices.
     if (!Array.isArray(s.catalog)) s.catalog = [];
     applyCatalogPriceMap(s);
+    applyCatalogCostMap(s);
     try {
       var seedCat = (window.BRUNO_SEED && window.BRUNO_SEED.catalog) || [];
       if (seedCat.length) {
@@ -13669,7 +13751,7 @@ function normalizeState(s) {
       var m = rows[i];
       var grp = m.group || '';
       if (grp && grp !== lastGroup) {
-        html += '<tr class="st-group"><td colspan="7">' + esc(grp) + '</td></tr>';
+        html += '<tr class="st-group"><td colspan="8">' + esc(grp) + '</td></tr>';
         lastGroup = grp;
       }
       var ext = smallToolsLineExt(m);
@@ -13683,7 +13765,7 @@ function normalizeState(s) {
         '<td class="col-actions"><button type="button" class="btn btn-sm btn-danger st-del" title="Remove">×</button></td>' +
         '</tr>';
     }
-    tbody.innerHTML = html || '<tr><td colspan="7" style="color:var(--text-muted);padding:1rem">No small-tool lines — Restore safety list or + Add line</td></tr>';
+    tbody.innerHTML = html || '<tr><td colspan="8" style="color:var(--text-muted);padding:1rem">No small-tool lines — Restore safety list or + Add line</td></tr>';
   }
 
   function renderSubs() {
@@ -13983,7 +14065,9 @@ function normalizeState(s) {
       var cs = document.getElementById('cat-search');
       renderCatalog(cs ? cs.value : '');
     }
-  }
+  
+    if (name === 'margins' && typeof renderMargins === 'function') { try { setupMargins(); renderMargins(); } catch (e) {} }
+}
 
   function setupTabs() {
     var nav = document.getElementById('nav-tabs');
@@ -14178,7 +14262,7 @@ function normalizeState(s) {
         html += '<div class="table-wrap"><table class="data"><thead><tr>';
         html += '<th style="width:2.2rem" title="On this job">✓</th>';
         html += '<th>Description</th><th>Part #</th><th>Vendor</th><th>Units</th>';
-        html += '<th class="col-cost">Unit price</th><th class="col-actions">Add</th>';
+        html += '<th class="col-cost">Customer $</th><th class="col-cost">Your cost $</th><th class="col-actions">Add</th>';
         html += '</tr></thead><tbody>';
         var limit = 120;
         var shown = 0;
@@ -14199,13 +14283,14 @@ function normalizeState(s) {
           html += '<td>' + esc(c.part) + '</td>';
           html += '<td>' + esc(c.vendor) + '</td>';
           html += '<td>' + esc(c.units) + '</td>';
-          html += '<td class="col-cost"><input type="number" class="num cat-cost" step="0.01" min="0" data-id="' + esc(c.id) + '" value="' + (Number(c.unitCost) || 0) + '" title="Edit catalog unit price (saved on this device)" aria-label="Catalog unit price" /></td>';
+          html += '<td class="col-cost"><input type="number" class="num cat-cost" step="0.01" min="0" data-id="' + esc(c.id) + '" value="' + (Number(c.unitCost) || 0) + '" title="Customer / shop price (used in quotes)" aria-label="Customer price" /></td>';
+          html += '<td class="col-cost"><input type="number" class="num cat-your" step="0.01" min="0" data-id="' + esc(c.id) + '" value="' + (c.yourCost != null && c.yourCost !== '' ? (Number(c.yourCost) || 0) : (Number(c.unitCost) || 0)) + '" title="Your cost after supplier discount" aria-label="Your cost" /></td>';
           html += '<td class="col-actions"><button type="button" class="btn btn-sm btn-primary cat-add" data-id="' + esc(c.id) + '" title="Add to job">+</button></td>';
           html += '</tr>';
           shown++;
         }
         if (sorted.length > limit) {
-          html += '<tr><td colspan="7" style="color:var(--text-muted)">Showing ' + limit + ' of ' + sorted.length + ' — refine search</td></tr>';
+          html += '<tr><td colspan="8" style="color:var(--text-muted)">Showing ' + limit + ' of ' + sorted.length + ' — refine search</td></tr>';
         }
         html += '</tbody></table></div>';
       }
@@ -14687,13 +14772,34 @@ function normalizeState(s) {
         }
         localStorage.setItem(catalogPricesKey(), JSON.stringify(priceMap));
       } catch (errPrices) {}
+      saveCatalogCostMapFromState();
       save();
+      if (typeof renderMargins === 'function') renderMargins();
+    }
+    function applyCatalogYourCost(inputEl) {
+      if (!inputEl || !inputEl.classList.contains('cat-your')) return;
+      var cid = inputEl.getAttribute('data-id');
+      var price = parseFloat(inputEl.value);
+      if (!isFinite(price) || price < 0) price = 0;
+      inputEl.value = price;
+      var cat = (state && state.catalog) || [];
+      for (var ci = 0; ci < cat.length; ci++) {
+        if (String(cat[ci].id) === String(cid)) {
+          cat[ci].yourCost = price;
+          break;
+        }
+      }
+      saveCatalogCostMapFromState();
+      save();
+      if (typeof renderMargins === 'function') renderMargins();
     }
     on('cat-groups', 'change', function (e) {
       if (e.target && e.target.classList.contains('cat-cost')) applyCatalogUnitPrice(e.target);
+      if (e.target && e.target.classList.contains('cat-your')) applyCatalogYourCost(e.target);
     });
     on('cat-groups', 'input', function (e) {
       if (e.target && e.target.classList.contains('cat-cost')) applyCatalogUnitPrice(e.target);
+      if (e.target && e.target.classList.contains('cat-your')) applyCatalogYourCost(e.target);
     });
     on('cat-groups', 'click', function (e) {
       var btn = e.target.closest('.cat-add');
@@ -15141,6 +15247,7 @@ function normalizeState(s) {
   }
 
   function softRefresh() {
+    try { if (document.getElementById('panel-margins') && document.getElementById('panel-margins').classList.contains('active')) renderMargins(); } catch (eM2) {}
     var calc = calcAll(state);
     updateChips(calc);
     renderPnL(calc);
@@ -15166,7 +15273,128 @@ function normalizeState(s) {
     renderCatalogFixed(_cs ? _cs.value : '');
   }
 
+  
+  function catalogDiscPct(c) {
+    var cust = Number(c.unitCost) || 0;
+    var yours = (c.yourCost != null && c.yourCost !== '') ? (Number(c.yourCost) || 0) : cust;
+    if (cust <= 0) return 0;
+    return ((cust - yours) / cust) * 100;
+  }
+  function renderMargins(filter) {
+    var body = document.getElementById('margins-body');
+    if (!body) return;
+    var q = (filter != null ? filter : ((document.getElementById('mrg-search') || {}).value || '')).toLowerCase().trim();
+    var cat = (state && state.catalog) || [];
+    var html = '';
+    var sumCust = 0, sumCost = 0, n = 0;
+    for (var i = 0; i < cat.length; i++) {
+      var c = cat[i];
+      if (!c) continue;
+      var hay = ((c.item || '') + ' ' + (c.part || '') + ' ' + (c.vendor || '')).toLowerCase();
+      if (q && hay.indexOf(q) < 0) continue;
+      var cust = Number(c.unitCost) || 0;
+      var yours = (c.yourCost != null && c.yourCost !== '') ? (Number(c.yourCost) || 0) : cust;
+      var diff = cust - yours;
+      var pct = cust > 0 ? (diff / cust) * 100 : 0;
+      sumCust += cust; sumCost += yours; n++;
+      html += '<tr data-id="' + esc(c.id) + '">';
+      html += '<td>' + esc(c.item) + '</td><td>' + esc(c.part) + '</td>';
+      html += '<td class="col-cost"><input type="number" class="num mrg-cust" step="0.01" min="0" value="' + cust + '" /></td>';
+      html += '<td class="col-cost"><input type="number" class="num mrg-pct" step="0.1" min="0" max="100" value="' + (Math.round(pct * 10) / 10) + '" title="% off customer → your cost" /></td>';
+      html += '<td class="col-cost"><input type="number" class="num mrg-your" step="0.01" min="0" value="' + yours + '" /></td>';
+      html += '<td class="num-cell">' + money(diff) + '</td>';
+      html += '<td class="num-cell">' + (Math.round(pct * 10) / 10) + '%</td>';
+      html += '</tr>';
+    }
+    body.innerHTML = html || '<tr><td colspan="7" style="color:var(--text-muted)">No catalog rows</td></tr>';
+    var diffSum = sumCust - sumCost;
+    var pctSum = sumCust > 0 ? (diffSum / sumCust) * 100 : 0;
+    var el;
+    el = document.getElementById('mrg-cust-sum'); if (el) el.textContent = money(sumCust);
+    el = document.getElementById('mrg-cost-sum'); if (el) el.textContent = money(sumCost);
+    el = document.getElementById('mrg-diff-sum'); if (el) el.textContent = money(diffSum);
+    el = document.getElementById('mrg-pct-sum'); if (el) el.textContent = (Math.round(pctSum * 10) / 10) + '%';
+  }
+  function setupMargins() {
+    var body = document.getElementById('margins-body');
+    if (!body || body.getAttribute('data-bound')) return;
+    body.setAttribute('data-bound', '1');
+    body.addEventListener('input', function (e) {
+      var tr = e.target.closest('tr[data-id]');
+      if (!tr) return;
+      var id = tr.getAttribute('data-id');
+      var cat = (state && state.catalog) || [];
+      var row = null;
+      for (var i = 0; i < cat.length; i++) if (String(cat[i].id) === String(id)) { row = cat[i]; break; }
+      if (!row) return;
+      if (e.target.classList.contains('mrg-cust')) {
+        row.unitCost = Math.max(0, parseFloat(e.target.value) || 0);
+        try {
+          var priceMap = {};
+          for (var ci = 0; ci < cat.length; ci++) if (cat[ci] && cat[ci].id != null) priceMap[String(cat[ci].id)] = Number(cat[ci].unitCost) || 0;
+          localStorage.setItem(catalogPricesKey(), JSON.stringify(priceMap));
+        } catch (err1) {}
+      } else if (e.target.classList.contains('mrg-your')) {
+        row.yourCost = Math.max(0, parseFloat(e.target.value) || 0);
+        saveCatalogCostMapFromState();
+      } else if (e.target.classList.contains('mrg-pct')) {
+        var cust = Number(row.unitCost) || 0;
+        var pct = Math.max(0, Math.min(100, parseFloat(e.target.value) || 0));
+        row.yourCost = Math.round(cust * (1 - pct / 100) * 100) / 100;
+        saveCatalogCostMapFromState();
+      }
+      // sync job materials customer price if same id
+      if (e.target.classList.contains('mrg-cust')) {
+        var mats = (state && state.materialsUsed) || [];
+        for (var mi = 0; mi < mats.length; mi++) {
+          if (String(mats[mi].id) === String(id) || String(mats[mi].catalogId || '') === String(id)) mats[mi].unitCost = row.unitCost;
+        }
+      }
+      save();
+      renderMargins(document.getElementById('mrg-search') && document.getElementById('mrg-search').value);
+      if (typeof renderCatalogFixed === 'function') {
+        var cs = document.getElementById('cat-search');
+        renderCatalogFixed(cs ? cs.value : '');
+      }
+      if (typeof softRefresh === 'function') softRefresh();
+      else if (typeof updateChips === 'function') { try { updateChips(calcAll(state)); } catch (e2) {} }
+    });
+    var search = document.getElementById('mrg-search');
+    if (search) search.addEventListener('input', function () { renderMargins(this.value); });
+    var bulk = document.getElementById('mrg-apply-bulk');
+    if (bulk) bulk.addEventListener('click', function () {
+      var pct = parseFloat((document.getElementById('mrg-bulk-pct') || {}).value);
+      if (!isFinite(pct)) return;
+      pct = Math.max(0, Math.min(100, pct));
+      var q = ((document.getElementById('mrg-search') || {}).value || '').toLowerCase().trim();
+      var cat = (state && state.catalog) || [];
+      for (var i = 0; i < cat.length; i++) {
+        var c = cat[i];
+        if (!c) continue;
+        var hay = ((c.item || '') + ' ' + (c.part || '')).toLowerCase();
+        if (q && hay.indexOf(q) < 0) continue;
+        var cust = Number(c.unitCost) || 0;
+        c.yourCost = Math.round(cust * (1 - pct / 100) * 100) / 100;
+      }
+      saveCatalogCostMapFromState();
+      save();
+      renderMargins(q);
+      toast('Applied ' + pct + '% discount to your cost');
+    });
+    var z = document.getElementById('mrg-cost-eq-cust');
+    if (z) z.addEventListener('click', function () {
+      var cat = (state && state.catalog) || [];
+      for (var i = 0; i < cat.length; i++) if (cat[i]) cat[i].yourCost = Number(cat[i].unitCost) || 0;
+      saveCatalogCostMapFromState();
+      save();
+      renderMargins((document.getElementById('mrg-search') || {}).value || '');
+      toast('Your cost = customer price (0% margin)');
+    });
+  }
+
+
   function renderAll() {
+    try { setupMargins(); renderMargins(); } catch (eM) {}
     _rendering = false;
     bindAll();
     refresh();
@@ -15284,7 +15512,7 @@ function normalizeState(s) {
         '<td class="col-actions"><button type="button" class="btn btn-sm btn-danger co-del" title="Remove">×</button></td>' +
         '</tr>';
     }
-    tbody.innerHTML = html || '<tr><td colspan="7" style="color:var(--text-muted);padding:1rem">No change orders. Add a CO — only <strong>approved</strong> ones enter Quote Total.</td></tr>';
+    tbody.innerHTML = html || '<tr><td colspan="8" style="color:var(--text-muted);padding:1rem">No change orders. Add a CO — only <strong>approved</strong> ones enter Quote Total.</td></tr>';
     var qsum = document.getElementById('co-quote-summary');
     if (qsum) {
       var calc = calcAll(state);

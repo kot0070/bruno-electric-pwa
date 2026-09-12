@@ -1245,12 +1245,35 @@ html[data-theme="light"] .panel {
   cursor: pointer;
 }
 .ui-prefs-fab:hover { background: var(--btn-hover-bg); }
-@media (max-width: 767.98px) {
+/* Phones: portrait OR landscape (short height) — collapse Theme/Zoom behind FAB */
+@media (max-width: 767.98px), (orientation: landscape) and (max-height: 560px) {
   .ui-prefs:not(.is-open) .ui-prefs-panel { display: none; }
   .ui-prefs:not(.is-open) .ui-prefs-fab { display: inline-flex; align-items: center; justify-content: center; }
   .ui-prefs.is-open .ui-prefs-fab { display: none; }
-  .ui-prefs.is-open .ui-prefs-panel { display: flex; margin-bottom: 0.35rem; }
+  .ui-prefs.is-open .ui-prefs-panel { display: flex; margin-bottom: 0.35rem; position: relative; padding-top: 2rem; }
+  .ui-prefs-close { display: inline-flex !important; }
 }
+.ui-prefs-close {
+  display: none;
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  border-radius: 8px;
+  min-width: 36px;
+  min-height: 36px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  z-index: 1;
+}
+.ui-prefs-close:hover { background: var(--btn-hover-bg); }
 @media print {
   .ui-prefs { display: none !important; }
   html { font-size: 15px !important; }
@@ -2154,6 +2177,7 @@ html[data-theme="light"] .panel {
   <div class="ui-prefs no-print" id="ui-prefs" aria-label="Theme and zoom">
     <button type="button" class="ui-prefs-fab" id="ui-prefs-fab" aria-expanded="false" aria-controls="ui-prefs-panel" title="Theme &amp; zoom">Aa</button>
     <div class="ui-prefs-panel" id="ui-prefs-panel">
+      <button type="button" class="ui-prefs-close" id="ui-prefs-close" title="Close" aria-label="Close theme and zoom">×</button>
       <button type="button" class="ui-prefs-btn ui-prefs-theme" id="ui-prefs-theme" title="Toggle theme" aria-label="Toggle theme">
         <span class="ico" id="ui-prefs-theme-ico" aria-hidden="true">🌙</span>
         <span id="ui-prefs-theme-label">Theme: Dark</span>
@@ -12556,16 +12580,48 @@ window.BRUNO_SEED = {
         saveUiPrefs(prefs);
       });
     }
+    function closeUiPrefsPanel() {
+      if (!cluster || !fab) return;
+      cluster.classList.remove('is-open');
+      fab.setAttribute('aria-expanded', 'false');
+    }
+    function openUiPrefsPanel() {
+      if (!cluster || !fab) return;
+      cluster.classList.add('is-open');
+      fab.setAttribute('aria-expanded', 'true');
+    }
     if (fab && cluster) {
-      fab.addEventListener('click', function () {
-        cluster.classList.add('is-open');
-        fab.setAttribute('aria-expanded', 'true');
+      fab.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        openUiPrefsPanel();
       });
-      document.addEventListener('click', function (ev) {
+      var closeBtn = document.getElementById('ui-prefs-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function (ev) {
+          ev.stopPropagation();
+          closeUiPrefsPanel();
+        });
+      }
+      // pointerdown catches taps that may not fire as click after rotate / scroll
+      document.addEventListener('pointerdown', function (ev) {
         if (!cluster.classList.contains('is-open')) return;
         if (cluster.contains(ev.target)) return;
-        cluster.classList.remove('is-open');
-        fab.setAttribute('aria-expanded', 'false');
+        closeUiPrefsPanel();
+      }, true);
+      document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape') closeUiPrefsPanel();
+      });
+      // Leaving short landscape for tall desktop: keep panel collapsible state sane
+      window.addEventListener('orientationchange', function () {
+        closeUiPrefsPanel();
+      });
+      window.addEventListener('resize', function () {
+        // If FAB mode no longer applies (wide + tall desktop), leave panel visible without is-open
+        try {
+          var shortLandscape = window.matchMedia('(orientation: landscape) and (max-height: 560px)').matches;
+          var narrow = window.matchMedia('(max-width: 767.98px)').matches;
+          if (!shortLandscape && !narrow) closeUiPrefsPanel();
+        } catch (e) {}
       });
     }
   }

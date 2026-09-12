@@ -1519,7 +1519,7 @@ html[data-theme="light"] .panel {
         <h2>Catalog</h2>
         <span class="hint">full materials list · search · add to this job</span>
       </div>
-      <p class="section-help"><strong>General materials list:</strong> Search by description / part / vendor (try <em>LED</em>, <em>lamp</em>, <em>fixture</em>). Grouped into collapsible categories (badge = used on job / total). <strong>Add to job</strong> copies a line to <strong>Job materials</strong> with Qty 1 — edit Qty and Unit price there. Some lighting lines ship at $0 until you set a price. Catalog is kept on blank job.</p>
+      <p class="section-help"><strong>General materials list:</strong> Search by description / part / vendor (try <em>LED</em>, <em>lamp</em>, <em>fixture</em>). Grouped into collapsible categories (badge = used on job / total). <strong>Add to job</strong> copies a line to <strong>Job materials</strong> with Qty 1 — edit Unit price in Catalog (saved on device) or Qty/Unit price on Job materials. Some lighting lines ship at $0 until you set a price. Catalog is kept on blank job.</p>
       <div class="card">
         <h3>Materials catalog <span class="sub">categories · search · add to job</span></h3>
         <div class="toolbar" style="flex-wrap:wrap;gap:.4rem">
@@ -14170,7 +14170,7 @@ window.BRUNO_SEED = {
           html += '<td>' + esc(c.part) + '</td>';
           html += '<td>' + esc(c.vendor) + '</td>';
           html += '<td>' + esc(c.units) + '</td>';
-          html += '<td class="num-cell">' + money(c.unitCost) + '</td>';
+          html += '<td class="col-cost"><input type="number" class="num cat-cost" step="0.01" min="0" data-id="' + esc(c.id) + '" value="' + (Number(c.unitCost) || 0) + '" title="Edit catalog unit price (saved on this device)" aria-label="Catalog unit price" /></td>';
           html += '<td class="col-actions"><button type="button" class="btn btn-sm btn-primary cat-add" data-id="' + esc(c.id) + '" title="Add to job">+</button></td>';
           html += '</tr>';
           shown++;
@@ -14629,6 +14629,32 @@ window.BRUNO_SEED = {
     });
 
     on('cat-groups', 'click', function (e) {
+      if (e.target.classList.contains('cat-cost')) {
+        var cid = e.target.getAttribute('data-id');
+        var price = parseFloat(e.target.value);
+        if (!isFinite(price) || price < 0) price = 0;
+        e.target.value = price;
+        var stamp = new Date().toISOString().slice(0, 10);
+        var cat = (state && state.catalog) || [];
+        var ci;
+        for (ci = 0; ci < cat.length; ci++) {
+          if (String(cat[ci].id) === String(cid)) {
+            cat[ci].unitCost = price;
+            cat[ci].priceUpdated = stamp;
+            break;
+          }
+        }
+        var mats = (state && state.materialsUsed) || [];
+        for (var mi = 0; mi < mats.length; mi++) {
+          if (String(mats[mi].id) === String(cid)) {
+            mats[mi].unitCost = price;
+            mats[mi].priceUpdated = stamp;
+          }
+        }
+        saveState();
+        renderAll();
+        return;
+      }
       var btn = e.target.closest('.cat-add');
       if (!btn) return;
       e.preventDefault();

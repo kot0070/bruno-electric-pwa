@@ -12839,7 +12839,35 @@ window.BRUNO_SEED = {
     return toISODate(d);
   }
 
-  function normalizeState(s) {
+  
+  function catalogPricesKey() {
+    try {
+      var k = String((typeof BRAND !== 'undefined' && BRAND.storage && BRAND.storage.job) || 'bruno-job-v1');
+      return k.replace(/-v\d+$/, '') + '-catalog-prices-v1';
+    } catch (e) { return 'bruno-catalog-prices-v1'; }
+  }
+  function loadCatalogPriceMap() {
+    try {
+      var raw = localStorage.getItem(catalogPricesKey());
+      if (!raw) return {};
+      var o = JSON.parse(raw);
+      return o && typeof o === 'object' && !Array.isArray(o) ? o : {};
+    } catch (e) { return {}; }
+  }
+  function applyCatalogPriceMap(s) {
+    if (!s || !Array.isArray(s.catalog)) return s;
+    var map = loadCatalogPriceMap();
+    var i, id, row;
+    for (i = 0; i < s.catalog.length; i++) {
+      row = s.catalog[i];
+      if (!row || row.id == null) continue;
+      id = String(row.id);
+      if (Object.prototype.hasOwnProperty.call(map, id)) row.unitCost = Number(map[id]) || 0;
+    }
+    return s;
+  }
+
+function normalizeState(s) {
     if (!s || typeof s !== 'object' || Array.isArray(s)) s = {};
     if (!s.tm) s.tm = {};
     if (!Array.isArray(s.tm.equipmentLines)) s.tm.equipmentLines = [];
@@ -12977,6 +13005,7 @@ window.BRUNO_SEED = {
     }
     // Merge new seed catalog rows (e.g. lighting) into saved jobs without wiping custom prices.
     if (!Array.isArray(s.catalog)) s.catalog = [];
+    applyCatalogPriceMap(s);
     try {
       var seedCat = (window.BRUNO_SEED && window.BRUNO_SEED.catalog) || [];
       if (seedCat.length) {
@@ -14628,33 +14657,45 @@ window.BRUNO_SEED = {
       renderCatalog(cs ? cs.value : '');
     });
 
-    on('cat-groups', 'click', function (e) {
-      if (e.target.classList.contains('cat-cost')) {
-        var cid = e.target.getAttribute('data-id');
-        var price = parseFloat(e.target.value);
-        if (!isFinite(price) || price < 0) price = 0;
-        e.target.value = price;
-        var stamp = new Date().toISOString().slice(0, 10);
-        var cat = (state && state.catalog) || [];
-        var ci;
-        for (ci = 0; ci < cat.length; ci++) {
-          if (String(cat[ci].id) === String(cid)) {
-            cat[ci].unitCost = price;
-            cat[ci].priceUpdated = stamp;
-            break;
-          }
+    function applyCatalogUnitPrice(inputEl) {
+      if (!inputEl || !inputEl.classList.contains('cat-cost')) return;
+      var cid = inputEl.getAttribute('data-id');
+      var price = parseFloat(inputEl.value);
+      if (!isFinite(price) || price < 0) price = 0;
+      inputEl.value = price;
+      var stamp = new Date().toISOString().slice(0, 10);
+      var cat = (state && state.catalog) || [];
+      var ci;
+      for (ci = 0; ci < cat.length; ci++) {
+        if (String(cat[ci].id) === String(cid)) {
+          cat[ci].unitCost = price;
+          cat[ci].priceUpdated = stamp;
+          break;
         }
-        var mats = (state && state.materialsUsed) || [];
-        for (var mi = 0; mi < mats.length; mi++) {
-          if (String(mats[mi].id) === String(cid)) {
-            mats[mi].unitCost = price;
-            mats[mi].priceUpdated = stamp;
-          }
-        }
-        saveState();
-        renderAll();
-        return;
       }
+      var mats = (state && state.materialsUsed) || [];
+      for (var mi = 0; mi < mats.length; mi++) {
+        if (String(mats[mi].id) === String(cid) || String(mats[mi].catalogId || '') === String(cid)) {
+          mats[mi].unitCost = price;
+          mats[mi].priceUpdated = stamp;
+        }
+      }
+      try {
+        var priceMap = {};
+        for (ci = 0; ci < cat.length; ci++) {
+          if (cat[ci] && cat[ci].id != null) priceMap[String(cat[ci].id)] = Number(cat[ci].unitCost) || 0;
+        }
+        localStorage.setItem(catalogPricesKey(), JSON.stringify(priceMap));
+      } catch (errPrices) {}
+      save();
+    }
+    on('cat-groups', 'change', function (e) {
+      if (e.target && e.target.classList.contains('cat-cost')) applyCatalogUnitPrice(e.target);
+    });
+    on('cat-groups', 'input', function (e) {
+      if (e.target && e.target.classList.contains('cat-cost')) applyCatalogUnitPrice(e.target);
+    });
+    on('cat-groups', 'click', function (e) {
       var btn = e.target.closest('.cat-add');
       if (!btn) return;
       e.preventDefault();
@@ -14666,7 +14707,7 @@ window.BRUNO_SEED = {
       }
       if (!c) return;
       state.materialsUsed.push({
-        id: uid('m'), qty: 1, item: c.item, part: c.part, vendor: c.vendor,
+        id: c.id || uid('m'), catalogId: c.id, qty: 1, item: c.item, part: c.part, vendor: c.vendor,
         units: c.units, unitCost: c.unitCost, crew: c.crew || 1, prod: c.prod || 1, prodUnit: c.prodUnit || 'Day',
         lastPriceUpdate: (state.meta && state.meta.globalPriceUpdate) || todayISO()
       });

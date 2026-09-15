@@ -15,9 +15,12 @@ require('../electric-catalog-v1.js');
 require('../electric-bom.js');
 require('../electric-residential-rules.js');
 require('../electric-residential.js');
+require('../electric-phase3-rules.js');
+require('../electric-phase3.js');
 require('./electrical-calculators.test.js');
 require('./data-integrity.test.js');
 require('./residential-estimator.test.js');
+require('./phase3-equipment.test.js');
 require('./service-worker.test.js');
 
 Promise.all(global.BRUNO_ASYNC_TESTS).then(function(){

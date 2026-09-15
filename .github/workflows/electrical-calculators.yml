@@ -6,6 +6,7 @@ on:
       - feature/electrical-tools-phase-1
       - fix/electrical-tools-phase-1-audit-p0p1
       - feature/residential-estimator-phase-2
+      - feature/electrical-tools-phase-3
   pull_request:
     paths:
       - 'electric-reference-data.js'
@@ -15,6 +16,9 @@ on:
       - 'electric-residential-rules.js'
       - 'electric-residential.js'
       - 'electrical-residential-ui.js'
+      - 'electric-phase3-rules.js'
+      - 'electric-phase3.js'
+      - 'electrical-phase3-ui.js'
       - 'electrical-tools.html'
       - 'sw.js'
       - 'tests/**'

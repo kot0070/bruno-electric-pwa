@@ -13,7 +13,7 @@
   }
 
   function loadWorkspaceEnhancement() {
-    // Electrical Tools owns its own shell; only enhance the legacy estimating workspace.
+    // Electrical Tools is a first-class app section with its own matching shell.
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (document.querySelector('script[data-be-workspace]')) return;
     var s = document.createElement('script');

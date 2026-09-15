@@ -30,7 +30,7 @@
       .be-side{display:none!important}
       body.be-workspace{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
       body.be-workspace #nav-tabs{display:none!important}
-      .be-mobile-bottom{position:fixed;left:0;right:0;bottom:0;z-index:190;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:7px 8px calc(7px + env(safe-area-inset-bottom,0px));background:#101820;border-top:1px solid var(--border);box-shadow:0 -8px 24px rgba(0,0,0,.32)}
+      .be-mobile-bottom{position:fixed;left:0;right:0;bottom:0;z-index:190;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:7px max(8px,env(safe-area-inset-right,0px)) calc(7px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));background:#101820;border-top:1px solid var(--border);box-shadow:0 -8px 24px rgba(0,0,0,.32)}
       .be-mobile-main{border:0;background:transparent;color:var(--text-muted);border-radius:10px;min-width:0;padding:7px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:750;line-height:1.1}
       .be-mobile-main .ico{font-size:18px;line-height:18px;font-weight:800}
       .be-mobile-main.active{background:var(--bg-card);color:var(--text)}
@@ -43,6 +43,8 @@
       .be-mobile-sheet-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
       .be-mobile-sheet button,.be-mobile-sheet a{display:flex;align-items:center;min-height:44px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);border-radius:9px;padding:9px 10px;text-decoration:none;text-align:left;font-size:13px;font-weight:650}
       .be-mobile-sheet button.active{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+      body.be-browser-mode .be-mobile-bottom{padding-right:calc(72px + env(safe-area-inset-right,0px))}
+      body.be-browser-mode .be-mobile-sheet{right:calc(72px + env(safe-area-inset-right,0px))}
     }
   `);
 
@@ -75,7 +77,7 @@
   function syncActive(tab) {
     document.querySelectorAll('.be-nav-btn[data-tab]').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === tab); });
     var group=groupForTab(tab);
-    document.querySelectorAll('.be-mobile-main[data-group]').forEach(function(b){b.classList.toggle('active',b.dataset.group===group)});
+    document.querySelectorAll('.be-mobile-main[data-group]').forEach(function(b){var on=b.dataset.group===group;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     document.querySelectorAll('.be-mobile-sheet [data-tab]').forEach(function(b){b.classList.toggle('active',b.dataset.tab===tab)});
   }
 
@@ -90,12 +92,14 @@
     }); aside.appendChild(box);
   });
   document.body.appendChild(aside); document.body.classList.add('be-workspace');
+  var standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;
+  if(!standalone)document.body.classList.add('be-browser-mode');
 
   var backdrop=document.createElement('div');backdrop.className='be-mobile-backdrop no-print';backdrop.addEventListener('click',closeMobileMenu);document.body.appendChild(backdrop);
   var sheet=document.createElement('div');sheet.className='be-mobile-sheet no-print';document.body.appendChild(sheet);
   var bottom=document.createElement('nav');bottom.className='be-mobile-bottom no-print';bottom.setAttribute('aria-label','Primary mobile navigation');
   mobileMeta.forEach(function(meta){
-    var b=document.createElement('button');b.type='button';b.className='be-mobile-main'+(meta.tools?' tools':'');b.dataset.group=meta.key;b.innerHTML='<span class="ico">'+meta.icon+'</span><span>'+meta.label+'</span>';
+    var b=document.createElement('button');b.type='button';b.className='be-mobile-main'+(meta.tools?' tools':'');b.dataset.group=meta.key;b.setAttribute('aria-label',meta.label);b.innerHTML='<span class="ico" aria-hidden="true">'+meta.icon+'</span><span>'+meta.label+'</span>';
     b.addEventListener('click',function(){
       if(meta.tools){location.href='./electrical-tools.html';return;}
       var g=groups.find(function(x){return x[0]===meta.key});if(!g)return;

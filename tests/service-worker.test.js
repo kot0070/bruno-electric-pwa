@@ -9,39 +9,22 @@ function is(a,b){if(a!==b)throw new Error('expected '+JSON.stringify(b)+', got '
 asyncTest('service worker activation deletes only owned stale Bruno Electric caches',function(){
   var source=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8');
   var listeners={},deleted=[];
-  var cacheNames=['bruno-electric-v23','bruno-electric-v24','bruno-electric-v25','bruno-electric-v26','bruno-electric-v27','bruno-ac-v99','other-pwa-cache','random-cache','bruno-electricity-v24','bruno-electrical-other-v24'];
+  var cacheNames=['bruno-electric-v23','bruno-electric-v24','bruno-electric-v25','bruno-electric-v26','bruno-electric-v27','bruno-electric-v28','bruno-ac-v99','other-pwa-cache','random-cache','bruno-electricity-v24','bruno-electrical-other-v24'];
   var sandbox={
     Promise:Promise,URL:URL,console:console,
-    self:{
-      location:{origin:'https://kot0070.github.io'},
-      clients:{claim:function(){return Promise.resolve()}},
-      skipWaiting:function(){return Promise.resolve()},
-      addEventListener:function(name,handler){listeners[name]=handler}
-    },
-    caches:{
-      keys:function(){return Promise.resolve(cacheNames.slice())},
-      delete:function(name){deleted.push(name);return Promise.resolve(true)},
-      open:function(){return Promise.resolve({addAll:function(){return Promise.resolve()},add:function(){return Promise.resolve()},put:function(){return Promise.resolve()}})},
-      match:function(){return Promise.resolve(null)}
-    },
+    self:{location:{origin:'https://kot0070.github.io'},clients:{claim:function(){return Promise.resolve()}},skipWaiting:function(){return Promise.resolve()},addEventListener:function(name,handler){listeners[name]=handler}},
+    caches:{keys:function(){return Promise.resolve(cacheNames.slice())},delete:function(name){deleted.push(name);return Promise.resolve(true)},open:function(){return Promise.resolve({addAll:function(){return Promise.resolve()},add:function(){return Promise.resolve()},put:function(){return Promise.resolve()}})},match:function(){return Promise.resolve(null)}},
     fetch:function(){return Promise.reject(new Error('network disabled in test'))}
   };
   vm.runInNewContext(source,sandbox,{filename:'sw.js'});
   if(typeof listeners.activate!=='function')throw new Error('activate handler not registered');
-  var waited=null;
-  listeners.activate({waitUntil:function(p){waited=p}});
-  if(!waited||typeof waited.then!=='function')throw new Error('activate did not register waitUntil promise');
-  return waited.then(function(){
-    deleted.sort();
-    is(deleted.join('|'),'bruno-electric-v23|bruno-electric-v24|bruno-electric-v25|bruno-electric-v26');
-    var kept=cacheNames.filter(function(x){return deleted.indexOf(x)<0}).sort();
-    is(kept.join('|'),['bruno-ac-v99','bruno-electric-v27','bruno-electrical-other-v24','bruno-electricity-v24','other-pwa-cache','random-cache'].sort().join('|'));
-  });
+  var waited=null;listeners.activate({waitUntil:function(p){waited=p}});if(!waited||typeof waited.then!=='function')throw new Error('activate did not register waitUntil promise');
+  return waited.then(function(){deleted.sort();is(deleted.join('|'),'bruno-electric-v23|bruno-electric-v24|bruno-electric-v25|bruno-electric-v26|bruno-electric-v27');var kept=cacheNames.filter(function(x){return deleted.indexOf(x)<0}).sort();is(kept.join('|'),['bruno-ac-v99','bruno-electric-v28','bruno-electrical-other-v24','bruno-electricity-v24','other-pwa-cache','random-cache'].sort().join('|'))});
 });
 
-asyncTest('service worker core shell includes all Phase 2 and Phase 3 modules',function(){
+asyncTest('service worker core shell includes residential pricing plus Phase 2 and Phase 3 modules',function(){
   var source=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8');
-  ['electric-residential-rules.js','electric-residential.js','electrical-residential-ui.js','electric-phase3-rules.js','electric-phase3.js','electrical-phase3-ui.js'].forEach(function(name){if(source.indexOf("'./"+name+"'")<0)throw new Error(name+' missing from core shell')});
+  ['electric-residential-rules.js','electric-residential.js','electric-residential-pricing.js','electrical-residential-ui.js','electrical-residential-pricing-ui.js','electric-phase3-rules.js','electric-phase3.js','electrical-phase3-ui.js'].forEach(function(name){if(source.indexOf("'./"+name+"'")<0)throw new Error(name+' missing from core shell')});
 });
 
 global.BRUNO_TEST_RESULTS=out;

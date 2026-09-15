@@ -4,16 +4,11 @@
 (function () {
   'use strict';
   if (document.documentElement.dataset.beWorkspace === '1') return;
-  document.documentElement.dataset.beWorkspace = '1';
 
   var NAV=window.BrunoElectricAppNavigation;
-  var groups=NAV&&NAV.groups||[
-    {key:'JOB',label:'Job',icon:'▣',defaultTab:'quote',items:[['quote','Quote'],['summary','Summary'],['cos','Change Orders']]},
-    {key:'ESTIMATE',label:'Estimate',icon:'≡',defaultTab:'materials',items:[['materials','Job Materials'],['catalog','Catalog'],['labor','Labor & Equipment'],['margins','Margins']]},
-    {key:'ELECTRICAL',label:'Electrical',icon:'⚡',defaultTab:'__tools',items:[['__tools','Electrical Tools']]},
-    {key:'BILLING',label:'Billing',icon:'$',defaultTab:'tm',items:[['tm','T&M Invoice'],['pnl','Profit & Loss']]},
-    {key:'MORE',label:'More',icon:'•••',defaultTab:'dispatch',items:[['dispatch','Dispatch'],['personnel','Workers'],['profiles','Company'],['reference','Reference'],['help','Help']]}
-  ];
+  if(!NAV||!Array.isArray(NAV.groups)||NAV.groups.length!==5||typeof NAV.group!=='function'||typeof NAV.groupForTab!=='function')return;
+  var groups=NAV.groups;
+  document.documentElement.dataset.beWorkspace = '1';
 
   function addStyle(css){var s=document.createElement('style');s.textContent=css;document.head.appendChild(s)}
   addStyle(`
@@ -75,8 +70,8 @@
   `);
 
   var currentGroup='JOB';
-  function groupByKey(key){if(NAV&&NAV.group)return NAV.group(key);for(var i=0;i<groups.length;i++)if(groups[i].key===key)return groups[i];return groups[0]}
-  function groupForTab(tab){if(NAV&&NAV.groupForTab)return NAV.groupForTab(tab);for(var i=0;i<groups.length;i++)for(var j=0;j<groups[i].items.length;j++)if(groups[i].items[j][0]===tab)return groups[i];return groups[0]}
+  function groupByKey(key){return NAV.group(key)}
+  function groupForTab(tab){return NAV.groupForTab(tab)}
   function existingTab(tab){return document.querySelector('#nav-tabs .nav-tab[data-tab="'+tab+'"]')}
   function activeSourceTab(){var a=document.querySelector('#nav-tabs .nav-tab.active');return a&&a.dataset.tab||'quote'}
   function syncNav(tab){

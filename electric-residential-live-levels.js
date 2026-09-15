@@ -1,5 +1,5 @@
 /* Bruno Electric — Residential Live dependency levels.
- * L0-L5 recalculate live. L6 is a commit boundary and changes only on Confirm & Save.
+ * L0-L5 recalculate live. L6 is affected by upstream edits but commits only on Confirm & Save.
  */
 (function(root){
 'use strict';
@@ -18,8 +18,9 @@ var INPUT_LEVEL={
   generalCircuitAmps:3,receptaclesPerGeneralCircuit:3
 };
 function levelForInput(key){return Object.prototype.hasOwnProperty.call(INPUT_LEVEL,key)?INPUT_LEVEL[key]:0}
-function affectedFrom(key){var n=levelForInput(key);return LEVELS.slice(n,6).map(function(x){return x.id})}
+function affectedFrom(key){var n=levelForInput(key);return LEVELS.slice(n).map(function(x){return x.id})}
+function liveAffectedFrom(key){var n=levelForInput(key);return LEVELS.slice(n,6).map(function(x){return x.id})}
 function pendingCommitFrom(key){var n=levelForInput(key);return n<=5?['L6']:[]}
 function annotate(result){if(!result)return result;result.dependencyLevels=LEVELS.map(function(l,i){var status='READY';if(i===1&&result.codeMinimums&&((result.codeMinimums.generalReceptacles&&!result.codeMinimums.generalReceptacles.known)||(result.codeMinimums.bathroomReceptacles&&!result.codeMinimums.bathroomReceptacles.known)||(result.codeMinimums.kitchenReceptacles&&!result.codeMinimums.kitchenReceptacles.known)))status='LAYOUT REQUIRED';if(i===2&&result.violations&&result.violations.length)status='NON-COMPLIANT';if(i===6)status='CONFIRM TO COMMIT';return{id:l.id,key:l.key,label:l.label,detail:l.detail,status:status}});return result}
-root.BrunoResidentialLiveLevels=Object.freeze({levels:LEVELS,levelForInput:levelForInput,affectedFrom:affectedFrom,pendingCommitFrom:pendingCommitFrom,annotate:annotate});
+root.BrunoResidentialLiveLevels=Object.freeze({levels:LEVELS,levelForInput:levelForInput,affectedFrom:affectedFrom,liveAffectedFrom:liveAffectedFrom,pendingCommitFrom:pendingCommitFrom,annotate:annotate});
 })(window);

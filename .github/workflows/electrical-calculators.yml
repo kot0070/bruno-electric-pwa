@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - feature/electrical-tools-phase-1
+      - fix/electrical-tools-phase-1-audit-p0p1
   pull_request:
     paths:
       - 'electric-reference-data.js'
       - 'electric-calculators.js'
+      - 'electric-catalog-v1.js'
+      - 'electric-bom.js'
+      - 'sw.js'
       - 'tests/**'
       - '.github/workflows/electrical-calculators.yml'
 
@@ -23,5 +27,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run deterministic calculator tests
+      - name: Run deterministic calculator and integrity tests
         run: node tests/run-node.js

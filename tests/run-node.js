@@ -31,6 +31,7 @@ require('./residential-takeoff.test.js');
 require('./residential-live.test.js');
 require('./residential-live-levels.test.js');
 require('./residential-live-history.test.js');
+require('./residential-live-workspace.test.js');
 require('./phase3-equipment.test.js');
 require('./service-worker.test.js');
 

@@ -42,7 +42,7 @@ addStyle(`
 
 var categoryOrder=[
   {label:'Core Calculators',ids:['amp','vd','cf','bf']},
-  {label:'Residential',ids:['res','res-takeoff']},
+  {label:'Residential',ids:['res','res-live','res-takeoff']},
   {label:'Equipment & Distribution',ids:['ev3','hv3','mo3','gr3','fd3']},
   {label:'Catalog & Reference',ids:['cat','ref']}
 ];

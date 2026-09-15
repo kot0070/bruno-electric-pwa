@@ -17,9 +17,34 @@ var REQUIRED=[
   {key:'license',label:'contractor license number'}
 ];
 
+function field(id){
+  var el=document.getElementById(id);
+  return el&&el.value!=null?String(el.value).trim():'';
+}
+function companyFromActiveLetterheadForm(){
+  var ids=['co-legal','co-addr1','co-city','co-state','co-zip','co-phone','co-license'];
+  var present=false;
+  for(var i=0;i<ids.length;i++)if(document.getElementById(ids[i])){present=true;break}
+  if(!present)return null;
+  return {
+    legalName:field('co-legal'),
+    address1:field('co-addr1'),
+    city:field('co-city'),
+    state:field('co-state'),
+    zip:field('co-zip'),
+    phone:field('co-phone'),
+    license:field('co-license')
+  };
+}
 function activeCompany(){
-  try{if(typeof window.getActiveProfile==='function'){var p=window.getActiveProfile();if(p)return p}}catch(e){}
-  try{if(window.state&&window.state.company)return window.state.company}catch(e){}
+  try{
+    if(window.BrunoElectricCompanyBridge&&typeof window.BrunoElectricCompanyBridge.getActiveProfile==='function'){
+      var b=window.BrunoElectricCompanyBridge.getActiveProfile();
+      if(b)return b;
+    }
+  }catch(e){}
+  var formCompany=companyFromActiveLetterheadForm();
+  if(formCompany)return formCompany;
   return {};
 }
 function value(c,key){
@@ -84,7 +109,8 @@ function blockNoncompliantPrint(e){
 document.addEventListener('click',blockNoncompliantPrint,true);
 window.addEventListener('beforeprint',preparePrintDocs);
 document.addEventListener('input',function(e){if(e.target&&/^co-(legal|addr1|city|state|zip|phone|license)$/.test(e.target.id||''))setTimeout(renderStatus,0)});
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(renderStatus,120)},{once:true});else setTimeout(renderStatus,120);
+document.addEventListener('change',function(e){if(e.target&&(/^(co-|letterhead)/.test(e.target.id||'')))setTimeout(renderStatus,0)});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(renderStatus,0)},{once:true});else setTimeout(renderStatus,0);
 
-window.BrunoDocumentCompliance={TDLR_NOTICE:TDLR_NOTICE,missingFields:missingFields,complianceStatus:complianceStatus,preparePrintDocs:preparePrintDocs};
+window.BrunoDocumentCompliance={TDLR_NOTICE:TDLR_NOTICE,missingFields:missingFields,complianceStatus:complianceStatus,preparePrintDocs:preparePrintDocs,activeCompany:activeCompany,renderStatus:renderStatus};
 })();

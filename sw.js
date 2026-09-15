@@ -1,5 +1,5 @@
 /* Bruno Electric Estimating — app shell offline cache */
-const CACHE = 'bruno-electric-v38';
+const CACHE = 'bruno-electric-v40';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [
   './',
@@ -9,6 +9,7 @@ const CORE_SHELL = [
   './sw-register.js',
   './electric-app-navigation.js',
   './electric-workspace.js',
+  './electric-compact-header.js',
   './electric-navigation-bridge.js',
   './electric-reference-data.js',
   './electric-calculators.js',

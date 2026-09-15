@@ -13,7 +13,6 @@
   }
 
   function loadWorkspaceEnhancement() {
-    // Electrical Tools is a first-class app section with its own matching shell.
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (document.querySelector('script[data-be-workspace]')) return;
     var s = document.createElement('script');
@@ -25,10 +24,22 @@
     document.head.appendChild(s);
   }
 
+  function loadAppNavigation() {
+    if (window.BrunoElectricAppNavigation) { loadWorkspaceEnhancement(); return; }
+    if (document.querySelector('script[data-be-app-nav]')) return;
+    var n=document.createElement('script');
+    n.src='./electric-app-navigation.js';
+    n.defer=true;
+    n.dataset.beAppNav='1';
+    n.onload=loadWorkspaceEnhancement;
+    n.onerror=loadWorkspaceEnhancement;
+    document.head.appendChild(n);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadWorkspaceEnhancement, { once: true });
+    document.addEventListener('DOMContentLoaded', loadAppNavigation, { once: true });
   } else {
-    loadWorkspaceEnhancement();
+    loadAppNavigation();
   }
 
   if (!('serviceWorker' in navigator)) return;

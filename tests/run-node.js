@@ -17,6 +17,7 @@ require('../electric-residential-rules.js');
 require('../electric-residential.js');
 require('../electric-residential-pricing.js');
 require('../electric-residential-takeoff.js');
+require('../electric-residential-live.js');
 require('../electric-phase3-rules.js');
 require('../electric-phase3.js');
 require('./electrical-calculators.test.js');
@@ -25,6 +26,7 @@ require('./navigation-shell.test.js');
 require('./residential-estimator.test.js');
 require('./residential-pricing.test.js');
 require('./residential-takeoff.test.js');
+require('./residential-live.test.js');
 require('./phase3-equipment.test.js');
 require('./service-worker.test.js');
 

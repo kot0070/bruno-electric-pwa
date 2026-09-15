@@ -1,6 +1,17 @@
 (function () {
   'use strict';
 
+  function loadCompactHeader() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoCompactHeader || document.querySelector('script[data-be-compact-header]')) return;
+    var h=document.createElement('script');
+    h.src='./electric-compact-header.js';
+    h.defer=true;
+    h.dataset.beCompactHeader='1';
+    h.onerror=function(){};
+    document.head.appendChild(h);
+  }
+
   function loadResidentialWorkspaceModule() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoResidentialLiveWorkspace || document.querySelector('script[data-be-res-live-workspace]')) return;
@@ -50,6 +61,7 @@
   }
 
   function loadAppNavigation() {
+    loadCompactHeader();
     loadResidentialWorkspaceBridge();
     if (window.BrunoElectricAppNavigation) { loadWorkspaceEnhancement(); return; }
     if (document.querySelector('script[data-be-app-nav]')) return;

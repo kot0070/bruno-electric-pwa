@@ -1,6 +1,6 @@
 /* Bruno Electric Estimating — app shell offline cache */
-/* Upgrade lineage: bruno-electric-v34 -> bruno-electric-v35 -> bruno-electric-v36. */
-const CACHE = 'bruno-electric-v36';
+/* Upgrade lineage: bruno-electric-v34 -> bruno-electric-v35 -> bruno-electric-v36 -> bruno-electric-v37. */
+const CACHE = 'bruno-electric-v37';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [
   './',

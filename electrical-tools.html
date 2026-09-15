@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f1419">
+  <title>Bruno Electric — Electrical Tools</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <style>
+    :root{--bg:#0f1419;--elev:#1a222d;--card:#212b38;--input:#0d1218;--border:#2e3a4a;--text:#e8eef6;--muted:#8b9bb0;--accent:#f0a500;--blue:#3d8bfd;--ok:#3dd68c;--bad:#f07178}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 "Segoe UI",system-ui,sans-serif}button,input,select{font:inherit;color:inherit}.top{position:sticky;top:0;z-index:20;display:flex;gap:12px;align-items:center;padding:10px 16px;background:#141c26;border-bottom:1px solid var(--border)}.top h1{font-size:17px;margin:0}.top small{color:var(--muted)}.top a{margin-left:auto;color:#fff;text-decoration:none;background:var(--blue);padding:7px 10px;border-radius:7px;font-weight:700}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:calc(100vh - 52px)}aside{border-right:1px solid var(--border);padding:14px 10px;background:#111923}aside button{width:100%;border:0;background:transparent;padding:8px 10px;text-align:left;border-radius:7px;color:var(--muted);cursor:pointer;font-weight:650}aside button:hover,aside button.active{background:var(--card);color:var(--text)}.group{font-size:10px;color:#6b7c91;font-weight:800;letter-spacing:.09em;margin:13px 10px 4px}.work{padding:18px;max-width:1500px;width:100%}.tool{display:none}.tool.active{display:block}.grid{display:grid;grid-template-columns:minmax(300px,.85fr) minmax(340px,1.15fr);gap:14px}.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px}.card h2,.card h3{margin:0 0 10px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.field label{display:block;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:4px}.field input,.field select{width:100%;min-height:40px;background:var(--input);border:1px solid var(--border);border-radius:7px;padding:7px 9px}.run{margin-top:12px;background:var(--blue);border:0;border-radius:7px;padding:9px 12px;font-weight:800;cursor:pointer}.steps{width:100%;border-collapse:collapse}.steps td,.steps th{padding:7px;border-bottom:1px solid var(--border);text-align:left}.steps th{color:var(--muted);font-size:11px}.badge{display:inline-block;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;background:#26384d}.pass{color:var(--ok)}.fail{color:var(--bad)}.warn{padding:8px 10px;border-left:3px solid var(--accent);background:#2a2519;margin:8px 0;color:#e7d7ab}.bom td input{width:80px;background:var(--input);border:1px solid var(--border);border-radius:5px;padding:5px}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{border:1px solid var(--border);background:var(--elev);border-radius:7px;padding:7px 9px;cursor:pointer}.catalog-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.cat-item{background:var(--elev);border:1px solid var(--border);border-radius:8px;padding:9px}.cat-item small{display:block;color:var(--muted)}.status{padding:8px 10px;background:var(--elev);border:1px solid var(--border);border-radius:8px;margin-bottom:12px}.res-shell{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.res-shell div{padding:10px;background:var(--elev);border:1px dashed var(--border);border-radius:8px;color:var(--muted)}@media(max-width:900px){.layout{grid-template-columns:1fr}aside{display:flex;overflow:auto;border-right:0;border-bottom:1px solid var(--border);padding:8px;position:sticky;top:51px;z-index:15}aside .group{display:none}aside button{width:auto;white-space:nowrap}.grid{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.catalog-grid,.res-shell{grid-template-columns:1fr}.work{padding:12px}}
+  </style>
+</head>
+<body>
+  <header class="top"><div><h1>Bruno Electric · Electrical Tools</h1><small>Texas · NEC 2026 · effective 2026-09-01 · verify local AHJ</small></div><a href="./index.html">← Job workspace</a></header>
+  <div class="layout"><aside id="tool-nav"></aside><main class="work"><div id="job-status" class="status">Loading current job…</div><div id="tool-host"></div></main></div>
+  <script src="./electric-reference-data.js"></script>
+  <script src="./electric-calculators.js"></script>
+  <script src="./electric-catalog-v1.js"></script>
+  <script src="./electric-bom.js"></script>
+  <script src="./electrical-tools-ui.js"></script>
+  <script src="./electrical-bom-ui.js"></script>
+  <script src="./sw-register.js"></script>
+</body>
+</html>

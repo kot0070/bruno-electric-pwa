@@ -1,4 +1,5 @@
 /* Bruno Electric Estimating — app shell offline cache */
+/* Upgrade path: bruno-electric-v34 -> bruno-electric-v35 for customer-document compliance. */
 const CACHE = 'bruno-electric-v35';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [

@@ -1,15 +1,18 @@
 /* Bruno Electric — Texas customer-document compliance guard.
- * Keeps required contractor identity visible and adds the TDLR regulatory notice
- * to customer-facing Quote/Proposal and T&M Invoice print documents.
+ * Uses current 16 TAC §73.51(f) notice text and requires a complete printable
+ * contractor identity before customer-facing Quote/Proposal or Invoice print.
  */
 (function(){
 'use strict';
 if(window.BrunoDocumentCompliance)return;
 
-var TDLR_NOTICE='Regulated by The Texas Department of Licensing and Regulation, P.O. Box 12157, Austin, Texas, 78711, 1-800-803-9202, 512-463-6599; website: www.tdlr.texas.gov/complaints';
+var TDLR_NOTICE='Regulated by The Texas Department of Licensing and Regulation, P.O. Box 12157, Austin, Texas 78711, 1-800-803-9202, 512-463-6599; website: www.tdlr.texas.gov';
 var REQUIRED=[
   {key:'name',label:'contractor name'},
-  {key:'address',label:'address'},
+  {key:'address1',label:'street address'},
+  {key:'city',label:'city'},
+  {key:'state',label:'state'},
+  {key:'zip',label:'ZIP code'},
   {key:'phone',label:'phone number'},
   {key:'license',label:'contractor license number'}
 ];
@@ -21,7 +24,10 @@ function activeCompany(){
 }
 function value(c,key){
   if(key==='name')return String(c.legalName||c.name||'').trim();
-  if(key==='address')return String(c.address1||c.address||'').trim();
+  if(key==='address1')return String(c.address1||c.address||'').trim();
+  if(key==='city')return String(c.city||'').trim();
+  if(key==='state')return String(c.state||'').trim();
+  if(key==='zip')return String(c.zip||'').trim();
   if(key==='phone')return String(c.phone||'').trim();
   if(key==='license')return String(c.license||c.tecl||'').trim();
   return '';

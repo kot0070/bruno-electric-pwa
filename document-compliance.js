@@ -71,7 +71,10 @@ function ensureStyle(){
     '.be-tdlr-notice{margin-top:14px;padding-top:9px;border-top:1px solid #999;font-size:9pt;line-height:1.35;color:#222}' +
     '.be-doc-compliance{margin-top:.75rem;padding:.65rem .8rem;border:1px solid var(--border);border-radius:8px;font-size:.82rem;line-height:1.45}' +
     '.be-doc-compliance.ok{border-color:rgba(61,214,140,.45);color:var(--success)}' +
-    '.be-doc-compliance.warn{border-color:rgba(240,113,120,.55);color:#ffb4b8}';document.head.appendChild(s);
+    '.be-doc-compliance.warn{border-color:rgba(240,113,120,.55);color:#ffb4b8}' +
+    '#be-native-print-blocker{display:none}' +
+    '@media print{body.be-native-print-blocked>*:not(#be-native-print-blocker){display:none!important}body.be-native-print-blocked #be-native-print-blocker{display:block!important;color:#111!important;background:#fff!important;font:12pt/1.45 Arial,sans-serif!important;padding:24px!important;margin:0!important}body.be-native-print-blocked #be-native-print-blocker strong{display:block;font-size:16pt;margin-bottom:10px}}';
+  document.head.appendChild(s);
 }
 function preparePrintDocs(){
   ensureStyle();
@@ -105,12 +108,59 @@ function blockNoncompliantPrint(e){
   }
   setTimeout(preparePrintDocs,0);
 }
+function classHas(name){
+  return !!(document.body&&document.body.classList&&document.body.classList.contains(name));
+}
+function isDedicatedCustomerPrint(){
+  return classHas('print-quote')||classHas('print-tm');
+}
+function activeCustomerPanel(){
+  if(typeof document.querySelector!=='function')return '';
+  if(document.querySelector('#panel-quote.active'))return 'quote';
+  if(document.querySelector('#panel-tm.active'))return 'tm';
+  return '';
+}
+function nativePrintBlocker(){
+  var el=document.getElementById('be-native-print-blocker');
+  if(el)return el;
+  el=document.createElement('section');
+  el.id='be-native-print-blocker';
+  el.setAttribute('aria-live','assertive');
+  if(document.body&&document.body.appendChild)document.body.appendChild(el);
+  return el;
+}
+function blockNativeCustomerPrint(reason){
+  ensureStyle();
+  if(document.body&&document.body.classList)document.body.classList.add('be-native-print-blocked');
+  var el=nativePrintBlocker();
+  if(!el)return;
+  el.textContent='';
+  var title=document.createElement('strong');title.textContent='Customer document print blocked';el.appendChild(title);
+  var text=document.createElement('div');text.textContent=reason;el.appendChild(text);
+}
+function clearNativePrintBlock(){
+  if(document.body&&document.body.classList)document.body.classList.remove('be-native-print-blocked');
+}
+function beforePrintGuard(){
+  preparePrintDocs();
+  if(isDedicatedCustomerPrint()){clearNativePrintBlock();return true;}
+  var panel=activeCustomerPanel();
+  if(!panel){clearNativePrintBlock();return true;}
+  var st=complianceStatus();
+  if(!st.ok){
+    blockNativeCustomerPrint('Cannot print this '+(panel==='tm'?'invoice':'quote/proposal')+'. Missing required contractor information: '+st.missing.join(', ')+'. Use Company to complete the active letterhead, then use the in-app Print button.');
+  }else{
+    blockNativeCustomerPrint('Use the in-app '+(panel==='tm'?'Print Invoice':'Print Quote')+' button so the validated customer document includes the required Texas contractor information and TDLR notice.');
+  }
+  return false;
+}
 
 document.addEventListener('click',blockNoncompliantPrint,true);
-window.addEventListener('beforeprint',preparePrintDocs);
+window.addEventListener('beforeprint',beforePrintGuard);
+window.addEventListener('afterprint',clearNativePrintBlock);
 document.addEventListener('input',function(e){if(e.target&&/^co-(legal|addr1|city|state|zip|phone|license)$/.test(e.target.id||''))setTimeout(renderStatus,0)});
 document.addEventListener('change',function(e){if(e.target&&(/^(co-|letterhead)/.test(e.target.id||'')))setTimeout(renderStatus,0)});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(renderStatus,0)},{once:true});else setTimeout(renderStatus,0);
 
-window.BrunoDocumentCompliance={TDLR_NOTICE:TDLR_NOTICE,missingFields:missingFields,complianceStatus:complianceStatus,preparePrintDocs:preparePrintDocs,activeCompany:activeCompany,renderStatus:renderStatus};
+window.BrunoDocumentCompliance={TDLR_NOTICE:TDLR_NOTICE,missingFields:missingFields,complianceStatus:complianceStatus,preparePrintDocs:preparePrintDocs,activeCompany:activeCompany,renderStatus:renderStatus,beforePrintGuard:beforePrintGuard,activeCustomerPanel:activeCustomerPanel,clearNativePrintBlock:clearNativePrintBlock};
 })();

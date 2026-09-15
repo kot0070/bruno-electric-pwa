@@ -1,26 +1,38 @@
 (function () {
   'use strict';
 
+  function loadDocumentCompliance() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoDocumentCompliance || document.querySelector('script[data-be-doc-compliance]')) return;
+    var c=document.createElement('script');
+    c.src='./document-compliance.js';
+    c.defer=true;
+    c.dataset.beDocCompliance='1';
+    c.onerror=function(){};
+    document.head.appendChild(c);
+  }
+
   function loadNavigationBridge() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
-    if (document.querySelector('script[data-be-nav-bridge]')) return;
+    if (document.querySelector('script[data-be-nav-bridge]')) { loadDocumentCompliance(); return; }
     var b = document.createElement('script');
     b.src = './electric-navigation-bridge.js';
     b.defer = true;
     b.dataset.beNavBridge = '1';
-    b.onerror = function () {};
+    b.onload = loadDocumentCompliance;
+    b.onerror = loadDocumentCompliance;
     document.head.appendChild(b);
   }
 
   function loadWorkspaceEnhancement() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
-    if (document.querySelector('script[data-be-workspace]')) return;
+    if (document.querySelector('script[data-be-workspace]')) { loadNavigationBridge(); return; }
     var s = document.createElement('script');
     s.src = './electric-workspace.js';
     s.defer = true;
     s.dataset.beWorkspace = '1';
     s.onload = loadNavigationBridge;
-    s.onerror = function () { /* fail-open: legacy navigation remains usable */ };
+    s.onerror = loadNavigationBridge; /* fail-open: legacy navigation remains usable */
     document.head.appendChild(s);
   }
 

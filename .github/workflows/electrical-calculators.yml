@@ -5,12 +5,17 @@ on:
     branches:
       - feature/electrical-tools-phase-1
       - fix/electrical-tools-phase-1-audit-p0p1
+      - feature/residential-estimator-phase-2
   pull_request:
     paths:
       - 'electric-reference-data.js'
       - 'electric-calculators.js'
       - 'electric-catalog-v1.js'
       - 'electric-bom.js'
+      - 'electric-residential-rules.js'
+      - 'electric-residential.js'
+      - 'electrical-residential-ui.js'
+      - 'electrical-tools.html'
       - 'sw.js'
       - 'tests/**'
       - '.github/workflows/electrical-calculators.yml'

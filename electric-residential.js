@@ -22,7 +22,8 @@ function calc(input){
  const otherVA=num(input.otherVA==null?0:input.otherVA,'other VA',true);
  const totalVA=baseDemand+fixedDemand+dryerDemand+cookingDemand+hvacDemand+motorAdder+otherVA;
  const serviceAmps=totalVA/240,candidate=serviceCandidate(serviceAmps);
- const material=input.serviceMaterial==='Cu'?'Cu':'Al';const conductor=candidate&&R.serviceConductors[candidate]?R.serviceConductors[candidate][material]:null;
+ const material=String(input.serviceMaterial||'');if(material!=='Cu'&&material!=='Al')throw new Error('service material must be Cu or Al');
+ const conductor=candidate&&R.serviceConductors[candidate]?R.serviceConductors[candidate][material]:null;
  return {module:'residentialLoad',status:candidate?'PASS':'REVIEW',reference:R.references,inputs:Object.assign({},input),result:{squareFeet:sqft,generalVA:general,smallApplianceVA:saVA,laundryVA,baseConnectedVA:baseConnected,baseDemandVA:Math.round(baseDemand),fixedConnectedVA:fixedConnected,fixedDemandFactor:fixedFactor,fixedDemandVA:Math.round(fixedDemand),dryerDemandVA:dryerDemand,cookingDemandVA:cookingDemand,hvacDemandVA:hvacDemand,motorAdderVA:Math.round(motorAdder),otherVA,totalVA:Math.round(totalVA),serviceAmps:Math.round(serviceAmps*10)/10,serviceCandidateA:candidate,serviceMaterial:material,serviceConductor:conductor},warnings:['Service result is a planning candidate, not permit-ready engineering. Verify local AHJ, utility requirements, service equipment rating, conductor conditions, temperature/adjustment factors, neutral, grounding/bonding and equipment-specific articles.','Heating/cooling are treated as noncoincident by using the larger entered load. Enter nameplate/design values; do not infer HVAC electrical load from tonnage.','The 25% motor adder is applied only to the explicit largestMotorVA input. If motor treatment differs for the actual equipment mix, perform a detailed calculation.']};
 }
 function circuits(input){

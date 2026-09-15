@@ -35,6 +35,10 @@
       .be-mobile-section-grid button{min-height:44px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);border-radius:9px;padding:9px 10px;text-align:left;font-size:13px;font-weight:700}
       .be-mobile-section-grid button.active{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
       .be-mobile-section-note{color:var(--text-muted);font-size:12px;margin:2px 0 0}
+      .be-workbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:9px;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px}
+      .be-workbar b{display:block;flex:1 0 100%;font-size:11px;color:var(--text-muted);margin:0 0 1px}
+      .be-workbar button{appearance:none;min-height:40px;border:1px solid var(--border);background:var(--bg-card);color:var(--text);padding:7px 9px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
+      .be-workbar button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
       .be-mobile-bottom{position:fixed;left:0;right:0;bottom:0;z-index:190;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:7px max(8px,env(safe-area-inset-right,0px)) calc(7px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));background:#101820;border-top:1px solid var(--border);box-shadow:0 -8px 24px rgba(0,0,0,.32)}
       .be-mobile-main{border:0;background:transparent;color:var(--text-muted);border-radius:10px;min-width:0;padding:7px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:750;line-height:1.1}
       .be-mobile-main .ico{font-size:18px;line-height:18px;font-weight:800}

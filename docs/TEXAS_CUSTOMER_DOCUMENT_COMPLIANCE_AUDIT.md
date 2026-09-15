@@ -1,7 +1,7 @@
 # Bruno Electric — Texas Customer Document Compliance Audit
 
 Audit date: 2026-09-15
-Scope: customer-facing Quote/Proposal, T&M Invoice, Company letterhead/profile, Change Orders as represented in printed quote output, normal app print/PDF flow, compliance bootstrap, and PWA/offline delivery.
+Scope: customer-facing Quote/Proposal, T&M Invoice, Company letterhead/profile, Change Orders as represented in printed quote output, all normal app and browser-native print/PDF paths, compliance bootstrap, and PWA/offline delivery.
 
 ## Source hierarchy
 
@@ -44,7 +44,7 @@ The application keeps its Company/profile vault inside the main application clos
 
 The compliance module also supports a narrow future `BrunoElectricCompanyBridge.getActiveProfile()` accessor if the application later exposes one deliberately. It does not depend on `window.state` or a non-existent global `getActiveProfile()`.
 
-## Fail-closed print bootstrap
+## Fail-closed print architecture
 
 Customer-document compliance is not allowed to fail open.
 
@@ -52,7 +52,15 @@ Customer-document compliance is not allowed to fail open.
 
 The compliance script is requested immediately and independently of the navigation enhancement chain. If `document-compliance.js` fails to load, the bootstrap blocker remains active and records `data-be-doc-compliance="error"`; customer-document printing stays blocked rather than silently bypassing the gate.
 
-After the compliance API is ready, the bootstrap blocker yields to the module's own capture-phase validator. The validator then blocks incomplete Company identity or allows the existing print flow to continue. This architecture closes both the pre-guard timing window and the compliance-script load-failure bypass identified in the prior audit.
+After the compliance API is ready, the bootstrap blocker yields to the module's own capture-phase validator. The validator then blocks incomplete Company identity or allows the existing dedicated print flow to continue.
+
+### Browser-native Print / Ctrl+P
+
+Browser-native printing is a separate path and cannot be cancelled reliably from `beforeprint`. Therefore the application handles customer Quote/Invoice surfaces fail-closed rather than pretending to cancel the system print dialog.
+
+When neither dedicated `body.print-quote` nor `body.print-tm` mode is active, `beforePrintGuard()` checks whether the active panel is Quote/Proposal or T&M Invoice. If so, it applies `body.be-native-print-blocked`. Print-only CSS then hides every application subtree and prints only a blocker message. The message directs a compliant Company to use the matching in-app Print Quote / Print Invoice button; if Company identity is incomplete it also lists the missing required fields. Thus browser menu Print and Ctrl+P cannot emit the Quote/Invoice active panel as a customer document and cannot bypass the fixed §73.51(f) notice path.
+
+`afterprint` removes the temporary blocker class. Browser-native printing of non-customer internal panels is not converted into a customer document by this compliance module.
 
 ## Customer-facing surfaces
 
@@ -71,7 +79,7 @@ The Company profile supports legal name, DBA, address lines, city, state, ZIP, p
 The editable footer remains separate from the fixed regulatory notice and cannot replace it.
 
 ### Alternate paths
-JSON export/import and backup functions are data-transfer surfaces, not customer proposals/invoices/written contracts. No additional standalone customer PDF generator was identified in the reviewed repository.
+JSON export/import and backup functions are data-transfer surfaces, not customer proposals/invoices/written contracts. No additional standalone customer PDF generator was identified in the reviewed repository. The historical generic browser-print fallback is explicitly prevented from printing active Quote/Invoice panels as customer documents; users must use the validated dedicated controls for those surfaces.
 
 ## LLC / SOS / EIN numbers
 
@@ -88,6 +96,10 @@ Regression coverage verifies:
 - bootstrap capture gate blocks before the compliance module is ready;
 - compliance-script load failure remains fail closed;
 - bootstrap yields only after the compliance API is ready;
+- browser-native Ctrl+P / menu Print on active Quote fails closed even with complete identity and directs the user to guarded Print Quote;
+- browser-native print on active Invoice with incomplete identity fails closed and reports missing fields;
+- dedicated compliant Quote print remains allowed and contains the exact fixed TDLR notice;
+- temporary native-print blocker state is cleared after printing;
 - compliance module remains in the PWA core shell and stale-cache cleanup stays ownership-isolated.
 
 ## Scope boundary

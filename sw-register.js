@@ -1,6 +1,17 @@
 (function () {
   'use strict';
 
+  function loadResidentialWorkspaceBridge() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoResidentialLiveWorkspace || document.querySelector('script[data-be-res-live-workspace]')) return;
+    var r=document.createElement('script');
+    r.src='./electric-residential-live-workspace.js';
+    r.defer=true;
+    r.dataset.beResLiveWorkspace='1';
+    r.onerror=function(){};
+    document.head.appendChild(r);
+  }
+
   function loadNavigationBridge() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (document.querySelector('script[data-be-nav-bridge]')) return;
@@ -25,6 +36,7 @@
   }
 
   function loadAppNavigation() {
+    loadResidentialWorkspaceBridge();
     if (window.BrunoElectricAppNavigation) { loadWorkspaceEnhancement(); return; }
     if (document.querySelector('script[data-be-app-nav]')) return;
     var n=document.createElement('script');

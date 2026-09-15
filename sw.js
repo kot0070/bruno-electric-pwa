@@ -1,13 +1,21 @@
 /* Bruno Electric Estimating — app shell offline cache */
-const CACHE = 'bruno-electric-v23';
+const CACHE = 'bruno-electric-v24';
 const SHELL = [
   './',
   './index.html',
+  './electrical-tools.html',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
-  './sw-register.js'
+  './sw-register.js',
+  './electric-workspace.js',
+  './electric-reference-data.js',
+  './electric-calculators.js',
+  './electric-catalog-v1.js',
+  './electric-bom.js',
+  './electrical-tools-ui.js',
+  './electrical-bom-ui.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -39,7 +47,6 @@ self.addEventListener('fetch', (event) => {
         }
         return res;
       }).catch(() => cached);
-      // navigate: prefer network, fall back to cache / index
       if (req.mode === 'navigate') {
         return net.then((r) => r || cached || caches.match('./index.html'));
       }

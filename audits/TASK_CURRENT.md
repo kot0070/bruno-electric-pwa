@@ -1,0 +1,65 @@
+# TASK_CURRENT — PR #11 corrective final acceptance
+
+MODE=FINAL_ACCEPTANCE_AUDIT
+REPO=kot0070/bruno-electric-pwa
+PR=11
+BASE_SHA=16795ea1b802f348ed693d7b789489136b4132a0
+HEAD_SHA=06478ffd41e48fd40dd793e04733a1bbb4cf3b76
+AUDIT_BRANCH=audit/pr11-06478ff
+REPORT_PATH=audits/reports/PR_11_CANONICAL_NAV_CORRECTIVE_06478ff.md
+
+READ_FIRST:
+- audits/PROTOCOL.md
+- previous report: audits/reports/PR_11_UNIVERSAL_RESPONSIVE_SHELL_98be9ad.md on branch audit/pr11-98be9ad
+
+SCOPE=CORRECTIVE_REAUDIT_ONLY
+
+PRIMARY_FIX:
+- `electric-app-navigation.js` must be the ONLY five-section IA data source.
+- `electric-workspace.js` must consume `window.BrunoElectricAppNavigation.groups` directly.
+- `electric-workspace.js` must NOT contain a duplicated fallback definition for JOB|ESTIMATE|ELECTRICAL|BILLING|MORE.
+- If canonical navigation is unavailable, workspace enhancement must fail open to the existing legacy UI rather than inventing a second IA model.
+
+VERIFY:
+- EXACT_BASE_SHA=true
+- EXACT_HEAD_SHA=true
+- PR_OPEN=true
+- CI_EXACT_HEAD_SUCCESS=true
+- CANONICAL_NAV_MODEL_SINGLE_SOURCE=true
+- WORKSPACE_CONSUMES_SHARED_NAV=true
+- WORKSPACE_DUPLICATE_NAV_FALLBACK=false
+- LEGACY_FAIL_OPEN_IF_NAV_MISSING=true
+- REGRESSION_TEST_PREVENTS_DUPLICATE_MODEL=true
+- PHONE_LT_768_ARCHITECTURE_UNCHANGED=true
+- TABLET_768_1199_ARCHITECTURE_UNCHANGED=true
+- DESKTOP_GTE_1200_ARCHITECTURE_UNCHANGED=true
+- ELECTRICAL_FIRST_CLASS_PAGE=true
+- CROSS_PAGE_GROUP_RESTORE=true
+- CROSS_PAGE_EXACT_TAB_RESTORE=true
+- CACHE_V34_UNCHANGED=true
+- NO_CALCULATOR_MATH_CHANGE=true
+- NO_NEC_LOGIC_CHANGE=true
+- NO_BOM_PRICING_PERSISTENCE_CHANGE=true
+
+MUST_NOT:
+- WRITE_PRODUCTION
+- MODIFY_PR
+- MERGE
+- MODIFY_MAIN
+- CHANGE_TASK
+
+REPORT_WRITE_PERMISSION:
+- Write only the immutable full audit report to REPORT_PATH on AUDIT_BRANCH.
+
+CHAT_OUTPUT_ONLY:
+- VERDICT
+- AUDITED HEAD SHA
+- BLOCKERS
+- REPORT LINK
+
+VERDICT_ENUM:
+- A — ACCEPT
+- B — ACCEPT AFTER MINOR FIXES
+- C — REJECT / REWORK REQUIRED
+
+MERGE_RECOMMENDATION_ON_A=MERGE PR #11 INTO main

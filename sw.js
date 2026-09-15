@@ -1,13 +1,11 @@
 /* Bruno Electric Estimating — app shell offline cache */
-const CACHE = 'bruno-electric-v24';
-const SHELL = [
+const CACHE = 'bruno-electric-v25';
+const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
+const CORE_SHELL = [
   './',
   './index.html',
   './electrical-tools.html',
   './manifest.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/apple-touch-icon.png',
   './sw-register.js',
   './electric-workspace.js',
   './electric-reference-data.js',
@@ -17,17 +15,29 @@ const SHELL = [
   './electrical-tools-ui.js',
   './electrical-bom-ui.js'
 ];
+const OPTIONAL_SHELL = [
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/apple-touch-icon.png'
+];
+const SHELL = CORE_SHELL.concat(OPTIONAL_SHELL);
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting())
+    caches.open(CACHE)
+      .then((cache) => cache.addAll(CORE_SHELL).then(() =>
+        Promise.all(OPTIONAL_SHELL.map((url) => cache.add(url).catch(() => null)))
+      ))
+      .then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
+      Promise.all(keys
+        .filter((k) => OWNED_CACHE_RE.test(k) && k !== CACHE)
+        .map((k) => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });

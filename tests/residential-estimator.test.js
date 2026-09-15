@@ -37,7 +37,8 @@ test('largest motor input adds exactly 25 percent',function(){var r=E.calculate(
 test('other VA is included at 100 percent',function(){var r=E.calculate(base({otherVA:2500}));is(r.result.totalVA,7600)});
 test('Cu 100A service candidate maps to #4',function(){var r=E.calculate(base({serviceMaterial:'Cu'}));is(r.result.serviceCandidateA,100);is(r.result.serviceConductor,'4');is(r.result.serviceMaterial,'Cu')});
 test('Al 100A service candidate maps to #2',function(){var r=E.calculate(base({serviceMaterial:'Al'}));is(r.result.serviceConductor,'2')});
-test('unknown service material fails closed to Al, not Cu',function(){var r=E.calculate(base({serviceMaterial:'foo'}));is(r.result.serviceMaterial,'Al')});
+test('unknown service material rejected',function(){throws(function(){E.calculate(base({serviceMaterial:'foo'}))})});
+test('blank service material rejected',function(){throws(function(){E.calculate(base({serviceMaterial:''}))})});
 test('cooking over 12 kW rejects automatic demand',function(){throws(function(){E.calculate(base({cooking:true,cookingKW:12.1}))})});
 test('cooking at or below 1.75 kW rejects this automation path',function(){throws(function(){E.calculate(base({cooking:true,cookingKW:1.75}))})});
 test('zero square feet rejected',function(){throws(function(){E.calculate(base({squareFeet:0}))})});
@@ -49,7 +50,7 @@ test('fixed appliance circuit uses entered voltage when supplied',function(){var
 
 test('residential BOM includes four minimum 20A circuit allowances',function(){var i=base({estimatedRunFt:50});var r=E.calculate(i),b=E.bom(i,r);is(b[0].item,'12/2 NM-B with ground');is(b[0].qty,200);is(b[1].item,'20A 1-pole breaker');is(b[1].qty,4)});
 test('residential BOM adds service candidate and conductor field-verify rows',function(){var i=base({estimatedRunFt:50});var r=E.calculate(i),b=E.bom(i,r);is(b[2].item,'Service equipment 100A — field verify');is(b[2].status,'Field Verify');is(b[3].codeSource,'310.12')});
-test('residential BOM for 200A uses existing 200A meter-main catalog name',function(){var i=base({otherVA:43000,estimatedRunFt:50});var r=E.calculate(i);is(r.result.serviceCandidateA,200);var b=E.bom(i,r);is(b[2].item,'200A meter/main combo')});
+test('residential BOM for 200A uses existing 200A meter-main catalog name',function(){var i=base({otherVA:40000,estimatedRunFt:50});var r=E.calculate(i);is(r.result.serviceCandidateA,200);var b=E.bom(i,r);is(b[2].item,'200A meter/main combo')});
 test('residential BOM rejects zero run length instead of fabricating footage',function(){var i=base({estimatedRunFt:0}),r=E.calculate(i);throws(function(){E.bom(i,r)})});
 
 global.BRUNO_TEST_RESULTS=out;

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  function loadResidentialWorkspaceBridge() {
+  function loadResidentialWorkspaceModule() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoResidentialLiveWorkspace || document.querySelector('script[data-be-res-live-workspace]')) return;
     var r=document.createElement('script');
@@ -10,6 +10,20 @@
     r.dataset.beResLiveWorkspace='1';
     r.onerror=function(){};
     document.head.appendChild(r);
+  }
+
+  function loadResidentialWorkspaceBridge() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoResidentialPricing) { loadResidentialWorkspaceModule(); return; }
+    var existing=document.querySelector('script[data-be-res-pricing]');
+    if (existing) return;
+    var p=document.createElement('script');
+    p.src='./electric-residential-pricing.js';
+    p.defer=true;
+    p.dataset.beResPricing='1';
+    p.onload=loadResidentialWorkspaceModule;
+    p.onerror=loadResidentialWorkspaceModule;
+    document.head.appendChild(p);
   }
 
   function loadNavigationBridge() {

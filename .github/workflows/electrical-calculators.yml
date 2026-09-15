@@ -3,6 +3,7 @@ name: Electrical Calculator Tests
 on:
   push:
     branches:
+      - main
       - feature/electrical-tools-phase-1
       - fix/electrical-tools-phase-1-audit-p0p1
       - feature/residential-estimator-phase-2
@@ -15,10 +16,17 @@ on:
       - 'electric-bom.js'
       - 'electric-residential-rules.js'
       - 'electric-residential.js'
+      - 'electric-residential-pricing.js'
+      - 'electric-residential-takeoff.js'
+      - 'electric-residential-live.js'
       - 'electrical-residential-ui.js'
+      - 'electrical-residential-pricing-ui.js'
+      - 'electrical-residential-takeoff-ui.js'
+      - 'electrical-residential-live-ui.js'
       - 'electric-phase3-rules.js'
       - 'electric-phase3.js'
       - 'electrical-phase3-ui.js'
+      - 'electrical-tools-shell.js'
       - 'electrical-tools.html'
       - 'sw.js'
       - 'tests/**'

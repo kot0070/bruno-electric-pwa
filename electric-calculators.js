@@ -14,6 +14,15 @@
     if (allowZero ? x < 0 : x <= 0) throw new Error((name || 'value') + (allowZero ? ' must be >= 0' : ' must be > 0'));
     return x;
   }
+  function integer(v, name, allowZero) {
+    const x = positive(v, name, allowZero);
+    if (!Number.isInteger(x)) throw new Error((name || 'value') + ' must be a whole number');
+    return x;
+  }
+  function oneOf(v, allowed, name) {
+    if (allowed.indexOf(v) === -1) throw new Error((name || 'value') + ' is unsupported');
+    return v;
+  }
   function round(v, places) { const p = Math.pow(10, places == null ? 2 : places); return Math.round((v + Number.EPSILON) * p) / p; }
   function tempFactor(tempRating, ambientC) {
     const rows = R.TEMP_FACTORS[tempRating];
@@ -24,14 +33,14 @@
     return rows[rows.length - 1][1];
   }
   function cccFactor(count) {
-    const c = positive(count, 'current-carrying conductor count');
+    const c = integer(count, 'current-carrying conductor count');
     const hit = R.CCC_FACTORS.find(x => c >= x.min && c <= x.max);
     return hit ? hit.factor : 1;
   }
   function tempIndex(rating) { return rating === 60 ? 0 : rating === 75 ? 1 : rating === 90 ? 2 : -1; }
 
   function ampacity(input) {
-    const material = input.material === 'Al' ? 'Al' : 'Cu';
+    const material = oneOf(input.material, ['Cu','Al'], 'conductor material');
     const size = String(input.size || '');
     const insulationRating = Number(input.insulationRating || 90);
     const terminalRating = Number(input.terminalRating || 75);
@@ -70,22 +79,24 @@
   }
 
   function voltageDrop(input) {
-    const material = input.material === 'Al' ? 'Al' : 'Cu';
+    const material = oneOf(input.material, ['Cu','Al'], 'conductor material');
     const size = String(input.size || '');
     const cmil = R.CMIL[size];
     if (!cmil) throw new Error('Unsupported conductor size');
     const voltage = positive(input.voltage, 'voltage');
     const amps = positive(input.current, 'current', true);
     const distance = positive(input.distanceFt, 'one-way distance', true);
-    const phase = input.phase === '3' || input.phase === 3 ? 3 : 1;
+    const phaseRaw = String(input.phase);
+    if (phaseRaw !== '1' && phaseRaw !== '3') throw new Error('phase must be 1 or 3');
+    const phase = Number(phaseRaw);
     const pf = input.powerFactor == null ? 1 : positive(input.powerFactor, 'power factor');
     if (pf > 1) throw new Error('Power factor cannot exceed 1');
+    const target = input.targetPct == null || input.targetPct === '' ? 3 : positive(input.targetPct, 'design target');
     const K = material === 'Al' ? 21.2 : 12.9;
     const multiplier = phase === 3 ? Math.sqrt(3) : 2;
     const drop = multiplier * K * amps * distance * pf / cmil;
-    const pct = voltage ? drop / voltage * 100 : 0;
+    const pct = drop / voltage * 100;
     const atLoad = voltage - drop;
-    const target = Number(input.targetPct || 3);
     return {
       module:'voltageDrop', status:pct <= target ? 'PASS' : 'REVIEW',
       steps:[
@@ -102,7 +113,7 @@
   }
 
   function conduitFill(input) {
-    const racewayType = input.racewayType || 'EMT';
+    const racewayType = oneOf(input.racewayType, ['EMT','PVC40'], 'raceway type');
     const tradeSize = String(input.tradeSize || '');
     const racewayArea = R.RACEWAY_AREA[racewayType] && R.RACEWAY_AREA[racewayType][tradeSize];
     if (!racewayArea) throw new Error('Unsupported raceway type/trade size in Phase 1');
@@ -110,7 +121,7 @@
     if (!rows.length) throw new Error('Add at least one conductor row');
     let qty = 0, used = 0;
     const breakdown = rows.map(function (r) {
-      const q = positive(r.qty, 'conductor quantity');
+      const q = integer(r.qty, 'conductor quantity');
       const size = String(r.size || '');
       const area = R.THHN_AREA[size];
       if (!area) throw new Error('Unsupported THHN/THWN-2 conductor size: ' + size);
@@ -139,11 +150,11 @@
     const size = String(input.size || '12');
     const allowance = R.BOX_FILL[size];
     if (!allowance) throw new Error('Unsupported conductor gauge for box fill');
-    const insulated = positive(input.insulatedCount || 0, 'insulated conductor count', true);
-    const grounds = positive(input.groundCount || 0, 'ground count', true);
-    const yokes = positive(input.yokeCount || 0, 'device/yoke count', true);
+    const insulated = integer(input.insulatedCount || 0, 'insulated conductor count', true);
+    const grounds = integer(input.groundCount || 0, 'ground count', true);
+    const yokes = integer(input.yokeCount || 0, 'device/yoke count', true);
+    if (grounds > 4) throw new Error('Phase 1 box fill supports up to 4 equipment grounding conductors. More than 4 requires a detailed NEC 314.16(B)(5) calculation.');
     const clamps = input.internalClamp ? 1 : 0;
-    // Simplified same-gauge model: grounds together count as one conductor volume; each yoke = two conductor volumes.
     const conductorUnits = insulated;
     const groundUnits = grounds > 0 ? 1 : 0;
     const yokeUnits = yokes * 2;
@@ -156,7 +167,7 @@
       steps:[
         {label:'Volume allowance per conductor unit',value:allowance,unit:'in³',status:'Code Required'},
         {label:'Insulated conductor units',value:conductorUnits,status:'Code Required'},
-        {label:'Equipment grounding conductor units',value:groundUnits,status:'Code Required'},
+        {label:'Equipment grounding conductor units (Phase 1: max 4 EGC)',value:groundUnits,status:'Code Required'},
         {label:'Device/yoke units',value:yokeUnits,status:'Code Required'},
         {label:'Internal clamp units',value:clampUnits,status:'Code Required'},
         {label:'Required box volume',value:round(required),unit:'in³',status:'Code Required'},
@@ -164,13 +175,15 @@
       ],
       result:{allowance,totalUnits,requiredVolume:round(required),availableVolume:round(available),remainingVolume:round(available-required)},
       reference:R.REFERENCES.boxFill,
-      warnings:['Phase 1 same-gauge model only. Mixed conductor sizes, multiple EGC sizes, barriers, fittings, terminal blocks, cable clamps, luminaire studs/hickeys, and special box provisions require a detailed calculation.']
+      warnings:['Phase 1 same-gauge model only and supports no more than four EGCs. Mixed conductor sizes, >4 EGCs, multiple EGC sizes, barriers, fittings, terminal blocks, cable clamps, luminaire studs/hickeys, and special box provisions require a detailed calculation.']
     };
   }
 
   function transformerCurrent(input) {
     const kva = positive(input.kva, 'kVA');
-    const phase = input.phase === '3' || input.phase === 3 ? 3 : 1;
+    const phaseRaw = String(input.phase);
+    if (phaseRaw !== '1' && phaseRaw !== '3') throw new Error('phase must be 1 or 3');
+    const phase = Number(phaseRaw);
     const pv = positive(input.primaryVoltage, 'primary voltage');
     const sv = positive(input.secondaryVoltage, 'secondary voltage');
     const factor = phase === 3 ? Math.sqrt(3) : 1;

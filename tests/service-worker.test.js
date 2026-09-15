@@ -9,7 +9,7 @@ function is(a,b){if(a!==b)throw new Error('expected '+JSON.stringify(b)+', got '
 asyncTest('service worker activation deletes only owned stale Bruno Electric caches',function(){
   var source=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8');
   var listeners={},deleted=[];
-  var cacheNames=['bruno-electric-v23','bruno-electric-v24','bruno-electric-v25','bruno-ac-v99','other-pwa-cache','random-cache','bruno-electricity-v24','bruno-electrical-other-v24'];
+  var cacheNames=['bruno-electric-v23','bruno-electric-v24','bruno-electric-v25','bruno-electric-v26','bruno-ac-v99','other-pwa-cache','random-cache','bruno-electricity-v24','bruno-electrical-other-v24'];
   var sandbox={
     Promise:Promise,URL:URL,console:console,
     self:{
@@ -33,10 +33,15 @@ asyncTest('service worker activation deletes only owned stale Bruno Electric cac
   if(!waited||typeof waited.then!=='function')throw new Error('activate did not register waitUntil promise');
   return waited.then(function(){
     deleted.sort();
-    is(deleted.join('|'),'bruno-electric-v23|bruno-electric-v24');
+    is(deleted.join('|'),'bruno-electric-v23|bruno-electric-v24|bruno-electric-v25');
     var kept=cacheNames.filter(function(x){return deleted.indexOf(x)<0}).sort();
-    is(kept.join('|'),['bruno-ac-v99','bruno-electric-v25','bruno-electrical-other-v24','bruno-electricity-v24','other-pwa-cache','random-cache'].sort().join('|'));
+    is(kept.join('|'),['bruno-ac-v99','bruno-electric-v26','bruno-electrical-other-v24','bruno-electricity-v24','other-pwa-cache','random-cache'].sort().join('|'));
   });
+});
+
+asyncTest('service worker core shell includes all Phase 2 residential modules',function(){
+  var source=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8');
+  ['electric-residential-rules.js','electric-residential.js','electrical-residential-ui.js'].forEach(function(name){if(source.indexOf("'./"+name+"'")<0)throw new Error(name+' missing from core shell')});
 });
 
 global.BRUNO_TEST_RESULTS=out;

@@ -4,16 +4,18 @@
 const R=Object.freeze({
   version:'electrical-phase3-2026',
   references:Object.freeze({
-    evse:'NEC 2026 Article 625; 625.40-625.42',
+    evse:'NEC 2026 Article 625/627 EV power transfer branch-circuit and continuous-load rules',
     hvac:'NEC 2026 Article 440; equipment nameplate MCA/MOCP',
     motorConductors:'NEC 2026 430.22',
     motorOverload:'NEC 2026 430.32',
     motorScgf:'NEC 2026 430.52(C)(1)',
+    motorEgc:'NEC 2026 250.122(F) Motor Circuits',
     egc:'NEC 2026 250.122',
     gec:'NEC 2026 250.66',
     feederContinuous:'NEC 2026 215 / applicable OCPD rules; 125% continuous load treatment'
   }),
-  standardOcpd:Object.freeze([15,20,25,30,35,40,45,50,60,70,80,90,100,110,125,150,175,200,225,250,300,350,400,450,500,600,700,800,1000,1200,1600,2000,2500,3000,4000,5000,6000]),
+  standardOcpd:Object.freeze([10,15,20,25,30,35,40,45,50,60,70,80,90,100,110,125,150,175,200,225,250,300,350,400,450,500,600,700,800,1000,1200,1600,2000,2500,3000,4000,5000,6000]),
+  fuseOnlyOcpd:Object.freeze([1,3,6,601]),
   egcTable:Object.freeze([
     {maxA:15,Cu:'14',Al:'12'},{maxA:20,Cu:'12',Al:'10'},{maxA:60,Cu:'10',Al:'8'},{maxA:100,Cu:'8',Al:'6'},
     {maxA:200,Cu:'6',Al:'4'},{maxA:300,Cu:'4',Al:'2'},{maxA:400,Cu:'3',Al:'1'},{maxA:500,Cu:'2',Al:'1/0'},
@@ -37,7 +39,7 @@ const R=Object.freeze({
     overloadOtherFactor:1.15,
     commonAcScgf:Object.freeze({nonTimeDelayFuse:3.00,timeDelayFuse:1.75,inverseTimeBreaker:2.50})
   }),
-  evse:Object.freeze({continuousFactor:1.25,individualBranchCircuit:true})
+  evse:Object.freeze({continuousFactor:1.25})
 });
 root.BrunoPhase3Rules=R;
 })(window);

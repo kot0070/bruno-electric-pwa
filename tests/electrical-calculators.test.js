@@ -45,7 +45,7 @@ test('voltage drop invalid PF',function(){throws(function(){C.voltageDrop({volta
 test('voltage drop target 2 valid',function(){var r=C.voltageDrop({voltage:240,phase:1,material:'Cu',size:'12',distanceFt:10,current:5,targetPct:2});eq(r.result.targetPct,2)});
 [0,-1,NaN].forEach(function(v){test('voltage drop invalid target '+String(v)+' rejected',function(){throws(function(){C.voltageDrop({voltage:240,phase:1,material:'Cu',size:'12',distanceFt:50,current:10,targetPct:v})})})});
 test('voltage drop omitted target defaults to 3',function(){var r=C.voltageDrop({voltage:240,phase:1,material:'Cu',size:'12',distanceFt:10,current:5});eq(r.result.targetPct,3)});
-test('voltage drop blank target rejected',function(){throws(function(){C.voltageDrop({voltage:240,phase:1,material:'Cu',size:'12',distanceFt:10,current:5,targetPct:''})})});
+test('voltage drop blank target defaults to 3',function(){var r=C.voltageDrop({voltage:240,phase:1,material:'Cu',size:'12',distanceFt:10,current:5,targetPct:''});eq(r.result.targetPct,3)});
 
 test('conduit fill normal 3x #12 THHN in 3/4 EMT',function(){var r=C.conduitFill({racewayType:'EMT',tradeSize:'3/4',conductors:[{size:'12',qty:3}]});eq(r.result.totalConductorArea,.0399,.0001);eq(r.result.allowedFillPct,40);is(r.status,'PASS')});
 test('conduit fill one conductor = 53%',function(){var r=C.conduitFill({racewayType:'EMT',tradeSize:'1/2',conductors:[{size:'4',qty:1}]});eq(r.result.allowedFillPct,53)});

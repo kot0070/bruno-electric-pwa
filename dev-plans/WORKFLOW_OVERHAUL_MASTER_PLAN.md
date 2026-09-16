@@ -3,7 +3,7 @@
 **Branch:** `dev/custom-special-order-materials`  
 **Execution mode:** STRICT SEQUENTIAL  
 **Audit mode:** ONE INDEPENDENT FULL AUDIT AFTER ALL STAGES  
-**Current stage:** `STAGE_5_JOB_TOTALS_QUOTE_CLARITY`  
+**Current stage:** `STAGE_6_QUOTE_APPROVAL_INVOICE_BOUNDARY`  
 **Overall state:** `IN_PROGRESS`
 
 ## NON-NEGOTIABLE EXECUTION RULES
@@ -41,85 +41,70 @@ Implemented prominent explicit save workflow, dirty/saved state, richer archive 
 **Status:** `DONE`
 
 ### Implemented
-- Save Calculation and Apply to Job are now distinct persisted intent boundaries.
-- `electric-residential-live-history.js::confirmAtomic()` is retained as a compatibility entry point but performs SAVE ONLY and asserts Job Materials are unchanged.
-- Added `electric-residential-apply-job.js` with explicit `applyActive()` transaction from the currently saved calculation.
-- Apply requires saved calculation identity/BOM, uses strict `BrunoElectricBOM.prepareReplacement()` cost semantics and stores applied provenance.
-- Provenance includes calculation ID/name, saved timestamp, applied timestamp, source type/version/tag, BOM line count, resolved/unresolved row counts and wire-takeoff metadata.
-- Prior legacy `residential-live-takeoff` rows and prior Residential applied-calculation rows are migrated/replaced; manual and non-Residential generated rows remain untouched.
-- blank Your Cost remains `materialsUnresolved[]`; explicit zero remains resolved numeric zero; positive cost remains resolved.
-- Quick ft² wire model is stored only as estimating/provenance metadata; Apply uses archived BOM rows and cannot silently replace exact cable-type BOM quantities.
-- Residential workflow UX now exposes `Apply to Job` / `Update Job from Calculation` separately from Save.
-- Apply is disabled when live inputs are dirty; live edits after Apply do not mutate Job until Save + Apply again.
-- UX states now distinguish `LIVE · NOT SAVED`, `LIVE CHANGES · NOT SAVED`, `SAVED · NOT APPLIED`, and `SAVED · APPLIED TO JOB`.
-- Job workspace top chip now represents the APPLIED calculation, not merely the active saved calculation; it flags `SAVED_NEWER_NOT_APPLIED` when a newer saved calculation exists.
-- Live Catalog pricing remains informational context only when saved/applied identities match; this does not mutate Job state.
-
-### Acceptance criteria
-- [x] Save alone leaves Job Materials unchanged.
-- [x] Explicit Apply/Update transaction exists.
-- [x] Applied calculation provenance survives persisted Job state/reload.
-- [x] Manual/other-source Job Materials are preserved.
-- [x] Re-Apply replaces prior Residential generated rows only.
-- [x] unresolved / explicit zero / positive Your Cost semantics preserved.
-- [x] Live edits after Apply do not silently mutate Job.
-- [x] Quick budget wire estimate cannot replace archived BOM quantities.
-- [x] Calculator UI distinguishes saved/applied state.
-- [x] Job workspace shows applied calculation and newer-saved/not-applied state.
-
-### Required regressions
-- [x] save-only material non-mutation;
-- [x] Apply saved calculation;
-- [x] same-domain re-apply;
-- [x] legacy Residential row migration;
-- [x] manual/other-source preservation;
-- [x] unresolved/zero/positive Your Cost;
-- [x] provenance persistence structure;
-- [x] saved edit after Apply remains Job-stable;
-- [x] quick wire budget does not alter BOM quantity;
-- [x] Job workspace applied/newer-saved provenance UI.
+- Save Calculation and Apply to Job are distinct persisted intent boundaries.
+- `electric-residential-live-history.js::confirmAtomic()` remains only as compatibility SAVE boundary and does not mutate Job Materials.
+- Explicit `electric-residential-apply-job.js::applyActive()` transaction applies the saved calculation through strict BOM semantics.
+- Applied provenance persists calculation ID/name, timestamps, source type/version/tag, row counts and wire-takeoff metadata.
+- Re-Apply replaces Residential-generated rows only; manual and non-Residential rows remain untouched.
+- blank / explicit zero / positive Your Cost semantics remain strict.
+- Quick ft² wire budget remains metadata only and cannot silently replace exact archived BOM quantities.
+- Calculator UX and Job workspace distinguish saved, applied, dirty and newer-saved/not-applied states.
 
 ### Completion evidence
-- Core/UX/test SHAs include: `b669ebe5fd3cc5921c53a7aec213e13e2886d167`, `748c76f574af98897179660773ef9b59fb1f43c1`, `3772c2bdb3de7e5394799153de7bc917957f021d`, `5faf4d68188aada0db511f79030429a90663debd`, `ff4d1a4ac697b5e3f7d61757038f0566bb5ec4de`, `23e99175238518c8f47fa4026597797671955ef2`, `8d3d8d9becde0f199ac407cd5b0e25116d72df76`, `c38b0b69a003f632d5478ea4231c72b59a64c383`, `0083f6a6bb4ea7a959e357ecea525cb81a23be67`, `87ff001656bcbafca4ba9807fc62c8f270744b9f`, `014bfc5c97da526fcde4d3993033e070f081f342`, `61b69fd9398c8e6260f123de47a6a95d2e3c144f`.
-- CI #273 passed the core Apply boundary at exact head `0083f6a6bb4ea7a959e357ecea525cb81a23be67`.
-- CI #275 exposed two legacy workspace assumptions; production semantics were retained and live-pricing context was restored without weakening applied provenance.
 - Final Stage 4 exact-head CI run `#276` — SUCCESS on `61b69fd9398c8e6260f123de47a6a95d2e3c144f`.
 
 ---
 ## STAGE 5 — JOB TOTALS / QUOTE PRICE CLARITY
+**Status:** `DONE`
+
+### Implemented
+- Added `electric-job-summary-semantics.js` as a semantic/validation layer over the existing authoritative `calcAll() -> updateChips/renderSummary` path; no duplicate pricing formula engine was introduced.
+- Header labels now explicitly distinguish Material/Labor/Equipment contractor cost, Estimated Job Cost, Recommended Customer Price exact, Approved Change Orders and Customer Quote Total.
+- `materialsUnresolved[]` produces first-class `INCOMPLETE MATERIAL COST` disclosure; unresolved rows remain excluded from numeric contractor-cost/profit math.
+- Summary disclosure shows applied Residential calculation provenance when present.
+- Added runtime parity guard comparing header vs Summary for material cost, total contractor cost and recommended exact customer price; mismatch produces `METRIC PARITY WARNING` and `data-summary-parity=FAIL`.
+- Stage 5 test suite verifies semantic labels, unresolved disclosure, parity endpoints/provenance, exact-vs-rounded quote semantics and absence of a duplicate OH/profit formula implementation.
+
+### Acceptance criteria
+- [x] Top metrics have unambiguous business meaning.
+- [x] Contractor cost, recommended customer price, approved CO and quote total are semantically distinct.
+- [x] Unresolved material cost cannot present contractor cost as complete.
+- [x] Applied-calculation provenance is visible near Summary state.
+- [x] Header/Summary parity is actively checked.
+- [x] No second sales/OH/profit calculation engine was introduced.
+
+### Completion evidence
+- Core/test/bootstrap SHAs include `0a16d340951ec863965cdb482cee7a649dff38eb`, `f60a0d52e8a652c26cc82fbf19eb8c6ce7e1b748`, `ee99d5f3407445ef911021156ed3dab8fd855d54`, `1e9425dad863fc12708626d8399d3cd52e437728`.
+- Exact-head CI run `#281` — SUCCESS on `1e9425dad863fc12708626d8399d3cd52e437728`.
+
+---
+## STAGE 6 — QUOTE APPROVAL / MANUAL CUSTOMER-PRICE OVERRIDE / INVOICE BOUNDARY
 **Status:** `IN_PROGRESS`
 
 ### Required implementation
-- Clarify top Job metric labels and calculation provenance.
-- Separate contractor cost from customer selling/recommended price.
-- Display whether material cost is complete or has unresolved exclusions.
-- Show applied Residential calculation reference near Job summary metrics when applicable.
-- Remove or rename ambiguous duplicate concepts such as `Sales (Exact)` vs `Quote Total` unless their difference is explicitly defined in UI.
-- Ensure top metrics and detailed Summary consume the same authoritative calculation path.
-
-### Acceptance criteria
-- Every top metric has one unambiguous business meaning.
-- Contractor cost, recommended/customer price, approved quote and change orders are visually/semantically distinct.
-- Any unresolved material cost prevents a misleading “complete contractor cost” presentation.
-- Applied-calculation provenance is visible near summary state.
-- Header metrics and Summary cannot disagree for the same persisted Job state.
+- Establish explicit flow: `Estimated Job Cost → Recommended Customer Price → Manual Quote Adjustment (optional) → Approved Quote → Invoice`.
+- Manual customer-price override must be explicit, persisted and attributable; blank override means use recommended price, not numeric zero.
+- Approve Quote must snapshot the customer amount and material/job/calculation provenance at that moment.
+- Calculator/Catalog/Job edits after approval must never silently rewrite the approved quote snapshot.
+- Invoice must reference an approved quote snapshot (plus explicit approved post-quote changes where supported), never a moving live recommended price.
+- Re-approval must create/update an explicit approval event rather than masquerading as the original approval.
+- Approval must disclose unresolved contractor-cost condition without converting unresolved cost to zero.
+- Quote/Invoice UX must clearly show LIVE RECOMMENDED vs MANUAL ADJUSTED vs APPROVED SNAPSHOT state.
 
 ### Required regressions
-- material/labor/equipment/job-cost formulas;
-- unresolved-cost disclosure;
-- approved change-order handling;
-- Summary/header parity;
-- applied-calculation provenance display;
-- responsive phone/tablet/desktop metric labels.
+- no manual override / manual positive override / explicit zero policy;
+- approve + reload persistence;
+- post-approval calculator edit isolation;
+- post-approval Catalog price edit isolation;
+- applied-calculation provenance snapshot;
+- unresolved-cost disclosure on approval;
+- re-approval version/timestamp behavior;
+- invoice consumes approved snapshot, not current live recommendation;
+- phone/tablet/desktop control visibility.
 
 ### Completion evidence
 - Implementation SHA: `PENDING`
 - CI/test evidence: `PENDING`
-
----
-## STAGE 6 — QUOTE APPROVAL / MANUAL CUSTOMER-PRICE OVERRIDE / INVOICE BOUNDARY
-**Status:** `PENDING`
-Required flow: `Estimated Job Cost → Recommended Customer Price → Manual Quote Adjustment (optional) → Approved Quote → Invoice`, persisted approval/override provenance and no silent post-approval calculator mutation.
 
 ---
 ## STAGE 7 — CATALOG / JOB MATERIALS UX CLARITY + CUSTOM MATERIAL COMPLETION

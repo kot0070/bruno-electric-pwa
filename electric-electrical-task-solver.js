@@ -24,7 +24,7 @@ function extract(text){var s=clean(text),known={};if(!s)return result(s,known);
  var v=first(/(?:^|\b)(120|208|240|277|480|600)\s*(?:v|volt|volts)\b/i,s);if(v!==null)known.voltage=v;
  if(/\b(?:three|3)\s*[- ]?phase\b|\b3\s*[φø]\b/i.test(s))known.phase='3';else if(/\b(?:single|one|1)\s*[- ]?phase\b|\b1\s*[φø]\b/i.test(s))known.phase='1';
  if(/\b(?:copper|cu)\b/i.test(s))known.material='Cu';else if(/\b(?:aluminum|aluminium|al)\b/i.test(s))known.material='Al';
- if(/\bemt\b/i.test(s))known.installation='EMT';else if(/\bpvc\s*(?:schedule|sch\.?\s*)?80\b/i.test(s))known.installation='PVC_SCH80';else if(/\bpvc\s*(?:schedule|sch\.?\s*)?40\b/i.test(s))known.installation='PVC_SCH40';
+ if(/\bemt\b/i.test(s))known.installation='EMT';else if(/\bpvc\s*(?:(?:schedule|sch\.?)\s*)?80\b/i.test(s))known.installation='PVC_SCH80';else if(/\bpvc\s*(?:(?:schedule|sch\.?)\s*)?40\b/i.test(s))known.installation='PVC_SCH40';
  if(/\bnon\s*[- ]?continuous\b/i.test(s))known.loadBasis='NONCONTINUOUS';else if(/\bcontinuous\b/i.test(s))known.loadBasis='CONTINUOUS';
  var vd=first(/(?:voltage\s*drop|\bvd\b)\s*(?:target)?\s*(?:of|=|:|at|under|≤|<=)?\s*(\d+(?:\.\d+)?)\s*%/i,s);if(vd!==null)known.vdTargetPct=vd;
  return result(s,known)}

@@ -3,7 +3,7 @@
 **Branch:** `dev/custom-special-order-materials`  
 **Execution mode:** STRICT SEQUENTIAL  
 **Audit mode:** ONE INDEPENDENT FULL AUDIT AFTER ALL STAGES  
-**Current stage:** `STAGE_4_APPLY_TO_JOB`  
+**Current stage:** `STAGE_5_JOB_TOTALS_QUOTE_CLARITY`  
 **Overall state:** `IN_PROGRESS`
 
 ## NON-NEGOTIABLE EXECUTION RULES
@@ -29,82 +29,92 @@ Implemented explicit-tab routes, canonical hash parser/default resolution, immed
 **Status:** `DONE`
 Implemented visible detailed routing takeoff, 12/2 vs 14/2 totals, selectable waste, optional quick ft² budget mode explicitly NOT NEC, validation, archive metadata persistence/restore.
 **Evidence:** SHAs `3c7efe11bc0054da3ed10fcf0a08844b4e1d5867`, `2a089aac1f37049a8cd260c302170363b81d06dc`, `53891291b7a749afccec42d96d88e72d5bb2ec9f`, `e8f18a383917f70e15b910dea5fbce5884aa4f6d`; CI #254 SUCCESS.
-**Reserved rule for Stage 4:** Quick ft² mode is budget reference only and must never silently replace exact cable-type Job Material rows.
 
 ---
 ## STAGE 3 — SAVE CALCULATION / ARCHIVE UX
 **Status:** `DONE`
-
-### Implemented
-- Added prominent sticky `Residential Calculation` workflow card with `Save Calculation` action.
-- Explicit live states: `LIVE · NOT SAVED`, `LIVE CHANGES · NOT SAVED`, `SAVED CALCULATION`.
-- Ordinary input changes mark dirty but never autosave/archive.
-- Save remains user-intent boundary and failed saves do not mark calculation saved.
-- Archive overview now shows calculation name, saved timestamp, area, circuits, wire estimate, LIVE Customer materials and LIVE Your Cost.
-- Existing Duplicate/Load/Delete semantics retained through bridge to existing archive controls.
-- History engine now performs idempotent save identity: repeated unchanged save/confirm reuses current active archive ID rather than creating duplicate rows.
-- Changed core calculation creates a new archive identity and leaves the old archived snapshot immutable.
-- Delete isolation and existing transaction rollback retained.
-- `sw-register.js` loads the new save/archive UX module; final PWA offline shell update remains Stage 8.
-
-### Acceptance criteria
-- [x] Save action is prominent at top of Residential workflow.
-- [x] Reload-persisted archive engine retained.
-- [x] Live edits do not mutate archived rows automatically.
-- [x] Explicit Duplicate creates separate editable identity.
-- [x] Delete affects only selected archive row.
-- [x] Repeated unchanged Save does not generate archive duplicates.
-- [x] Saved/dirty/unsaved states are visible.
-
-### Required regressions
-- [x] save/reload existing persistence path;
-- [x] idempotent repeated save;
-- [x] changed calculation versioning + archive immutability;
-- [x] duplicate identity;
-- [x] delete isolation;
-- [x] atomic rollback retained;
-- [x] no autosave in dirty handler;
-- [x] archive summary fields and workflow state UI.
-
-### Completion evidence
-- Implementation/test SHAs: `489d009847e37edf0ae0c52d4213dfbb1af73438`, `9167976ff975c21f46fe00d8d3396faefbb7233c`, `7a249467e95dcc4c606fd0ae10751c9ba4bd304f`, `67c38822d3535c3b2444eb2b93fa3790bba89108`, `ac795a5280482c9599f4383523c09b06efe67dd2`, `3146d69d166b459d7ffb0d43ad449eb53cd90b7b`, `dcfe721158c77daba27686da7653766ffbf03b1e`.
-- Initial run #261 found one stale formatting-sensitive bootstrap assertion; production ordering was correct. Test was hardened to validate semantic ordering independent of whitespace.
-- Exact-head CI run `#262` — SUCCESS on `dcfe721158c77daba27686da7653766ffbf03b1e`.
+Implemented prominent explicit save workflow, dirty/saved state, richer archive overview, idempotent unchanged-save identity, archive immutability, duplicate/delete isolation and no autosave.
+**Evidence:** SHAs `489d009847e37edf0ae0c52d4213dfbb1af73438`, `9167976ff975c21f46fe00d8d3396faefbb7233c`, `7a249467e95dcc4c606fd0ae10751c9ba4bd304f`, `67c38822d3535c3b2444eb2b93fa3790bba89108`, `ac795a5280482c9599f4383523c09b06efe67dd2`, `3146d69d166b459d7ffb0d43ad449eb53cd90b7b`, `dcfe721158c77daba27686da7653766ffbf03b1e`; CI #262 SUCCESS.
 
 ---
 ## STAGE 4 — APPLY CALCULATION TO JOB / PROVENANCE
+**Status:** `DONE`
+
+### Implemented
+- Save Calculation and Apply to Job are now distinct persisted intent boundaries.
+- `electric-residential-live-history.js::confirmAtomic()` is retained as a compatibility entry point but performs SAVE ONLY and asserts Job Materials are unchanged.
+- Added `electric-residential-apply-job.js` with explicit `applyActive()` transaction from the currently saved calculation.
+- Apply requires saved calculation identity/BOM, uses strict `BrunoElectricBOM.prepareReplacement()` cost semantics and stores applied provenance.
+- Provenance includes calculation ID/name, saved timestamp, applied timestamp, source type/version/tag, BOM line count, resolved/unresolved row counts and wire-takeoff metadata.
+- Prior legacy `residential-live-takeoff` rows and prior Residential applied-calculation rows are migrated/replaced; manual and non-Residential generated rows remain untouched.
+- blank Your Cost remains `materialsUnresolved[]`; explicit zero remains resolved numeric zero; positive cost remains resolved.
+- Quick ft² wire model is stored only as estimating/provenance metadata; Apply uses archived BOM rows and cannot silently replace exact cable-type BOM quantities.
+- Residential workflow UX now exposes `Apply to Job` / `Update Job from Calculation` separately from Save.
+- Apply is disabled when live inputs are dirty; live edits after Apply do not mutate Job until Save + Apply again.
+- UX states now distinguish `LIVE · NOT SAVED`, `LIVE CHANGES · NOT SAVED`, `SAVED · NOT APPLIED`, and `SAVED · APPLIED TO JOB`.
+- Job workspace top chip now represents the APPLIED calculation, not merely the active saved calculation; it flags `SAVED_NEWER_NOT_APPLIED` when a newer saved calculation exists.
+- Live Catalog pricing remains informational context only when saved/applied identities match; this does not mutate Job state.
+
+### Acceptance criteria
+- [x] Save alone leaves Job Materials unchanged.
+- [x] Explicit Apply/Update transaction exists.
+- [x] Applied calculation provenance survives persisted Job state/reload.
+- [x] Manual/other-source Job Materials are preserved.
+- [x] Re-Apply replaces prior Residential generated rows only.
+- [x] unresolved / explicit zero / positive Your Cost semantics preserved.
+- [x] Live edits after Apply do not silently mutate Job.
+- [x] Quick budget wire estimate cannot replace archived BOM quantities.
+- [x] Calculator UI distinguishes saved/applied state.
+- [x] Job workspace shows applied calculation and newer-saved/not-applied state.
+
+### Required regressions
+- [x] save-only material non-mutation;
+- [x] Apply saved calculation;
+- [x] same-domain re-apply;
+- [x] legacy Residential row migration;
+- [x] manual/other-source preservation;
+- [x] unresolved/zero/positive Your Cost;
+- [x] provenance persistence structure;
+- [x] saved edit after Apply remains Job-stable;
+- [x] quick wire budget does not alter BOM quantity;
+- [x] Job workspace applied/newer-saved provenance UI.
+
+### Completion evidence
+- Core/UX/test SHAs include: `b669ebe5fd3cc5921c53a7aec213e13e2886d167`, `748c76f574af98897179660773ef9b59fb1f43c1`, `3772c2bdb3de7e5394799153de7bc917957f021d`, `5faf4d68188aada0db511f79030429a90663debd`, `ff4d1a4ac697b5e3f7d61757038f0566bb5ec4de`, `23e99175238518c8f47fa4026597797671955ef2`, `8d3d8d9becde0f199ac407cd5b0e25116d72df76`, `c38b0b69a003f632d5478ea4231c72b59a64c383`, `0083f6a6bb4ea7a959e357ecea525cb81a23be67`, `87ff001656bcbafca4ba9807fc62c8f270744b9f`, `014bfc5c97da526fcde4d3993033e070f081f342`, `61b69fd9398c8e6260f123de47a6a95d2e3c144f`.
+- CI #273 passed the core Apply boundary at exact head `0083f6a6bb4ea7a959e357ecea525cb81a23be67`.
+- CI #275 exposed two legacy workspace assumptions; production semantics were retained and live-pricing context was restored without weakening applied provenance.
+- Final Stage 4 exact-head CI run `#276` — SUCCESS on `61b69fd9398c8e6260f123de47a6a95d2e3c144f`.
+
+---
+## STAGE 5 — JOB TOTALS / QUOTE PRICE CLARITY
 **Status:** `IN_PROGRESS`
 
 ### Required implementation
-- Separate Save Calculation from Apply to Job; saving alone must not mutate Job Materials.
-- Add explicit `Apply to Job` / `Update Job from calculation` transaction for a saved active calculation.
-- Persist provenance: calculation/archive ID, name, applied timestamp, source type/version.
-- Apply generated BOM through strict BOM cost semantics.
-- Preserve manual and non-Residential generated Job Materials.
-- Re-apply replaces only Residential applied-calculation rows, not manual/other-source rows.
-- blank Your Cost -> unresolved store; explicit 0 -> resolved zero; positive -> resolved cost.
-- Calculator edits after Apply must not mutate Job until explicit Save + Apply/Update.
-- Quick ft² wire mode is budget reference only and must not silently drive exact Job Material cable rows; Apply uses the saved calculation BOM/detailed material structure unless an explicit exact cable-type model exists.
-- Job/Calculator UI must show which calculation is currently applied and whether live changes are newer than applied state.
+- Clarify top Job metric labels and calculation provenance.
+- Separate contractor cost from customer selling/recommended price.
+- Display whether material cost is complete or has unresolved exclusions.
+- Show applied Residential calculation reference near Job summary metrics when applicable.
+- Remove or rename ambiguous duplicate concepts such as `Sales (Exact)` vs `Quote Total` unless their difference is explicitly defined in UI.
+- Ensure top metrics and detailed Summary consume the same authoritative calculation path.
+
+### Acceptance criteria
+- Every top metric has one unambiguous business meaning.
+- Contractor cost, recommended/customer price, approved quote and change orders are visually/semantically distinct.
+- Any unresolved material cost prevents a misleading “complete contractor cost” presentation.
+- Applied-calculation provenance is visible near summary state.
+- Header metrics and Summary cannot disagree for the same persisted Job state.
 
 ### Required regressions
-- Save-only leaves Job Materials unchanged;
-- Apply saved calculation;
-- same-source re-apply;
-- manual/other-source preservation;
-- unresolved/zero/positive Your Cost;
-- provenance persistence/reload;
-- calculator edit after Apply does not auto-mutate Job;
-- quick wire budget does not replace exact cable-type BOM rows.
+- material/labor/equipment/job-cost formulas;
+- unresolved-cost disclosure;
+- approved change-order handling;
+- Summary/header parity;
+- applied-calculation provenance display;
+- responsive phone/tablet/desktop metric labels.
 
 ### Completion evidence
 - Implementation SHA: `PENDING`
 - CI/test evidence: `PENDING`
-
----
-## STAGE 5 — JOB TOTALS / QUOTE PRICE CLARITY
-**Status:** `PENDING`
-Required: cost vs customer price vs approved quote clarity, unresolved disclosure, applied-calculation reference, remove ambiguous Sales/Quote labels, header/summary parity.
 
 ---
 ## STAGE 6 — QUOTE APPROVAL / MANUAL CUSTOMER-PRICE OVERRIDE / INVOICE BOUNDARY

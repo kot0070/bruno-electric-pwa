@@ -32,6 +32,7 @@ require('./residential-live.test.js');
 require('./residential-live-levels.test.js');
 require('./residential-live-history.test.js');
 require('./residential-live-workspace.test.js');
+require('./dispatch-journal-v2.test.js');
 require('./phase3-equipment.test.js');
 require('./service-worker.test.js');
 

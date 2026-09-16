@@ -1,7 +1,7 @@
 # Bruno Electric — Function / Capability Audit Master
 
 MASTER_STATUS: ACTIVE
-CURRENT_STAGE: STAGE_0_BASELINE_AND_REQUIREMENTS_INDEX
+CURRENT_STAGE: STAGE_1_RUNTIME_CAPABILITY_INVENTORY
 EXECUTION_MODE: STRICT_SEQUENTIAL
 IMPLEMENTATION_BRANCH: main
 AUDIT_BRANCH_POLICY: separate exact-SHA audit branches
@@ -93,24 +93,32 @@ Audit role cannot modify production behavior or weaken expectations to match cur
 ---
 
 # STAGE 0 — Baseline + Requirements Index + Browser Baseline
-STATUS: ACTIVE
+STATUS: DONE_ACCEPTED
 
-Required:
-- pin exact current `main`;
-- verify exact-head deterministic CI and test count;
-- inventory current/legacy/stale plans, state ledgers, developer reports and accepted audit evidence;
-- explicitly classify stale governance documents instead of treating them as current truth;
-- inspect browser-test infrastructure (`package.json`, Playwright config/tests, CI workflow, test server);
-- record Browser E2E baseline as PRESENT/PARTIAL/ABSENT;
-- create `audits/function-capability/REQUIREMENTS_INDEX.md`;
-- create initial `audits/function-capability/capabilities.json` with stable IDs and `browser_e2e_required` fields.
+Accepted evidence:
+- initial audit exact production SHA: `31a303dd28b752f5823be78512ee975902295d44`;
+- initial audit branch: `audit/function-capability-stage0-31a303d`;
+- finding `FCA-S0-P1-001`: per-capability governing source traceability missing;
+- corrective production SHA: `846e8cd55aaa7a1fbeb28536dab008f21c8cc6b4`;
+- exact-head deterministic CI: Electrical Calculator Tests run #532 / id `35159627641`, SUCCESS;
+- independent re-audit branch: `audit/function-capability-stage0-reaudit-846e8cd`;
+- re-audit verdict: `A_ACCEPT`, P0=0, P1=0;
+- Browser E2E baseline: `ABSENT`, intentionally to be implemented at Stage 3, never treated as capability PASS evidence.
 
-Gate: exact baseline recorded; deterministic CI proven; every initial capability has a traceable source/classification; Browser baseline explicitly known; no requirement inferred only from chat memory.
+Completed requirements:
+- pinned exact current main for Stage 0 audit;
+- verified exact-head deterministic CI and accounted for the unchanged 767-test inventory;
+- inventoried/classified current and stale governance sources;
+- inspected browser-test infrastructure and recorded Browser E2E baseline as ABSENT;
+- created `audits/function-capability/REQUIREMENTS_INDEX.md`;
+- created `audits/function-capability/capabilities.json` with stable IDs, per-capability governing source traceability and browser fields.
+
+Gate: ACCEPTED.
 
 ---
 
 # STAGE 1 — Runtime Capability Inventory
-STATUS: LOCKED
+STATUS: ACTIVE
 Map current UI controls/routes -> handlers -> runtime -> storage/services; identify dead/unreachable runtime, visible actions without a valid runtime path, duplicate/conflicting implementations, dormant prototypes and service-worker loading paths. Deliver `RUNTIME_CAPABILITY_MAP.md` and expand `capabilities.json`. Every user action must map to a Capability ID or infrastructure-only classification.
 
 ---
@@ -192,14 +200,14 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 handoff:
   role_completed: ORCHESTRATOR
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
-  verdict_or_gate: STAGE_0_ACTIVE
+  verdict_or_gate: STAGE_1_ACTIVE
   blockers: []
   files_to_read_next:
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_STATE.json
-    - dev-plans/ELECTRICAL_TASKS_AUTONOMOUS_MASTER.md
+    - audits/function-capability/capabilities.json
   next_role: AUDIT_ORCHESTRATOR
-  next_action: Complete Stage 0 baseline/requirements/browser-infrastructure inventory, exact-head CI evidence and initial capability registry, then audit and accept before Stage 1.
+  next_action: Complete Stage 1 runtime capability inventory by mapping current UI/actions to handlers, runtime modules and persistence/services, create RUNTIME_CAPABILITY_MAP.md, expand capabilities.json, run exact-head CI and independent audit before Stage 2.
   prohibited_actions:
     - mark_capability_pass_without_evidence
     - silently_change_requirement_to_match_runtime

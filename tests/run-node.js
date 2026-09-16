@@ -26,6 +26,7 @@ require('../electric-phase3.js');
 require('../electric-custom-materials.js');
 require('../electric-pricing-domain-guard.js');
 require('./electrical-calculators.test.js');
+require('./math-corrective-boundaries.test.js');
 require('./data-integrity.test.js');
 require('./navigation-shell.test.js');
 require('./navigation-deeplink.test.js');

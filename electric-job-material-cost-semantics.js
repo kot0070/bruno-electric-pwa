@@ -1,0 +1,18 @@
+/* Bruno Electric — Job Materials unresolved-cost display bridge.
+ * Unresolved generated materials live in state.materialsUnresolved, never in materialsUsed numeric-cost math.
+ * This module makes those blocked rows visible in Job Materials and keeps the unresolved count explicit.
+ */
+(function(root){
+'use strict';
+var JOB_KEY='bruno-electric-v1',rendering=false;
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function read(){try{var j=JSON.parse(root.localStorage.getItem(JOB_KEY)||'null');return j&&typeof j==='object'?j:null}catch(e){return null}}
+function unresolved(){var j=read();return j&&Array.isArray(j.materialsUnresolved)?j.materialsUnresolved:[]}
+function removeInjected(body){var old=body.querySelectorAll('tr[data-bruno-unresolved="1"]');for(var i=0;i<old.length;i++)old[i].remove()}
+function ensureBanner(rows){var panel=root.document&&root.document.getElementById?root.document.getElementById('panel-materials'):null;if(!panel)return;var id='bruno-unresolved-materials-banner',el=root.document.getElementById(id);if(!rows.length){if(el)el.remove();return}if(!el){el=root.document.createElement('div');el.id=id;el.setAttribute('role','alert');el.style.cssText='margin:.75rem 0;padding:.65rem .8rem;border:1px solid var(--warning,#ffcc66);border-left:3px solid var(--warning,#ffcc66);border-radius:8px;background:rgba(255,204,102,.08);color:var(--text,#e8eef6);font-size:.86rem;line-height:1.45';var body=root.document.getElementById('mat-used-body');var table=body&&body.closest?body.closest('table'):null;if(table&&table.parentNode)table.parentNode.insertBefore(el,table);else panel.insertBefore(el,panel.firstChild)}el.textContent=rows.length+' generated material'+(rows.length===1?'':'s')+' blocked from project material-cost totals because Your Cost is unresolved. Enter Your Cost in Catalog/Pricing & Margins, then Confirm & Save again.'}
+function render(){if(rendering||!root.document)return;var body=root.document.getElementById('mat-used-body');if(!body)return;rendering=true;try{removeInjected(body);var rows=unresolved();ensureBanner(rows);for(var i=0;i<rows.length;i++){var r=rows[i]||{},tr=root.document.createElement('tr');tr.setAttribute('data-bruno-unresolved','1');tr.setAttribute('data-cost-state','unresolved');tr.innerHTML='<td>'+esc(r.qty||0)+'</td><td>'+esc(r.item||'')+'<div style="font-size:.72rem;color:var(--warning,#ffcc66);font-weight:700">UNRESOLVED COST</div></td><td>'+esc(r.part||'')+'</td><td>'+esc(r.units||'EA')+'</td><td class="num-cell" data-cost-state="unresolved">Unresolved</td><td>'+esc(r.lastPriceUpdate||'')+'</td><td class="num-cell" data-cost-state="unresolved">Excluded</td><td class="col-actions">—</td>';body.appendChild(tr)}}finally{rendering=false}}
+function queue(){root.setTimeout(render,0);root.setTimeout(render,80)}
+function install(){render();var body=root.document.getElementById('mat-used-body');if(body&&root.MutationObserver){var mo=new root.MutationObserver(function(){if(!rendering)queue()});mo.observe(body,{childList:true})}root.document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('button'):null;if(!b)return;var t=String(b.textContent||'');if(t.indexOf('Confirm & Save')>=0)root.setTimeout(render,120)},true);root.addEventListener&&root.addEventListener('storage',function(e){if(e&&e.key===JOB_KEY)queue()})}
+root.BrunoJobMaterialCostSemantics=Object.freeze({readUnresolved:unresolved,render:render,version:'strict-v1'});
+if(root.document){if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',install,{once:true});else install()}
+})(typeof window!=='undefined'?window:globalThis);

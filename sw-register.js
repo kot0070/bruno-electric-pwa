@@ -1,6 +1,61 @@
 (function () {
   'use strict';
 
+  /* The legacy inline Pricing & Margins renderer models blank Your Cost as
+   * Customer Price. Disable that runtime synchronously, before DOMContentLoaded
+   * starts the inline app, and give the strict module a dedicated tbody.
+   */
+  function prepareStrictMarginsRuntime() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    var strict=document.getElementById('margins-body-strict');
+    if (strict) return;
+    var legacy=document.getElementById('margins-body');
+    if (!legacy || !legacy.parentNode) return;
+    strict=document.createElement('tbody');
+    strict.id='margins-body-strict';
+    strict.setAttribute('data-pricing-margins-runtime','strict-v2');
+    legacy.parentNode.insertBefore(strict,legacy);
+    legacy.parentNode.removeChild(legacy);
+    var panel=document.getElementById('panel-margins');
+    if (panel) {
+      panel.setAttribute('data-pricing-margins-runtime','strict-v2');
+      panel.setAttribute('data-legacy-margins-disabled','1');
+    }
+  }
+
+  function loadCatalogCostSemantics() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoCatalogCostSemantics || document.querySelector('script[data-be-catalog-cost-semantics]')) return;
+    var c=document.createElement('script');
+    c.src='./electric-catalog-cost-semantics.js';
+    c.defer=true;
+    c.dataset.beCatalogCostSemantics='1';
+    c.onerror=function(){};
+    document.head.appendChild(c);
+  }
+
+  function loadPricingMarginsSemantics() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoPricingMarginsSemantics || document.querySelector('script[data-be-pricing-margins-semantics]')) return;
+    var m=document.createElement('script');
+    m.src='./electric-pricing-margins-semantics.js';
+    m.defer=true;
+    m.dataset.bePricingMarginsSemantics='1';
+    m.onerror=function(){};
+    document.head.appendChild(m);
+  }
+
+  function loadJobMaterialCostSemantics() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoJobMaterialCostSemantics || document.querySelector('script[data-be-job-material-cost-semantics]')) return;
+    var j=document.createElement('script');
+    j.src='./electric-job-material-cost-semantics.js';
+    j.defer=true;
+    j.dataset.beJobMaterialCostSemantics='1';
+    j.onerror=function(){};
+    document.head.appendChild(j);
+  }
+
   function loadDispatchJournal() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoDispatchJournalV2 || document.querySelector('script[data-be-dispatch-v2]')) return;
@@ -72,6 +127,10 @@
   }
 
   function loadAppNavigation() {
+    prepareStrictMarginsRuntime();
+    loadCatalogCostSemantics();
+    loadPricingMarginsSemantics();
+    loadJobMaterialCostSemantics();
     loadCompactHeader();
     loadDispatchJournal();
     loadResidentialWorkspaceBridge();
@@ -85,6 +144,9 @@
     n.onerror=loadWorkspaceEnhancement;
     document.head.appendChild(n);
   }
+
+  /* Critical ordering: execute before the inline app's DOMContentLoaded init. */
+  prepareStrictMarginsRuntime();
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadAppNavigation, { once: true });
   else loadAppNavigation();

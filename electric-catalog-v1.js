@@ -1,5 +1,5 @@
 /* Bruno Electric — editable estimating catalog starter.
- * Prices are placeholders only. Missing items seed at $0 and never overwrite an existing user's cost/price.
+ * Customer prices are placeholders only. Missing Your Cost stays unresolved until the user enters it.
  */
 (function (root) {
   'use strict';
@@ -65,7 +65,7 @@
     ['label-panel','FASTENERS / CONSUMABLES','Panel/circuit labels allowance','EA'],
     ['staple-nm','FASTENERS / CONSUMABLES','NM cable staple allowance','EA']
   ].map(function (r) {
-    return {id:'ecat-'+r[0],category:r[1],item:r[2],units:r[3],unitCost:0,yourCost:0,vendor:'',part:'',notes:'Estimating placeholder — user price required',priceStatus:'PLACEHOLDER',catalogVersion:'electric-v1'};
+    return {id:'ecat-'+r[0],category:r[1],item:r[2],units:r[3],unitCost:0,yourCost:'',vendor:'',part:'',notes:'Estimating placeholder — customer price and Your Cost require user input',priceStatus:'PLACEHOLDER',catalogVersion:'electric-v1'};
   });
 
   function norm(s) { return String(s || '').trim().toLowerCase().replace(/\s+/g,' '); }
@@ -80,5 +80,5 @@
     return out;
   }
 
-  root.BrunoElectricalCatalogV1 = Object.freeze({items:ITEMS, mergeMissing:mergeMissing, version:'electric-v1', pricePolicy:'Estimating placeholders only; user-edited prices persist and are never overwritten by catalog completion.'});
+  root.BrunoElectricalCatalogV1 = Object.freeze({items:ITEMS, mergeMissing:mergeMissing, version:'electric-v1', pricePolicy:'Customer-price placeholders may be zero; blank/missing Your Cost is unresolved. User-edited prices/costs persist and are never overwritten by catalog completion.'});
 })(window);

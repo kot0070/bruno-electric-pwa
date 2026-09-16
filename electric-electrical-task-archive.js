@@ -3,7 +3,7 @@
 'use strict';
 var API=root.BrunoElectricalTasks,T=root.BrunoElectricalTaskMaterialTakeoff,G=root.BrunoGroundingEngine;
 if(!API||!T||!G)throw new Error('Electrical Tasks, Stage 5 takeoff and grounding runtimes must load before Task Archive');
-var VERSION='electrical-task-archive-v2',JOB_KEY='bruno-electric-v1';
+var VERSION='electrical-task-archive-v3',JOB_KEY='bruno-electric-v1';
 function clone(x){return x==null?x:JSON.parse(JSON.stringify(x))}
 function parse(raw){try{var x=JSON.parse(raw||'null');return x&&typeof x==='object'&&!Array.isArray(x)?x:null}catch(e){return null}}
 function readJob(){return parse(root.localStorage&&root.localStorage.getItem(JOB_KEY))}
@@ -17,7 +17,7 @@ function rename(id,name){var t=API.get(id);if(!t)throw new Error('Electrical Tas
 function duplicate(id){return API.duplicate(id)}
 function remove(id){return API.remove(id)}
 function groundingFromInputs(x){x=x||{};return{ocpdAmps:x.ocpdAmps,neutralMode:x.neutralMode,egcMaterial:x.egcMaterial}}
-function calculateTask(t){if(t.taskType==='FEEDER_PANEL_RUN')return G.calculate(t.inputs||{},groundingFromInputs(t.inputs));if(t.taskType==='BRANCH_CIRCUIT_RUN'&&root.BrunoElectricalTaskAdvanced)return root.BrunoElectricalTaskAdvanced.calculate(t.taskType,t.inputs||{},groundingFromInputs(t.inputs));throw new Error('Recalculate is not supported for this task type yet')}
+function calculateTask(t){if(t.taskType==='FEEDER_PANEL_RUN')return G.calculate(t.inputs||{},groundingFromInputs(t.inputs));if(root.BrunoElectricalTaskAdvanced)return root.BrunoElectricalTaskAdvanced.calculate(t.taskType,t.inputs||{},groundingFromInputs(t.inputs));throw new Error('Recalculate is not supported for this task type yet')}
 function recalculate(id){var t=API.get(id);if(!t)throw new Error('Electrical Task not found in active Job');var g=calculateTask(t);t.status=g.status;t.result=clone(g.result);t.candidates=clone(g.candidates||[]);t.calculationSteps=clone(g.calculationSteps||[]);t.warnings=clone(g.warnings||[]);t.unresolved=clone(g.unresolved||[]);t.engineVersion=g.taskTemplateEngineVersion||g.engineVersion||t.engineVersion;return API.save(t)}
 function activeRows(j,id){var u=Array.isArray(j&&j.materialsUsed)?j.materialsUsed:[],r=Array.isArray(j&&j.materialsUnresolved)?j.materialsUnresolved:[];return{used:u.filter(function(x){return x&&String(x.sourceTaskId)===String(id)&&x.materialType==='ELECTRICAL_TASK_TAKEOFF'}),unresolved:r.filter(function(x){return x&&String(x.sourceTaskId)===String(id)&&x.materialType==='ELECTRICAL_TASK_TAKEOFF'})}}
 function apply(plan){return T.apply(plan)}

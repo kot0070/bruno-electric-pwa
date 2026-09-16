@@ -40,6 +40,7 @@ require('./residential-wire-takeoff.test.js');
 require('./residential-save-archive-ux.test.js');
 require('./job-summary-semantics.test.js');
 require('./quote-lifecycle.test.js');
+require('./catalog-job-ux-semantics.test.js');
 require('./dispatch-journal-v2.test.js');
 require('./project-calculator.test.js');
 require('./phase3-equipment.test.js');

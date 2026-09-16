@@ -1,19 +1,21 @@
 # Bruno Electric — Stage 1 Runtime Capability Map
 
-STATUS: STAGE_1_IMPLEMENTATION_EVIDENCE
-MAPPED_MAIN_SHA: `fe983638dcd84f358077354e667ecb953165c560`
+STATUS: STAGE_1_DONE_ACCEPTED
+RUNTIME_BASE_SHA: `c04a1c6807ab40e142eea25d8fe40405ff139b86`
+STAGE_1_ACCEPTANCE_SHA: `16f725d56f034d55a6ae2e5e46acf67a08f95d05`
 SCOPE: current reachable runtime, loaders, UI actions, handlers, persistence, services and conflicting/dormant paths
 
-This map is runtime evidence only. It does **not** promote user-facing capabilities to PASS; real-browser proof remains mandatory under the Function Capability Audit Master.
+`c04a1c6` is the exact Stage 1 independent re-audit runtime SHA. The delta from `c04a1c6` to Stage 1 acceptance SHA `16f725d` changed only Function Capability Audit governance files, not production/runtime files. This map is runtime evidence only. It does **not** promote user-facing capabilities to PASS; real-browser proof remains mandatory under the Function Capability Audit Master.
 
 ## 1. Runtime topology
 
 ### Main Job workspace (`index.html`)
 - `index.html` is the legacy single-page Job workspace. It owns the base Job state, core tabs, fixed-price/T&M UI, materials, catalog, workers, Company profiles, change orders, P&L, import/export and print actions.
 - Primary Job persistence key: `bruno-electric-v1`.
-- Additional legacy/device keys visible in the inline runtime include Company profiles, UI preferences and Catalog accordion state.
-- `sw-register.js` is not only service-worker registration; it is the runtime enhancement loader for the current semantic/capability modules.
+- Additional device/local vaults include Company profiles, UI preferences, Catalog accordion state and the current Dispatch Journal v3 standalone keys.
+- `sw-register.js` is not only service-worker registration; it is the runtime enhancement loader for current semantic/capability modules.
 - Current navigation is injected by `electric-app-navigation.js` + `electric-workspace.js`; deep-link restoration is `electric-navigation-bridge.js`.
+- `electric-app-navigation.js` loads `electric-app-backup-dispatch.js` on the Job workspace so full-app backup/restore includes the current Journal v3 vaults.
 
 ### Electrical Tools (`electrical-tools.html`)
 - Loads the base electrical calculation/reference/catalog/BOM/Residential/Phase-3 stack directly.
@@ -30,8 +32,8 @@ This map is runtime evidence only. It does **not** promote user-facing capabilit
 - Dispatch Journal v3 re-renders `#panel-dispatch`, superseding the inline legacy Dispatch UI while the legacy state model still exists in `index.html`.
 
 ### PWA
-- Service worker cache: `bruno-electric-v67`.
-- `CORE_SHELL` includes main Job workspace, Electrical Tools, navigation/workspace overlays, current pricing/custom/quote modules, all current Electrical Tasks stages, Residential modules and calculation UIs.
+- Service worker cache: `bruno-electric-v68`.
+- `CORE_SHELL` includes the main Job workspace, Electrical Tools, navigation/workspace overlays, `electric-app-backup-dispatch.js`, current pricing/custom/quote modules, all current Electrical Tasks stages, Residential modules and calculation UIs.
 - Install requires all `CORE_SHELL` entries; optional icons may fail without blocking install.
 - Fetch strategy is network-refresh with cache fallback; navigation falls back to cached `index.html`.
 
@@ -41,8 +43,8 @@ This map is runtime evidence only. It does **not** promote user-facing capabilit
 |---|---|---|---|---|
 | CAP-NAV-001 | desktop side nav, tablet rail, phone bottom nav | `electric-workspace.js` `openGroup/openTab`; `electrical-tools-shell.js` links/picker | `index.html` panels or `electrical-tools.html` | navigation only |
 | CAP-NAV-002 | `#be=GROUP&tab=...` | `electric-app-navigation.js` parse/href + `electric-navigation-bridge.js` click restore | canonical source tab | URL hash / cross-page navigation |
-| CAP-JRN-001 | Journal → Call Journal / Dispatch | current overlay `electric-dispatch-journal-v2.js` | call/helper/tax journal runtime | **separate keys** `bruno-electric-dispatch-journal-v2`, `bruno-electric-dispatch-settings-v2` |
-| CAP-ELC-001 | Calculator → Project Calculator / Electrical Tools | `electrical-tools-shell.js`, `electrical-tools-ui.js` | tool sections and current engine modules | calculations mostly non-persistent; BOM actions mutate active Job |
+| CAP-JRN-001 | Journal → Call Journal / Dispatch | current overlay `electric-dispatch-journal-v2.js` | call/helper/tax journal runtime | standalone keys `bruno-electric-dispatch-journal-v2`, `bruno-electric-dispatch-settings-v2` |
+| CAP-ELC-001 | Calculator → Project Calculator / Electrical Tools | `electrical-tools-shell.js`, `electrical-tools-ui.js` | tool sections and current engine modules | calculations mostly non-persistent; explicit BOM actions mutate active Job |
 | CAP-QTE-001 | Job → Customer Price / Quote | inline quote runtime + `electric-quote-lifecycle.js` | live recommendation → approval candidate | Job key `bruno-electric-v1` |
 | CAP-TM-001 | Job → Invoice | inline T&M runtime | T&M document path | Job key; remains separate from fixed-price approval |
 | CAP-CAT-001/002 | Catalog | inline Catalog + strict overlays + `electric-custom-materials.js` | standard/custom Catalog and Job add | Job-scoped `catalog`, `materialsUsed`, `materialsUnresolved` |
@@ -55,8 +57,8 @@ This map is runtime evidence only. It does **not** promote user-facing capabilit
 | New blank Job | header `#btn-blank` | inline `index.html` state reset path | replaces current `bruno-electric-v1`; device vaults intentionally preserved | CURRENT |
 | Export current Job | header `#btn-export`, Help shortcut | inline `doExportJob()` | JSON download of current `state` | CURRENT |
 | Import current Job | header `#btn-import` | inline import reader → Job payload validation/apply | replaces current Job state | CURRENT |
-| Export app backup | header `#btn-export-app`, Help shortcut | inline `doExportApp()` | downloads `{job, companies, uiPrefs, catalogOpen}` | CURRENT, **gap candidate for Dispatch v3** |
-| Import app backup | header `#btn-import-app` | inline `applyAppPayload()` | restores supported payload members | CURRENT, **gap candidate for Dispatch v3** |
+| Export app backup | header `#btn-export-app`, Help shortcut | `doExportApp()` + `electric-app-backup-dispatch.js` export wrapper | downloads base app payload plus `dispatchJournalV3.data/settings` | CURRENT; Stage 1 backup blocker corrected |
+| Import app backup | header `#btn-import-app` | `applyAppPayload()` + `electric-app-backup-dispatch.js` restore wrapper | restores supported base members and Journal v3 standalone keys when present; legacy backups do not erase existing Journal v3 | CURRENT; Stage 1 backup blocker corrected |
 | Company profiles | More → Company | inline profile handlers | `bruno-electric-profiles-v1` | CURRENT |
 | Company export/import | Company + Help shortcuts | inline company backup handlers | profiles vault only | CURRENT |
 | Workers roster/pay/burden | More → Workers | inline personnel handlers | current Job/personnel model | CURRENT |
@@ -64,10 +66,10 @@ This map is runtime evidence only. It does **not** promote user-facing capabilit
 | Theme / zoom | Help/preferences controls | inline UI preference handlers | `bruno-electric-ui-prefs-v1` | CURRENT |
 | Catalog accordion state | Catalog | inline state handlers | Catalog open-state key | CURRENT |
 
-## 4. Dispatch / Journal runtime collision
+## 4. Dispatch / Journal runtime and persistence boundary
 
 ### Current reachable runtime
-`sw-register.js` loads `electric-dispatch-journal-v2.js` on the Job workspace. That module replaces/re-renders `#panel-dispatch` and stores current journal data in:
+`sw-register.js` loads `electric-dispatch-journal-v2.js` on the Job workspace. The module replaces/re-renders `#panel-dispatch` and stores current journal data in:
 - `bruno-electric-dispatch-journal-v2`
 - `bruno-electric-dispatch-settings-v2`
 
@@ -81,12 +83,18 @@ It supports:
 ### Dormant/conflicting legacy runtime
 `index.html` still normalizes, renders and binds a legacy `state.dispatch` inside `bruno-electric-v1`. After the v3 overlay re-renders the panel, the legacy UI path is no longer the authoritative visible journal, but its state remains in the Job model.
 
-### Cross-capability persistence conflict candidate
-The visible Help text says full app backup includes Dispatch. However current `doExportApp()` exports only:
-`job`, `companies`, `uiPrefs`, `catalogOpen`.
-The current Dispatch v3 standalone keys are absent. Therefore a user can export a nominal full app backup without the currently visible Journal v3 data/settings.
+### Stage 1 finding lifecycle
+At audit SHA `138b3de84f158d57ec0046d6dbed80049c1ba299`, independent audit finding `FCA-S1-P1-001` proved that full app backup omitted the visible Journal v3 standalone data/settings while Help promised Dispatch inclusion.
 
-Candidate finding for independent audit: `FCA-S1-DISPATCH-BACKUP`.
+The production correction added `electric-app-backup-dispatch.js`, deterministic regression tests and PWA core-shell inclusion. Re-audit at exact SHA `c04a1c6807ab40e142eea25d8fe40405ff139b86` verified:
+- app export includes `dispatchJournalV3.data/settings`;
+- app import restores both current Journal v3 standalone keys when the block is present;
+- legacy app backups without the new block do not destructively erase an existing Journal v3;
+- PWA cache includes the bridge.
+
+`FCA-S1-P1-001`: **VERIFIED_CLOSED**.
+
+Remaining architectural observation `FCA-S1-P2-001`: legacy `state.dispatch` and current standalone Journal v3 coexist and can diverge. Stage 2 must classify the intended persistence/isolation/migration contract. This is not a Stage 1 P0/P1 blocker.
 
 ## 5. Catalog / materials / cost semantics
 
@@ -119,8 +127,7 @@ Runtime semantics:
 | CAP-RES-002 | Save Calculation; Saved Calculations archive; Duplicate/Load/Delete | `electric-residential-save-archive-ux.js` proxies accepted history runtime | active/archive snapshot in Job state |
 | CAP-RES-003 | Apply to Job / Update Job from Calculation | `electric-residential-apply-job.js::applyActive()` | transaction replaces only prior residential-generated Job material rows, preserves manual/other generated rows, writes provenance `residentialAppliedCalculation` |
 
-Important current boundary:
-`Live edits -> Save Calculation -> Apply to Job`.
+Important current boundary: `Live edits -> Save Calculation -> Apply to Job`.
 Save does not mutate Job Materials. Editing after Apply marks the live view dirty and does not mutate the applied Job until a new Save + Apply.
 
 ## 7. Electrical core tools
@@ -202,7 +209,7 @@ Snapshot includes customer amount, price source, recommendation at approval, man
 Legacy T&M print controls are deliberately relabeled as T&M and remain separate from the fixed-price approved snapshot path.
 
 ## 10. Runtime-discovered current capabilities added to registry
-The initial Stage 0 registry was requirement-led. Stage 1 must also represent current reachable product actions discovered in runtime:
+The initial Stage 0 registry was requirement-led. Stage 1 also represents reachable product actions discovered in runtime:
 - CAP-ELC-002..011: individual electrical/project/equipment tools;
 - CAP-ET-016: task rename/duplicate/delete lifecycle;
 - CAP-CO-001: Change Orders;
@@ -210,11 +217,11 @@ The initial Stage 0 registry was requirement-led. Stage 1 must also represent cu
 - CAP-PNL-001: Profit & Loss;
 - CAP-WRK-001: Workers roster/burden/pay calculator;
 - CAP-CMP-001: Company/letterhead profiles;
-- CAP-BKP-001..004: Job, full-app, Company and Workers backup/restore surfaces;
+- CAP-BKP-001..004: full-app, Company, Workers and Help backup/restore surfaces;
 - CAP-UI-001: theme/zoom preference persistence;
 - CAP-REF-001: in-product electrical/reference surfaces.
 
-These remain `UNTESTED` at this stage unless a later evidence stage classifies them.
+These remain `UNTESTED`; Stage 1 runtime reachability is not capability PASS evidence.
 
 ## 11. Infrastructure-only / dormant / conflicting paths
 
@@ -228,11 +235,11 @@ These remain `UNTESTED` at this stage unless a later evidence stage classifies t
 - base Electrical Tasks non-feeder `onchange` says templates are planned, but Stage7 intentionally replaces that handler after load and enables accepted advanced templates;
 - base Residential legacy save controls remain as the implementation target behind the newer explicit Save/Archive UX proxy.
 
-### Conflict candidates for Stage 1 independent audit
-1. **Dispatch full-backup mismatch:** current visible Dispatch v3 standalone keys are not present in `doExportApp()` / `applyAppPayload()`, while Help claims full backup includes Dispatch.
-2. **Dual Dispatch state models:** legacy `state.dispatch` and current standalone Journal can diverge; only one is visible/current.
+### Findings / conflicts after Stage 1 corrective cycle
+1. **`FCA-S1-P1-001` Dispatch full-backup mismatch:** corrected and `VERIFIED_CLOSED`; current full app backup includes Journal v3 data/settings.
+2. **`FCA-S1-P2-001` Dual Dispatch state models:** remains an architectural classification item for Stage 2; legacy `state.dispatch` and current standalone Journal can diverge.
 
-No production correction is made in this Stage 1 mapping document. Severity and corrective requirement belong to the independent exact-SHA audit.
+No capability is promoted to PASS by this map.
 
 ## 12. Stage 1 completion checklist
 - [x] current shell/pages identified
@@ -243,8 +250,18 @@ No production correction is made in this Stage 1 mapping document. Severity and 
 - [x] dormant/overridden paths identified
 - [x] runtime-discovered product capabilities identified for registry expansion
 - [x] conflicting implementation candidate recorded without silently changing requirements
-- [ ] capability registry expansion committed
-- [ ] fresh exact-head deterministic CI
-- [ ] independent exact-SHA Stage 1 audit
-- [ ] all P0/P1 corrected and re-audited
-- [ ] Stage 1 ACCEPT
+- [x] capability registry expansion committed
+- [x] fresh exact-head deterministic CI
+- [x] independent exact-SHA Stage 1 audit
+- [x] all Stage 1 P0/P1 corrected and re-audited
+- [x] Stage 1 ACCEPT
+
+Accepted evidence:
+- inventory SHA `138b3de84f158d57ec0046d6dbed80049c1ba299`, CI run #536 / id `35160109516`, SUCCESS;
+- initial audit branch `audit/function-capability-stage1-138b3de`, verdict `A_REJECT_CORRECTIVE_REQUIRED`, P0=0/P1=1;
+- corrective runtime SHA `7b39a8fb55be5a525cf157124fcb14e42903c758`, CI run #543 / id `35163156620`, SUCCESS, 770/770;
+- re-audit runtime/governance SHA `c04a1c6807ab40e142eea25d8fe40405ff139b86`, CI run #545 / id `35163241400`, SUCCESS;
+- re-audit branch `audit/function-capability-stage1-reaudit-c04a1c6`, verdict `A_ACCEPT`, P0=0/P1=0;
+- authoritative Stage 1 acceptance / Stage 2 entry SHA `16f725d56f034d55a6ae2e5e46acf67a08f95d05`, CI run #547 / id `35163361606`, SUCCESS; delta from re-audit SHA is governance-only.
+
+Stage 2 is the next active gate and must compare each capability `PLAN/SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT` without treating this Stage 1 map as PASS proof.

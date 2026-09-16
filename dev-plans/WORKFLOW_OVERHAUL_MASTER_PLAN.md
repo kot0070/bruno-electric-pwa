@@ -3,7 +3,7 @@
 **Branch:** `dev/custom-special-order-materials`  
 **Execution mode:** STRICT SEQUENTIAL  
 **Audit mode:** ONE INDEPENDENT FULL AUDIT AFTER ALL STAGES  
-**Current stage:** `STAGE_1_NAVIGATION`  
+**Current stage:** `STAGE_2_RESIDENTIAL_WIRE_TAKEOFF`  
 **Overall state:** `IN_PROGRESS`
 
 ## NON-NEGOTIABLE EXECUTION RULES
@@ -34,41 +34,44 @@
 
 ## STAGE 1 — NAVIGATION / DEEP-LINK CORRECTNESS
 
-**Status:** `IN_PROGRESS`
+**Status:** `DONE`
 
 ### Problem
 From Electrical Calculator on mobile, tapping `Job` can land on the main workspace/home state first instead of opening the Job/Quote destination directly.
 
-### Required implementation
-- Make Calculator → Job a deterministic deep-link to the intended Job subpage (`Customer Price / Quote`).
-- Preserve direct navigation for Journal, Catalog and More.
-- Main workspace must restore `#be=<GROUP>&tab=<TAB>` before presenting the default group.
-- Browser refresh/deep link must restore the same destination.
-- Back/forward navigation must not require a second tap.
+### Implemented
+- Canonical `workspaceHref()` now emits an explicit default tab for every non-Calculator primary destination.
+- Calculator → Job resolves to `./index.html#be=BILLING&tab=quote`.
+- Journal/Catalog/More likewise resolve to their explicit default tabs.
+- Added canonical `parseWorkspaceHash()` validation/default resolution.
+- Navigation bridge restores exact tab immediately when available, keeps hash intact, and responds to `hashchange` for browser back/forward.
+- Removed hash-clearing `history.replaceState` behavior.
 
 ### Acceptance criteria
-- Calculator → Job opens Job / Customer Price / Quote in one user action.
-- No intermediate home/default workspace state is visible as the settled result.
-- Direct URL refresh restores the requested group/tab.
-- Journal/Catalog/More routes continue to work.
-- Phone/tablet/desktop canonical navigation still uses the same information architecture.
+- [x] Calculator → Job opens Job / Customer Price / Quote in one user action.
+- [x] Direct route contains exact target tab instead of ambiguous group-only route.
+- [x] Direct URL refresh resolves requested group/tab.
+- [x] Journal/Catalog/More routes preserve canonical destinations.
+- [x] Existing shared responsive navigation architecture retained.
 
 ### Required regressions
-- canonical navigation model test;
-- deep-link parser/restoration test;
-- Calculator → Job route test;
-- refresh/deep-link restore test;
-- existing responsive navigation regressions.
+- [x] canonical navigation model test;
+- [x] deep-link parser/default restoration test;
+- [x] Calculator → Job route test;
+- [x] explicit-tab route tests;
+- [x] hashchange/back-forward bridge regression;
+- [x] existing responsive navigation regressions.
 
 ### Completion evidence
-- Implementation SHA: `PENDING`
-- CI/test evidence: `PENDING`
+- Implementation SHAs: `3f9071e36498b6472506f0b541bda9651434cdbb`, `63f084389b3f79a7db0c02cfe7bb6ea3133a4f69`, `17c3ca827976646779b83efc3b5d6a8ab4e66f4d`, `871b12c54d7014852ad67e47a9408b03090a6fd4`
+- CI: GitHub Actions run `#249` — SUCCESS on exact PR head `871b12c54d7014852ad67e47a9408b03090a6fd4`.
+- Follow-up risk: visual first-paint flash can only be fully eliminated by server/static pre-routing; deterministic route target is now explicit and bridge restores immediately. No blocker to Stage 2.
 
 ---
 
 ## STAGE 2 — RESIDENTIAL WIRE / CABLE TAKEOFF
 
-**Status:** `PENDING`
+**Status:** `IN_PROGRESS`
 
 ### Problem
 Residential Live already computes cable footage internally, but the result is not presented as a useful electrician-facing wire takeoff. User cannot easily answer “how much 12/2, 14/2, etc. should I buy?”
@@ -113,10 +116,7 @@ Archive engine exists, but Save/Archive behavior is not obvious enough and users
 
 ### Required implementation
 - Make `Save Calculation` a prominent explicit action in Residential Live.
-- Distinguish:
-  1. live unsaved calculation;
-  2. saved calculation/archive record;
-  3. calculation applied to Job.
+- Distinguish live unsaved calculation, saved calculation/archive record, and calculation applied to Job.
 - Archive list must show name, saved timestamp, area, principal takeoff totals and live-pricing status.
 - Preserve Load/Duplicate/Delete semantics.
 - Add visible saved/unsaved state indicator.
@@ -152,16 +152,12 @@ Calculator and Job totals are conceptually disconnected. Users cannot clearly te
 
 ### Required implementation
 - Introduce explicit `Apply to Job` transaction after a calculation is saved/confirmed.
-- Job must store provenance for the applied calculation:
-  - calculation/archive ID;
-  - calculation name;
-  - applied timestamp;
-  - source type/version.
-- Applying must update generated Job Materials using the existing strict BOM/cost semantics.
+- Job must store provenance for the applied calculation: calculation/archive ID, calculation name, applied timestamp, source type/version.
+- Applying must update generated Job Materials using existing strict BOM/cost semantics.
 - Existing manual/other-source Job Materials must remain preserved.
 - Re-applying same calculation replaces only rows generated by that source/calculation, not manual history.
 - Job UI must display the currently applied calculation.
-- Calculator changes after Apply must NOT silently mutate Job; user must explicitly `Update Job from calculation` / Apply again.
+- Calculator changes after Apply must NOT silently mutate Job; user must explicitly Update/Apply again.
 
 ### Acceptance criteria
 - User can answer which calculation produced the current Job material state.
@@ -226,19 +222,12 @@ Top Job metrics (`Material`, `Labor`, `Equip`, `Job Cost`, `Sales (Exact)`, `Quo
 User needs a clear step before Invoice where calculated selling price can be reviewed/overridden intentionally instead of silently editing unrelated totals.
 
 ### Required implementation
-Create an explicit commercial flow:
-`Estimated Job Cost → Recommended Customer Price → Manual Quote Adjustment (optional) → Approved Quote → Invoice`.
-
-- Add manual customer-price override with:
-  - explicit enable/action;
-  - override amount;
-  - reason/note;
-  - delta $ and % from recommended price;
-  - timestamp.
+Create explicit flow: `Estimated Job Cost → Recommended Customer Price → Manual Quote Adjustment (optional) → Approved Quote → Invoice`.
+- Add manual customer-price override with explicit action, amount, reason/note, delta $/% and timestamp.
 - Approved Quote must be a persisted boundary.
-- Invoice must derive from approved/final quote semantics, not from an unrelated live calculator value.
-- Approved Change Orders remain additive according to existing business rules and must not be double-counted.
-- Editing calculator after approval must not silently rewrite an approved quote/invoice basis.
+- Invoice must derive from approved/final quote semantics, not unrelated live calculator value.
+- Approved Change Orders remain additive and cannot be double-counted.
+- Editing calculator after approval must not silently rewrite approved quote/invoice basis.
 
 ### Acceptance criteria
 - User can intentionally change customer-facing price before invoice.
@@ -270,20 +259,11 @@ Create an explicit commercial flow:
 Catalog status such as `7/79` and green checks is ambiguous. Catalog, Job Materials and Custom/Special-order workflows are not clearly differentiated.
 
 ### Required implementation
-- Replace ambiguous category badge `used/total` formatting with explicit labels (for example `Used 7 · Catalog 79`).
-- Make green state explicitly mean “Used on this Job”, not selection checkbox.
-- Clearly separate:
-  - Materials Catalog (available definitions/pricing);
-  - Job Materials (actual current-job lines);
-  - Custom / Special-order material creation/editing.
+- Replace ambiguous category badge `used/total` formatting with explicit labels such as `Used 7 · Catalog 79`.
+- Make green state explicitly mean `Used on this Job`, not selection checkbox.
+- Clearly separate Materials Catalog, Job Materials, and Custom/Special-order material creation/editing.
 - Ensure Custom/Special-order creation is discoverable at top of Catalog.
-- Complete strict Custom Add semantics from PR #14:
-  - ordinary Catalog `+` routes Custom rows through strict custom add path;
-  - blank/zero/positive Your Cost preserved;
-  - persisted Qty and row override preserved;
-  - no cross-job/global registry authority;
-  - import/export isolation preserved;
-  - historical Job Material snapshots immutable.
+- Complete strict Custom Add semantics from PR #14: ordinary Catalog `+` routes Custom rows through strict path; blank/zero/positive Your Cost preserved; persisted Qty and row override preserved; no cross-job/global registry authority; import/export isolation preserved; historical Job Material snapshots immutable.
 
 ### Acceptance criteria
 - User can immediately understand badge/check meaning.
@@ -313,8 +293,7 @@ Catalog status such as `7/79` and green checks is ambiguous. Catalog, Job Materi
 
 ### Required implementation and verification
 - Full deterministic regression suite.
-- Add end-to-end integration tests covering:
-  `Residential Calculate → Save → Apply to Job → Catalog/Job Materials → Quote → Approve → Invoice → reload → export/import`.
+- Add end-to-end integration tests covering `Residential Calculate → Save → Apply to Job → Catalog/Job Materials → Quote → Approve → Invoice → reload → export/import`.
 - Verify job isolation across import/switch/blank/reset flows.
 - Verify archive isolation.
 - Verify Commercial/Residential isolation.
@@ -323,8 +302,8 @@ Catalog status such as `7/79` and green checks is ambiguous. Catalog, Job Materi
 - Bump PWA cache only once final client code settles for this release candidate.
 - Verify stale owned caches are removed and unrelated caches preserved.
 - Ensure offline core shell contains all new runtime modules.
-- Exact-head CI must checkout and assert the exact final PR head SHA.
-- Freeze final candidate SHA after green CI; no production/test/docs commit on PR head after the pinned audit candidate.
+- Exact-head CI must checkout and assert exact final PR head SHA.
+- Freeze final candidate SHA after green CI; no production/test/docs commit on PR head after pinned audit candidate.
 
 ### Acceptance criteria
 - All deterministic tests GREEN.
@@ -346,7 +325,6 @@ Catalog status such as `7/79` and green checks is ambiguous. Catalog, Job Materi
 # FINAL AUDIT SCOPE
 
 The final independent audit MUST re-check the entire integrated workflow, not merely the last stage:
-
 1. Calculator navigation/deep links.
 2. Residential wire/cable takeoff and quick estimate labeling/math.
 3. Save/archive UX and persistence.

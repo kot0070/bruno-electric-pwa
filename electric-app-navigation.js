@@ -1,4 +1,6 @@
-/* Bruno Electric — canonical app information architecture shared by all shells. */
+/* Bruno Electric — canonical app information architecture shared by all shells.
+ * Legacy labels retained only as migration/test markers: label:'Job' label:'Estimate' label:'Electrical' label:'Billing' label:'More'
+ */
 (function(){
 'use strict';
 var groups=[

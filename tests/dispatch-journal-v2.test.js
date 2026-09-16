@@ -7,9 +7,11 @@ function ok(v,msg){if(!v)throw new Error(msg||'assertion failed')}
 var src=fs.readFileSync(path.join(__dirname,'..','electric-dispatch-journal-v2.js'),'utf8');
 var nav=fs.readFileSync(path.join(__dirname,'..','electric-app-navigation.js'),'utf8');
 var reg=fs.readFileSync(path.join(__dirname,'..','sw-register.js'),'utf8');
-var mode=fs.readFileSync(path.join(__dirname,'..','electric-project-mode.js'),'utf8');
-test('dispatch journal is canonical home and supports archive period modes',function(){ok(nav.indexOf("label:'Journal'")>=0,'Journal primary nav missing');ok(nav.indexOf("defaultTab:'dispatch'")>=0,'dispatch not home default');['day','week','month','quarter'].forEach(function(x){ok(src.indexOf("value=\""+x+"\"")>=0,x+' view missing')})});
-test('dispatch journal includes calls helpers and persistent tax settings',function(){['bruno-electric-dispatch-journal-v2','bruno-electric-dispatch-settings-v2','Add call','Helpers','Tax & journal settings','Dripping Springs, TX'].forEach(function(x){ok(src.indexOf(x)>=0,x+' missing')});ok(src.indexOf('businessNet:net-helperGross')>=0,'helper cost not deducted from net')});
-test('project calculator exposes residential and commercial modes',function(){ok(mode.indexOf('Residential / dwelling')>=0,'residential mode missing');ok(mode.indexOf('Commercial')>=0,'commercial mode missing');ok(mode.indexOf("['res','res-live','res-takeoff']")>=0,'residential isolation list missing');ok(reg.indexOf('electric-project-mode.js')>=0,'project mode loader missing')});
+test('dispatch journal remains canonical home and supports period archive',function(){ok(nav.indexOf("label:'Journal'")>=0,'Journal primary nav missing');ok(nav.indexOf("defaultTab:'dispatch'")>=0,'dispatch not home default');['day','week','month','quarter'].forEach(function(x){ok(src.indexOf("value=\""+x+"\"")>=0,x+' view missing')})});
+test('scheduled and cancelled calls are not earned',function(){ok(src.indexOf("var earned=c.status==='completed'")>=0,'earned status gate missing');ok(src.indexOf("if(!earned)return{gross:0,tax:0,net:0,hours:0}")>=0,'non-completed calls can still earn revenue')});
+test('helper costs iterate every date in selected period including zero-call days',function(){ok(src.indexOf('eachDate(r[0],r[1]')>=0,'period does not iterate calendar dates');ok(src.indexOf('helperCostForDate(h,s,day)')>=0,'helper daily cost not evaluated independently of calls')});
+test('helper economics are versioned by effective date',function(){['revisions','revisionFor','putRevision','Changes are versioned from the selected date','Disable from'].forEach(function(x){ok(src.indexOf(x)>=0,x+' missing')});ok(src.indexOf('data.helpers=data.helpers.filter')<0,'helper delete still erases historical economics')});
+test('completed calls snapshot applied owner tax',function(){ok(src.indexOf('taxPctApplied')>=0,'call tax snapshot missing');ok(src.indexOf("status==='completed'")>=0,'completed status snapshot boundary missing')});
+test('obsolete global project mode loader is removed',function(){ok(reg.indexOf('electric-project-mode.js')<0,'old project mode selector still injected')});
 global.BRUNO_TEST_RESULTS=out;
 })();

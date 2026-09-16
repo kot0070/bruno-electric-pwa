@@ -1,6 +1,17 @@
 (function () {
   'use strict';
 
+  function loadCatalogCostSemantics() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoCatalogCostSemantics || document.querySelector('script[data-be-catalog-cost-semantics]')) return;
+    var c=document.createElement('script');
+    c.src='./electric-catalog-cost-semantics.js';
+    c.defer=true;
+    c.dataset.beCatalogCostSemantics='1';
+    c.onerror=function(){};
+    document.head.appendChild(c);
+  }
+
   function loadDispatchJournal() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoDispatchJournalV2 || document.querySelector('script[data-be-dispatch-v2]')) return;
@@ -72,6 +83,7 @@
   }
 
   function loadAppNavigation() {
+    loadCatalogCostSemantics();
     loadCompactHeader();
     loadDispatchJournal();
     loadResidentialWorkspaceBridge();

@@ -1,5 +1,6 @@
 name: Electrical Calculator Tests
 # Audit gate: PR runs must test the exact pull-request head SHA, never the synthetic merge ref.
+# Final candidate trigger: this workflow commit is intentionally the last dev-branch change before audit.
 
 on:
   push:

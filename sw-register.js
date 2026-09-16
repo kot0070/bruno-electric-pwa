@@ -1,6 +1,28 @@
 (function () {
   'use strict';
 
+  /* The legacy inline Pricing & Margins renderer models blank Your Cost as
+   * Customer Price. Disable that runtime synchronously, before DOMContentLoaded
+   * starts the inline app, and give the strict module a dedicated tbody.
+   */
+  function prepareStrictMarginsRuntime() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    var strict=document.getElementById('margins-body-strict');
+    if (strict) return;
+    var legacy=document.getElementById('margins-body');
+    if (!legacy || !legacy.parentNode) return;
+    strict=document.createElement('tbody');
+    strict.id='margins-body-strict';
+    strict.setAttribute('data-pricing-margins-runtime','strict-v2');
+    legacy.parentNode.insertBefore(strict,legacy);
+    legacy.parentNode.removeChild(legacy);
+    var panel=document.getElementById('panel-margins');
+    if (panel) {
+      panel.setAttribute('data-pricing-margins-runtime','strict-v2');
+      panel.setAttribute('data-legacy-margins-disabled','1');
+    }
+  }
+
   function loadCatalogCostSemantics() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoCatalogCostSemantics || document.querySelector('script[data-be-catalog-cost-semantics]')) return;
@@ -94,6 +116,7 @@
   }
 
   function loadAppNavigation() {
+    prepareStrictMarginsRuntime();
     loadCatalogCostSemantics();
     loadPricingMarginsSemantics();
     loadCompactHeader();
@@ -109,6 +132,9 @@
     n.onerror=loadWorkspaceEnhancement;
     document.head.appendChild(n);
   }
+
+  /* Critical ordering: execute before the inline app's DOMContentLoaded init. */
+  prepareStrictMarginsRuntime();
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadAppNavigation, { once: true });
   else loadAppNavigation();

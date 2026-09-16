@@ -12,19 +12,19 @@ Before any legacy write to the main job key is committed, `CUSTOM_SPECIAL_ORDER`
 
 Save/Edit/Delete update the canonical registry and persisted job synchronously, then request an immediate page reload for UI / closed-over-state rehydration. Add-to-Job preserves the same registry and strict cost semantics.
 
-Integration regressions now reproduce the exact stale-write sequence for create, edit and delete, plus blank / explicit-zero / positive Your Cost rows.
+Integration regressions reproduce the exact stale-write sequence for create, edit and delete, plus blank / explicit-zero / positive Your Cost rows.
 
 ## Exact-head CI correction
 The GitHub Actions workflow now explicitly checks out `github.event.pull_request.head.sha` for PR runs and verifies `git rev-parse HEAD` against that expected SHA before tests execute.
 
-The production/test corrective implementation passed as exact HEAD before this documentation-only commit:
-- implementation SHA: `b78b1ea261f3246ab178ab06a8ba5967a1282ef5`
-- run #232: SUCCESS
-- `TESTED_HEAD_SHA=b78b1ea261f3246ab178ab06a8ba5967a1282ef5`
-- `EXPECTED_HEAD_SHA=b78b1ea261f3246ab178ab06a8ba5967a1282ef5`
+Final release candidate:
+- exact candidate SHA: `076260e55b227258fd30f1533fa51be596b15962`
+- GitHub Actions run: #234
+- conclusion: SUCCESS
+- checkout ref: `076260e55b227258fd30f1533fa51be596b15962`
+- `TESTED_HEAD_SHA=076260e55b227258fd30f1533fa51be596b15962`
+- `EXPECTED_HEAD_SHA=076260e55b227258fd30f1533fa51be596b15962`
 - deterministic suite: 511/511 passed.
-
-This report commit itself is documentation-only; the next audit candidate must be pinned only after exact-head CI has run on the final branch HEAD.
 
 ## Preserved feature scope
 - persisted Qty;
@@ -39,4 +39,4 @@ This report commit itself is documentation-only; the next audit candidate must b
 - PWA v48.
 
 ## Release policy
-PR #14 remains unmerged until independent audit acceptance of the next pinned exact HEAD.
+PR #14 remains unmerged until independent audit acceptance of exact candidate HEAD `076260e55b227258fd30f1533fa51be596b15962`.

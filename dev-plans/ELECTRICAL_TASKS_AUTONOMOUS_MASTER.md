@@ -1,7 +1,7 @@
 # Bruno Electric — Electrical Tasks / Field Calculator Autonomous Master
 
-MASTER_STATUS: IN_PROGRESS
-CURRENT_STAGE: STAGE_12_FINAL_RELEASE_CANDIDATE_MASTER
+MASTER_STATUS: MASTER_COMPLETE
+CURRENT_STAGE: COMPLETE
 EXECUTION_MODE: STRICT_SEQUENTIAL
 IMPLEMENTATION_BRANCH: main
 AUDIT_BRANCH_POLICY: separate exact-SHA audit branches
@@ -62,7 +62,7 @@ The detailed authoritative ledger is `dev-plans/ELECTRICAL_TASKS_MASTER_STATE.js
 | 9 | DONE_ACCEPTED | `aa1fcc63300abfca0cc9b41c6147fda0d8780068` | 751 | A_ACCEPT |
 | 10 | DONE_ACCEPTED | `7baa60b75f0fb7e67983749db167c49d97777904` | 759 | A_ACCEPT |
 | 11 | DONE_ACCEPTED | `68ff1dc9084ac67e147707d983f0c7316af6499d` | 767 | A_ACCEPT |
-| 12 | ACTIVE | release-candidate corrective/re-audit | >=767 required | pending final A_ACCEPT |
+| 12 | DONE_ACCEPTED | `7895688e2b4d67f25634820822582a4c86635bb3` | >=767 | A_ACCEPT after corrective re-audit |
 
 ---
 
@@ -162,12 +162,12 @@ Accepted P2: repository has no automated screenshot-diff / real-device browser f
 ---
 
 # STAGE 12 — Final Release Candidate Master
-STATUS: ACTIVE
-
-Completion requires every stage accepted, 0 P0, 0 P1, exact final release SHA, deterministic suite count >= prior accepted baseline, exact-head CI GREEN, final PWA cache version, final developer report, full independent release audit, and re-audit after any corrective work.
+STATUS: DONE_ACCEPTED
 
 Final developer report: `dev-reports/ELECTRICAL_TASKS_FINAL_RELEASE_CANDIDATE.md`.
 
-Initial Stage 12 audit on release candidate `84f8a6cd834e3c49874a9bfcbeab67c6057ff5cc` found no product-code P0/P1 but raised one governance P1 because this master was stale. This document update is the required corrective. Exact-head CI and final re-audit are required before changing `MASTER_STATUS` to `MASTER_COMPLETE`.
+Initial Stage 12 audit on `84f8a6cd834e3c49874a9bfcbeab67c6057ff5cc` found one governance P1: stale master execution state. The corrective synchronized this master with the authoritative state ledger. Exact-head CI run #519 on `7895688e2b4d67f25634820822582a4c86635bb3` passed, and the independent re-audit `audits/reports/ELECTRICAL_TASKS_STAGE12_REAUDIT_7895688.md` returned `A_ACCEPT` with P0=0/P1=0.
 
-MASTER_COMPLETE only when Stage 12 receives final exact-SHA A_ACCEPT with 0 P0/P1.
+All stages 0–12 are DONE_ACCEPTED. Final completion metadata may change the repository head without changing product runtime; the accepted release-candidate code/evidence head is `7895688e2b4d67f25634820822582a4c86635bb3`.
+
+MASTER_COMPLETE

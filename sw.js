@@ -1,9 +1,9 @@
-/* Bruno Electric Estimating — app shell offline cache. Previous cache: bruno-electric-v66; current: bruno-electric-v67. Historical audited baseline: bruno-electric-v45. */
-const CACHE = 'bruno-electric-v67';
+/* Bruno Electric Estimating — app shell offline cache. Previous cache: bruno-electric-v67; current: bruno-electric-v68. Historical audited baseline: bruno-electric-v45. */
+const CACHE = 'bruno-electric-v68';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [
   './','./index.html','./electrical-tools.html','./manifest.webmanifest','./sw-register.js',
-  './electric-app-navigation.js','./electric-workspace.js','./electric-compact-header.js','./electric-navigation-bridge.js',
+  './electric-app-navigation.js','./electric-workspace.js','./electric-compact-header.js','./electric-navigation-bridge.js','./electric-app-backup-dispatch.js',
   './electric-dispatch-journal-v2.js','./electric-catalog-cost-semantics.js','./electric-pricing-margins-semantics.js','./electric-job-material-cost-semantics.js','./electric-job-summary-semantics.js','./electric-pricing-domain-guard.js','./electric-quote-lifecycle.js','./electric-fixed-price-invoice.js','./electric-catalog-job-ux-semantics.js','./electric-custom-materials.js',
   './electric-reference-data.js','./electric-calculators.js','./electric-catalog-v1.js','./electric-bom.js','./electric-electrical-tasks.js','./electric-electrical-task-engine.js','./electric-raceway-engine.js','./electric-grounding-reference.js','./electric-grounding-engine.js','./electric-electrical-task-advanced.js','./electric-electrical-task-solver.js','./electric-electrical-task-material-takeoff.js','./electric-electrical-task-archive.js','./electrical-tasks-ui.js','./electrical-tasks-stage2-ui.js','./electrical-tasks-stage3-ui.js','./electrical-tasks-stage4-ui.js','./electrical-tasks-stage5-ui.js','./electrical-tasks-stage6-ui.js','./electrical-tasks-stage7-ui.js','./electrical-tasks-stage8-ui.js',
   './electric-residential-rules.js','./electric-residential.js','./electric-residential-pricing.js','./electric-residential-catalog-bridge.js','./electric-residential-takeoff.js','./electric-residential-live.js','./electric-residential-live-levels.js','./electric-residential-live-history.js','./electric-residential-history-job-scope.js','./electric-residential-live-workspace.js','./electric-residential-wire-takeoff.js','./electric-residential-apply-job.js','./electric-residential-save-archive-ux.js',

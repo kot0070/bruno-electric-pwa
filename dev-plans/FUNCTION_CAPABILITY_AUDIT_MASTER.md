@@ -1,7 +1,7 @@
 # Bruno Electric — Function / Capability Audit Master
 
 MASTER_STATUS: ACTIVE
-CURRENT_STAGE: STAGE_2_REQUIREMENT_TO_RUNTIME_GAP_AUDIT
+CURRENT_STAGE: STAGE_3_EXECUTABLE_CORE_WORKFLOWS_PLAYWRIGHT_FOUNDATION
 EXECUTION_MODE: STRICT_SEQUENTIAL
 IMPLEMENTATION_BRANCH: main
 AUDIT_BRANCH_POLICY: separate exact-SHA audit branches
@@ -128,7 +128,7 @@ Accepted Stage 1 evidence:
 - re-audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE1_REAUDIT_c04a1c6.md`;
 - re-audit verdict: `A_ACCEPT`, P0=0, P1=0;
 - `FCA-S1-P1-001`: `VERIFIED_CLOSED`;
-- `FCA-S1-P2-001`: dual Dispatch persistence models retained as a Stage 2 architectural classification item, not a Stage 1 blocker.
+- `FCA-S1-P2-001`: dual Dispatch persistence models retained as a later architectural classification item, not a Stage 1 blocker.
 
 Capability status boundary: Stage 1 acceptance does not mark high-risk user-facing capabilities PASS; browser proof remains mandatory later.
 
@@ -137,16 +137,56 @@ Gate: ACCEPTED.
 ---
 
 # STAGE 2 — Requirement-to-Runtime Gap Audit
-STATUS: ACTIVE
+STATUS: DONE_ACCEPTED
 For every capability compare `PLAN/SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT`. Classify exact/different-valid/partial/missing/unreachable/undocumented/obsolete. Auditor does not fix production. Freeze findings with exact SHA.
 
-Stage 2 must explicitly carry forward and classify `FCA-S1-P2-001` (dual Dispatch persistence models) and must not reinterpret the absence of Browser E2E as PASS evidence.
+Accepted Stage 2 evidence:
+- Stage 2 entry exact SHA: `16f725d56f034d55a6ae2e5e46acf67a08f95d05`;
+- entry exact-head CI: run #547 / id `35163361606`, SUCCESS;
+- initial audit branch: `audit/function-capability-stage2-16f725d`;
+- initial audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE2_AUDIT_16f725d.md`;
+- initial verdict: `A_REJECT_CORRECTIVE_REQUIRED`, P0=0, P1=1;
+- `FCA-S2-P1-001`: Stage 1 registry/runtime-map evidence was stale after the accepted Dispatch backup corrective;
+- corrective evidence SHA: `b246300e215dc1241434aef9c341e7a12397c29e`;
+- corrective exact-head CI: run #549 / id `35163662864`, SUCCESS;
+- corrective re-audit branch: `audit/function-capability-stage2-reaudit-b246300`;
+- corrective re-audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE2_CORRECTIVE_REAUDIT_b246300.md`;
+- corrective verdict: `A_ACCEPT_CORRECTIVE`; `FCA-S2-P1-001` -> `VERIFIED_CLOSED`;
+- full exact-SHA matrix branch: `audit/function-capability-stage2-matrix-b246300`;
+- full matrix: `audits/function-capability/REQUIREMENT_RUNTIME_GAP_MATRIX.md`;
+- final audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE2_AUDIT_b246300.md`;
+- final verdict: `A_ACCEPT`, P0=0, P1=0;
+- all registered Capability IDs classified across PLAN/SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT;
+- no MISSING registered current capability identified; no source/runtime-proven UNREACHABLE registered current capability identified;
+- no user-facing capability PASS was granted by Stage 2.
+
+Explicit non-blocking P2 carry:
+- `FCA-S2-P2-001`: visible Journal v3 standalone persistence coexists with legacy Job-scoped `state.dispatch`; long-term persistence/isolation/migration contract remains to be normalized;
+- `FCA-S2-P2-002`: `CAP-ET-016` registry metadata under-classifies an Electrical Tasks Stage 6 requirement already present in the accepted master;
+- `FCA-S2-P2-003`: several reachable secondary product surfaces lack independent current PLAN/SPEC granularity;
+- `FCA-S2-P2-004`: Electrical Tasks Stage 11 v67 is historical accepted evidence; current Function Capability runtime is v68 after the later Dispatch backup corrective.
+
+Gate: ACCEPTED.
 
 ---
 
 # STAGE 3 — Executable Core Workflows + Playwright Foundation
-STATUS: LOCKED
-Implement Playwright infrastructure and mandatory journeys. Also retain deterministic integration tests. Minimum journeys include Job/materials isolation, Residential, Electrical Tasks, advanced templates, Task Solver, Quote/Approved Quote/Invoice, Import/Export and reload resilience. CI must require deterministic suite GREEN AND Playwright GREEN against the same exact SHA.
+STATUS: ACTIVE
+Implement Playwright infrastructure and mandatory journeys. Retain deterministic integration tests. Minimum journeys include Job/materials isolation, Residential, Electrical Tasks, advanced templates, Task Solver, Quote/Approved Quote/Invoice, Import/Export and reload resilience. Binding browser policy requires the full mandatory set `E2E-01` through `E2E-12` to be represented. CI must require deterministic suite GREEN AND Playwright GREEN against the same exact SHA.
+
+Stage 3 implementation requirements:
+- root Playwright project configuration;
+- deterministic local static server serving the repository application without external application credentials;
+- Chromium mandatory in CI;
+- page errors / uncaught browser errors / fatal required asset-load failures fail critical journeys;
+- isolated browser storage by default with explicit persistence/reload tests where required;
+- desktop, phone and tablet viewport projects/coverage as required by journey semantics;
+- trace, screenshots and report retained on failure where CI supports artifacts;
+- exact checkout SHA must equal the SHA reported/tested by the workflow;
+- existing deterministic Node suite remains a required same-SHA gate;
+- browser tests must drive the real rendered UI for user-facing actions, not replace UI proof with direct module calls.
+
+Gate: exact-head deterministic + Playwright CI, independent exact-SHA Stage 3 audit, correction of every P0/P1, re-audit, then ACCEPT.
 
 ---
 
@@ -215,19 +255,20 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 handoff:
   role_completed: ORCHESTRATOR
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
-  verdict_or_gate: STAGE_2_ACTIVE
+  verdict_or_gate: STAGE_3_ACTIVE
   blockers: []
   files_to_read_next:
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_STATE.json
-    - audits/function-capability/REQUIREMENTS_INDEX.md
+    - audits/function-capability/REQUIREMENT_RUNTIME_GAP_MATRIX.md
     - audits/function-capability/RUNTIME_CAPABILITY_MAP.md
     - audits/function-capability/capabilities.json
-  next_role: INDEPENDENT_AUDITOR
-  next_action: Start Stage 2 from current authoritative main. Pin exact SHA, create a separate exact-SHA Stage 2 audit branch, compare every capability PLAN/SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT, freeze findings, and classify FCA-S1-P2-001. Do not modify production from the audit branch.
+    - .github/workflows/electrical-calculators.yml
+  next_role: IMPLEMENTER
+  next_action: Implement the Playwright foundation and mandatory E2E-01..E2E-12 journeys against the real UI, require deterministic Node tests and Chromium browser tests on the same exact SHA in CI, then create a separate exact-SHA Stage 3 audit branch. Correct every P0/P1 before Stage 3 acceptance.
   prohibited_actions:
     - mark_capability_pass_without_evidence
     - silently_change_requirement_to_match_runtime
-    - skip_browser_e2e_for_high_risk_user_capability
+    - substitute_direct_module_calls_for_required_real_browser_ui_proof
     - skip_p0_p1_corrective_cycle
 ```

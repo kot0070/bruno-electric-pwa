@@ -3,7 +3,7 @@
 **Branch:** `dev/custom-special-order-materials`  
 **Execution mode:** STRICT SEQUENTIAL  
 **Audit mode:** ONE INDEPENDENT FULL AUDIT AFTER ALL STAGES  
-**Current stage:** `STAGE_6_QUOTE_APPROVAL_INVOICE_BOUNDARY`  
+**Current stage:** `STAGE_7_CATALOG_JOB_MATERIALS_CUSTOM`  
 **Overall state:** `IN_PROGRESS`
 
 ## NON-NEGOTIABLE EXECUTION RULES
@@ -22,94 +22,86 @@
 ## STAGE 1 — NAVIGATION / DEEP-LINK CORRECTNESS
 **Status:** `DONE`
 Implemented explicit-tab routes, canonical hash parser/default resolution, immediate exact-tab restore, preserved hash and hashchange/back-forward support.
-**Evidence:** SHAs `3f9071e36498b6472506f0b541bda9651434cdbb`, `63f084389b3f79a7db0c02cfe7bb6ea3133a4f69`, `17c3ca827976646779b83efc3b5d6a8ab4e66f4d`, `871b12c54d7014852ad67e47a9408b03090a6fd4`; CI #249 SUCCESS.
+**Evidence:** CI #249 SUCCESS.
 
 ---
 ## STAGE 2 — RESIDENTIAL WIRE / CABLE TAKEOFF
 **Status:** `DONE`
-Implemented visible detailed routing takeoff, 12/2 vs 14/2 totals, selectable waste, optional quick ft² budget mode explicitly NOT NEC, validation, archive metadata persistence/restore.
-**Evidence:** SHAs `3c7efe11bc0054da3ed10fcf0a08844b4e1d5867`, `2a089aac1f37049a8cd260c302170363b81d06dc`, `53891291b7a749afccec42d96d88e72d5bb2ec9f`, `e8f18a383917f70e15b910dea5fbce5884aa4f6d`; CI #254 SUCCESS.
+Implemented detailed routing takeoff, 12/2 vs 14/2 totals, waste, quick ft² budget mode explicitly NOT NEC, validation and archive persistence.
+**Evidence:** CI #254 SUCCESS.
 
 ---
 ## STAGE 3 — SAVE CALCULATION / ARCHIVE UX
 **Status:** `DONE`
-Implemented prominent explicit save workflow, dirty/saved state, richer archive overview, idempotent unchanged-save identity, archive immutability, duplicate/delete isolation and no autosave.
-**Evidence:** SHAs `489d009847e37edf0ae0c52d4213dfbb1af73438`, `9167976ff975c21f46fe00d8d3396faefbb7233c`, `7a249467e95dcc4c606fd0ae10751c9ba4bd304f`, `67c38822d3535c3b2444eb2b93fa3790bba89108`, `ac795a5280482c9599f4383523c09b06efe67dd2`, `3146d69d166b459d7ffb0d43ad449eb53cd90b7b`, `dcfe721158c77daba27686da7653766ffbf03b1e`; CI #262 SUCCESS.
+Implemented explicit Save workflow, dirty/saved state, archive overview, idempotent unchanged-save identity, archive immutability, duplicate/delete isolation and no autosave.
+**Evidence:** CI #262 SUCCESS.
 
 ---
 ## STAGE 4 — APPLY CALCULATION TO JOB / PROVENANCE
 **Status:** `DONE`
-
-### Implemented
-- Save Calculation and Apply to Job are distinct persisted intent boundaries.
-- `electric-residential-live-history.js::confirmAtomic()` remains only as compatibility SAVE boundary and does not mutate Job Materials.
-- Explicit `electric-residential-apply-job.js::applyActive()` transaction applies the saved calculation through strict BOM semantics.
-- Applied provenance persists calculation ID/name, timestamps, source type/version/tag, row counts and wire-takeoff metadata.
-- Re-Apply replaces Residential-generated rows only; manual and non-Residential rows remain untouched.
-- blank / explicit zero / positive Your Cost semantics remain strict.
-- Quick ft² wire budget remains metadata only and cannot silently replace exact archived BOM quantities.
-- Calculator UX and Job workspace distinguish saved, applied, dirty and newer-saved/not-applied states.
-
-### Completion evidence
-- Final Stage 4 exact-head CI run `#276` — SUCCESS on `61b69fd9398c8e6260f123de47a6a95d2e3c144f`.
+Implemented separate Save vs Apply boundaries, strict BOM Apply transaction, applied provenance, Residential-only re-Apply replacement, unresolved/zero/positive cost semantics, and saved/applied/newer-saved UX.
+**Evidence:** final exact-head CI #276 SUCCESS on `61b69fd9398c8e6260f123de47a6a95d2e3c144f`.
 
 ---
 ## STAGE 5 — JOB TOTALS / QUOTE PRICE CLARITY
 **Status:** `DONE`
-
-### Implemented
-- Added `electric-job-summary-semantics.js` as a semantic/validation layer over the existing authoritative `calcAll() -> updateChips/renderSummary` path; no duplicate pricing formula engine was introduced.
-- Header labels now explicitly distinguish Material/Labor/Equipment contractor cost, Estimated Job Cost, Recommended Customer Price exact, Approved Change Orders and Customer Quote Total.
-- `materialsUnresolved[]` produces first-class `INCOMPLETE MATERIAL COST` disclosure; unresolved rows remain excluded from numeric contractor-cost/profit math.
-- Summary disclosure shows applied Residential calculation provenance when present.
-- Added runtime parity guard comparing header vs Summary for material cost, total contractor cost and recommended exact customer price; mismatch produces `METRIC PARITY WARNING` and `data-summary-parity=FAIL`.
-- Stage 5 test suite verifies semantic labels, unresolved disclosure, parity endpoints/provenance, exact-vs-rounded quote semantics and absence of a duplicate OH/profit formula implementation.
-
-### Acceptance criteria
-- [x] Top metrics have unambiguous business meaning.
-- [x] Contractor cost, recommended customer price, approved CO and quote total are semantically distinct.
-- [x] Unresolved material cost cannot present contractor cost as complete.
-- [x] Applied-calculation provenance is visible near Summary state.
-- [x] Header/Summary parity is actively checked.
-- [x] No second sales/OH/profit calculation engine was introduced.
-
-### Completion evidence
-- Core/test/bootstrap SHAs include `0a16d340951ec863965cdb482cee7a649dff38eb`, `f60a0d52e8a652c26cc82fbf19eb8c6ce7e1b748`, `ee99d5f3407445ef911021156ed3dab8fd855d54`, `1e9425dad863fc12708626d8399d3cd52e437728`.
-- Exact-head CI run `#281` — SUCCESS on `1e9425dad863fc12708626d8399d3cd52e437728`.
+Added semantic/validation layer over the authoritative legacy calculation path, explicit contractor-cost vs recommended/customer quote labels, unresolved-cost disclosure, applied-calculation reference and header↔Summary parity guard without duplicating OH/profit math.
+**Evidence:** exact-head CI #281 SUCCESS on `1e9425dad863fc12708626d8399d3cd52e437728`.
 
 ---
 ## STAGE 6 — QUOTE APPROVAL / MANUAL CUSTOMER-PRICE OVERRIDE / INVOICE BOUNDARY
+**Status:** `DONE`
+
+### Implemented
+- Added `electric-quote-lifecycle.js` with explicit fixed-price lifecycle: `Estimated Job Cost → Recommended Customer Price → Manual Quote Adjustment (optional) → Approved Quote snapshot → Invoice basis`.
+- Blank manual adjustment means use live recommended price; positive manual amount is explicit `MANUAL_ADJUSTMENT`; explicit zero/negative/invalid values fail closed.
+- Approval persists immutable snapshot with approval ID, revision, approval timestamp, customer amount, recommended-at-approval amount, manual override, approved CO amount, unresolved-cost condition, quote metadata and applied-calculation provenance.
+- Post-approval calculator/Catalog/Job edits do not mutate approved amount or approval-time cost/provenance fields.
+- Re-approval increments revision and preserves prior approval in history.
+- Fixed-price invoice basis is unavailable before approval and is sourced only from `APPROVED_QUOTE_SNAPSHOT`, never from moving live recommendation.
+- Quote UX explicitly labels LIVE RECOMMENDED / MANUAL ADJUSTED / APPROVED SNAPSHOT and exposes immutable invoice basis.
+
+### Acceptance criteria
+- [x] Manual override is explicit and blank-safe.
+- [x] Zero override policy is fail-closed.
+- [x] Approval is persisted immutable snapshot.
+- [x] Unresolved material cost is disclosed and snapshotted rather than coerced to zero.
+- [x] Applied-calculation provenance is snapshotted.
+- [x] Re-approval has distinct revision/history.
+- [x] Invoice basis depends on approved snapshot only.
+
+### Completion evidence
+- Implementation/test/bootstrap SHAs include `3399908bb0a39a497032383b02bbfbf20db9af32`, `00a5f05d1a71dbb5c65a2f05240afa3625d966a4`, `ff4ed617acfe340df1a67ff4b4b7555c47127b33`, `3aa18cf6ce3d3529dfc0b75ce99b9975c1511f1c`.
+- Exact-head CI run #286 — SUCCESS on `3aa18cf6ce3d3529dfc0b75ce99b9975c1511f1c`.
+
+---
+## STAGE 7 — CATALOG / JOB MATERIALS UX CLARITY + CUSTOM MATERIAL COMPLETION
 **Status:** `IN_PROGRESS`
 
 ### Required implementation
-- Establish explicit flow: `Estimated Job Cost → Recommended Customer Price → Manual Quote Adjustment (optional) → Approved Quote → Invoice`.
-- Manual customer-price override must be explicit, persisted and attributable; blank override means use recommended price, not numeric zero.
-- Approve Quote must snapshot the customer amount and material/job/calculation provenance at that moment.
-- Calculator/Catalog/Job edits after approval must never silently rewrite the approved quote snapshot.
-- Invoice must reference an approved quote snapshot (plus explicit approved post-quote changes where supported), never a moving live recommended price.
-- Re-approval must create/update an explicit approval event rather than masquerading as the original approval.
-- Approval must disclose unresolved contractor-cost condition without converting unresolved cost to zero.
-- Quote/Invoice UX must clearly show LIVE RECOMMENDED vs MANUAL ADJUSTED vs APPROVED SNAPSHOT state.
+- Explicit row-level `CATALOG`, `USED ON JOB`, `CUSTOM / SPECIAL ORDER`, and Job Material source semantics.
+- Clarify that Catalog definitions and Job Material snapshots are different records.
+- Keep Custom Material creation/editing discoverable at the top of Catalog.
+- All Custom Catalog Add paths must route through strict custom cost semantics.
+- Project-scoped Custom definitions must remain isolated to the active imported/new job state; no device-global custom registry may leak between jobs.
+- Preserve blank vs explicit zero vs positive Your Cost semantics and strict positive Qty semantics.
+- Editing/deleting Catalog definitions must never rewrite historical Job Material snapshots.
+- Responsive phone/tablet/desktop controls must remain usable.
 
 ### Required regressions
-- no manual override / manual positive override / explicit zero policy;
-- approve + reload persistence;
-- post-approval calculator edit isolation;
-- post-approval Catalog price edit isolation;
-- applied-calculation provenance snapshot;
-- unresolved-cost disclosure on approval;
-- re-approval version/timestamp behavior;
-- invoice consumes approved snapshot, not current live recommendation;
-- phone/tablet/desktop control visibility.
+- custom create/edit/delete/add;
+- Catalog Add guard for custom rows;
+- blank/zero/positive Your Cost;
+- saved Qty vs row-specific Add Qty override;
+- repeated Add behavior;
+- historical snapshot immutability after Catalog edit/delete;
+- import/new-job isolation;
+- row-level Catalog/Used/Custom/source UX markers;
+- phone/tablet/desktop CSS breakpoints.
 
 ### Completion evidence
 - Implementation SHA: `PENDING`
 - CI/test evidence: `PENDING`
-
----
-## STAGE 7 — CATALOG / JOB MATERIALS UX CLARITY + CUSTOM MATERIAL COMPLETION
-**Status:** `PENDING`
-Required: explicit Used/Catalog badges, used-on-job meaning, Catalog vs Job Materials separation, discoverable Custom Material UI, strict Custom Add path, job/import isolation, blank/zero/positive cost and Qty semantics.
 
 ---
 ## STAGE 8 — FINAL INTEGRATION GATE / PWA / EXPORT-IMPORT / EXACT-HEAD CI

@@ -34,6 +34,7 @@ require('./residential-takeoff.test.js');
 require('./residential-live.test.js');
 require('./residential-live-levels.test.js');
 require('./residential-live-history.test.js');
+require('./residential-history-job-scope.test.js');
 require('./residential-apply-job.test.js');
 require('./residential-live-workspace.test.js');
 require('./residential-wire-takeoff.test.js');

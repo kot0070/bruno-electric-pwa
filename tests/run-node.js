@@ -38,6 +38,7 @@ require('./phase3-equipment.test.js');
 require('./service-worker.test.js');
 require('./residential-catalog-bridge.test.js');
 require('./catalog-cost-semantics.test.js');
+require('./pricing-margins-semantics.test.js');
 
 Promise.all(global.BRUNO_ASYNC_TESTS).then(function(){
   var r = global.BRUNO_TEST_RESULTS;

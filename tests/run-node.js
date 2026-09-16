@@ -2,18 +2,14 @@
 global.window = global;
 global.document = { getElementById: function () { return null; } };
 var store={};
-global.localStorage={
-  getItem:function(k){return Object.prototype.hasOwnProperty.call(store,k)?store[k]:null;},
-  setItem:function(k,v){store[k]=String(v);},
-  removeItem:function(k){delete store[k];},
-  clear:function(){store={};}
-};
+global.localStorage={getItem:function(k){return Object.prototype.hasOwnProperty.call(store,k)?store[k]:null;},setItem:function(k,v){store[k]=String(v);},removeItem:function(k){delete store[k];},clear:function(){store={};}};
 global.BRUNO_ASYNC_TESTS=[];
 require('../electric-reference-data.js');
 require('../electric-calculators.js');
 require('../electric-catalog-v1.js');
 require('../electric-bom.js');
 require('../electric-electrical-tasks.js');
+require('../electric-electrical-task-engine.js');
 require('../electric-residential-rules.js');
 require('../electric-residential.js');
 require('../electric-residential-pricing.js');
@@ -29,6 +25,7 @@ require('../electric-pricing-domain-guard.js');
 require('./electrical-calculators.test.js');
 require('./math-corrective-boundaries.test.js');
 require('./electrical-tasks.test.js');
+require('./electrical-task-engine.test.js');
 require('./electrical-tasks-ui.test.js');
 require('./data-integrity.test.js');
 require('./navigation-shell.test.js');
@@ -58,10 +55,4 @@ require('./residential-catalog-bridge.test.js');
 require('./catalog-cost-semantics.test.js');
 require('./pricing-margins-semantics.test.js');
 require('./custom-materials.test.js');
-
-Promise.all(global.BRUNO_ASYNC_TESTS).then(function(){
-  var r = global.BRUNO_TEST_RESULTS;
-  if (!r) { console.error('No test results produced'); process.exit(2); }
-  console.log('Bruno Electric deterministic tests: ' + r.pass + '/' + r.total + ' passed');
-  if (r.fail) { r.results.filter(function(x){return !x.ok}).forEach(function(x){console.error('FAIL — '+x.name+': '+x.error);}); process.exit(1); }
-}).catch(function(err){ console.error(err&&err.stack||err); process.exit(1); });
+Promise.all(global.BRUNO_ASYNC_TESTS).then(function(){var r=global.BRUNO_TEST_RESULTS;if(!r){console.error('No test results produced');process.exit(2)}console.log('Bruno Electric deterministic tests: '+r.pass+'/'+r.total+' passed');if(r.fail){r.results.filter(function(x){return !x.ok}).forEach(function(x){console.error('FAIL — '+x.name+': '+x.error)});process.exit(1)}}).catch(function(err){console.error(err&&err.stack||err);process.exit(1)});

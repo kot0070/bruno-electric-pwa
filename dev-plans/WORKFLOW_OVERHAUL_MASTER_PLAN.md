@@ -3,7 +3,7 @@
 **Branch:** `dev/custom-special-order-materials`  
 **Execution mode:** STRICT SEQUENTIAL  
 **Audit mode:** ONE INDEPENDENT FULL AUDIT AFTER ALL STAGES  
-**Current stage:** `STAGE_7_CATALOG_JOB_MATERIALS_CUSTOM`  
+**Current stage:** `STAGE_8_FINAL_INTEGRATION_GATE`  
 **Overall state:** `IN_PROGRESS`
 
 ## NON-NEGOTIABLE EXECUTION RULES
@@ -20,93 +20,61 @@
 
 ---
 ## STAGE 1 — NAVIGATION / DEEP-LINK CORRECTNESS
-**Status:** `DONE`
-Implemented explicit-tab routes, canonical hash parser/default resolution, immediate exact-tab restore, preserved hash and hashchange/back-forward support.
-**Evidence:** CI #249 SUCCESS.
+**Status:** `DONE` — CI #249 SUCCESS.
 
----
 ## STAGE 2 — RESIDENTIAL WIRE / CABLE TAKEOFF
-**Status:** `DONE`
-Implemented detailed routing takeoff, 12/2 vs 14/2 totals, waste, quick ft² budget mode explicitly NOT NEC, validation and archive persistence.
-**Evidence:** CI #254 SUCCESS.
+**Status:** `DONE` — CI #254 SUCCESS.
 
----
 ## STAGE 3 — SAVE CALCULATION / ARCHIVE UX
-**Status:** `DONE`
-Implemented explicit Save workflow, dirty/saved state, archive overview, idempotent unchanged-save identity, archive immutability, duplicate/delete isolation and no autosave.
-**Evidence:** CI #262 SUCCESS.
+**Status:** `DONE` — CI #262 SUCCESS.
 
----
 ## STAGE 4 — APPLY CALCULATION TO JOB / PROVENANCE
-**Status:** `DONE`
-Implemented separate Save vs Apply boundaries, strict BOM Apply transaction, applied provenance, Residential-only re-Apply replacement, unresolved/zero/positive cost semantics, and saved/applied/newer-saved UX.
-**Evidence:** final exact-head CI #276 SUCCESS on `61b69fd9398c8e6260f123de47a6a95d2e3c144f`.
+**Status:** `DONE` — exact-head CI #276 SUCCESS on `61b69fd9398c8e6260f123de47a6a95d2e3c144f`.
 
----
 ## STAGE 5 — JOB TOTALS / QUOTE PRICE CLARITY
-**Status:** `DONE`
-Added semantic/validation layer over the authoritative legacy calculation path, explicit contractor-cost vs recommended/customer quote labels, unresolved-cost disclosure, applied-calculation reference and header↔Summary parity guard without duplicating OH/profit math.
-**Evidence:** exact-head CI #281 SUCCESS on `1e9425dad863fc12708626d8399d3cd52e437728`.
+**Status:** `DONE` — exact-head CI #281 SUCCESS on `1e9425dad863fc12708626d8399d3cd52e437728`.
 
----
 ## STAGE 6 — QUOTE APPROVAL / MANUAL CUSTOMER-PRICE OVERRIDE / INVOICE BOUNDARY
+**Status:** `DONE` — exact-head CI #286 SUCCESS on `3aa18cf6ce3d3529dfc0b75ce99b9975c1511f1c`.
+
+## STAGE 7 — CATALOG / JOB MATERIALS UX CLARITY + CUSTOM MATERIAL COMPLETION
 **Status:** `DONE`
 
 ### Implemented
-- Added `electric-quote-lifecycle.js` with explicit fixed-price lifecycle: `Estimated Job Cost → Recommended Customer Price → Manual Quote Adjustment (optional) → Approved Quote snapshot → Invoice basis`.
-- Blank manual adjustment means use live recommended price; positive manual amount is explicit `MANUAL_ADJUSTMENT`; explicit zero/negative/invalid values fail closed.
-- Approval persists immutable snapshot with approval ID, revision, approval timestamp, customer amount, recommended-at-approval amount, manual override, approved CO amount, unresolved-cost condition, quote metadata and applied-calculation provenance.
-- Post-approval calculator/Catalog/Job edits do not mutate approved amount or approval-time cost/provenance fields.
-- Re-approval increments revision and preserves prior approval in history.
-- Fixed-price invoice basis is unavailable before approval and is sourced only from `APPROVED_QUOTE_SNAPSHOT`, never from moving live recommendation.
-- Quote UX explicitly labels LIVE RECOMMENDED / MANUAL ADJUSTED / APPROVED SNAPSHOT and exposes immutable invoice basis.
-
-### Acceptance criteria
-- [x] Manual override is explicit and blank-safe.
-- [x] Zero override policy is fail-closed.
-- [x] Approval is persisted immutable snapshot.
-- [x] Unresolved material cost is disclosed and snapshotted rather than coerced to zero.
-- [x] Applied-calculation provenance is snapshotted.
-- [x] Re-approval has distinct revision/history.
-- [x] Invoice basis depends on approved snapshot only.
+- Existing Custom / Special-order workflow remains first-class at top of Catalog with create/edit/delete, persisted Catalog Qty, row-specific Add Qty override and strict Add-to-Job routing.
+- Added `electric-catalog-job-ux-semantics.js` to expose row-level `CATALOG`, `CUSTOM / SPECIAL ORDER`, and `USED ON JOB ×qty` semantics.
+- Job Material resolved rows receive source markers distinguishing `CUSTOM SNAPSHOT`, `CATALOG SNAPSHOT`, `GENERATED · source`, and `MANUAL JOB SNAPSHOT`.
+- Catalog and Job Materials now carry explicit explanatory legends: Catalog rows are definitions; Job Materials are historical snapshots.
+- Project-scoped Custom definitions remain inside active `bruno-electric-v1` job state; prior device-global Custom registries are non-authoritative and cannot leak between imported/replaced jobs.
+- strict blank / explicit zero / positive Your Cost semantics and positive Qty enforcement remain covered.
+- Catalog edit/delete preserves already-added Job Material history.
+- Responsive semantic badge styling includes phone breakpoint and existing Custom form retains phone/tablet/desktop layouts.
 
 ### Completion evidence
-- Implementation/test/bootstrap SHAs include `3399908bb0a39a497032383b02bbfbf20db9af32`, `00a5f05d1a71dbb5c65a2f05240afa3625d966a4`, `ff4ed617acfe340df1a67ff4b4b7555c47127b33`, `3aa18cf6ce3d3529dfc0b75ce99b9975c1511f1c`.
-- Exact-head CI run #286 — SUCCESS on `3aa18cf6ce3d3529dfc0b75ce99b9975c1511f1c`.
-
----
-## STAGE 7 — CATALOG / JOB MATERIALS UX CLARITY + CUSTOM MATERIAL COMPLETION
-**Status:** `IN_PROGRESS`
-
-### Required implementation
-- Explicit row-level `CATALOG`, `USED ON JOB`, `CUSTOM / SPECIAL ORDER`, and Job Material source semantics.
-- Clarify that Catalog definitions and Job Material snapshots are different records.
-- Keep Custom Material creation/editing discoverable at the top of Catalog.
-- All Custom Catalog Add paths must route through strict custom cost semantics.
-- Project-scoped Custom definitions must remain isolated to the active imported/new job state; no device-global custom registry may leak between jobs.
-- Preserve blank vs explicit zero vs positive Your Cost semantics and strict positive Qty semantics.
-- Editing/deleting Catalog definitions must never rewrite historical Job Material snapshots.
-- Responsive phone/tablet/desktop controls must remain usable.
-
-### Required regressions
-- custom create/edit/delete/add;
-- Catalog Add guard for custom rows;
-- blank/zero/positive Your Cost;
-- saved Qty vs row-specific Add Qty override;
-- repeated Add behavior;
-- historical snapshot immutability after Catalog edit/delete;
-- import/new-job isolation;
-- row-level Catalog/Used/Custom/source UX markers;
-- phone/tablet/desktop CSS breakpoints.
-
-### Completion evidence
-- Implementation SHA: `PENDING`
-- CI/test evidence: `PENDING`
+- UX/bootstrap/test SHAs include `16c91cdf51c63ad2fe3732c33f4e5ce4d2efbaca`, `913cdcee9d015a180255bd7c2ebf143bf61946aa`, `ed307f61880132a3e88ac7faf901711fe16f1242`, `f8e1d4d4339bacbd4c6e6f07a17427fdc056d2c9`.
+- Exact-head CI run #291 — SUCCESS on `f8e1d4d4339bacbd4c6e6f07a17427fdc056d2c9`.
 
 ---
 ## STAGE 8 — FINAL INTEGRATION GATE / PWA / EXPORT-IMPORT / EXACT-HEAD CI
-**Status:** `PENDING`
-Required: full end-to-end tests, isolation/regressions, responsive verification, final PWA cache/core shell update, exact-head CI, frozen candidate, developer report, then one full independent audit.
+**Status:** `IN_PROGRESS`
+
+### Required implementation
+- Final PWA cache/core-shell version bump including every new runtime module.
+- Validate stale owned-cache cleanup and unrelated-cache preservation.
+- Full import/export/new-job isolation across Custom definitions, applied Residential provenance and Quote approval lifecycle.
+- Full deterministic suite across all prior stages plus legacy shared regressions.
+- Responsive phone/tablet/desktop static/runtime contract verification for newly introduced controls.
+- Preserve Residential/Commercial isolation and historical helper-tax behavior.
+- Freeze exact PR candidate SHA only after all code/tests/docs are complete.
+- Produce developer implementation report tied to frozen exact SHA and exact-head CI run.
+- Create one independent `AUDIT ONLY` branch with `audits/TASK_CURRENT.md` + `audits/PROTOCOL.md` pinned to the frozen candidate.
+- Do not merge PR #14 before independent audit acceptance.
+
+### Completion evidence
+- Candidate SHA: `PENDING`
+- CI/test evidence: `PENDING`
+- Developer report: `PENDING`
+- Independent audit task: `PENDING`
 
 ---
 # FINAL AUDIT SCOPE

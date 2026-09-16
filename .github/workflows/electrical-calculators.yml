@@ -1,4 +1,5 @@
 name: Electrical Calculator Tests
+# Audit gate: PR runs must test the exact pull-request head SHA, never the synthetic merge ref.
 
 on:
   push:

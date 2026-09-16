@@ -41,6 +41,7 @@ require('./electrical-tasks-provenance.test.js');
 require('./electrical-task-material-takeoff.test.js');
 require('./electrical-task-archive.test.js');
 require('./electrical-task-data-integrity-master.test.js');
+require('./electrical-tasks-responsive-pwa-master.test.js');
 require('./electrical-tasks-ui.test.js');
 require('./data-integrity.test.js');
 require('./navigation-shell.test.js');

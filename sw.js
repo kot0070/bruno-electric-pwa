@@ -1,10 +1,10 @@
-/* Bruno Electric Estimating — app shell offline cache. Previous cache: bruno-electric-v43; earlier audited cache: bruno-electric-v40. */
-const CACHE = 'bruno-electric-v44';
+/* Bruno Electric Estimating — app shell offline cache. Previous cache: bruno-electric-v44; earlier audited cache: bruno-electric-v40. */
+const CACHE = 'bruno-electric-v45';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [
   './','./index.html','./electrical-tools.html','./manifest.webmanifest','./sw-register.js',
   './electric-app-navigation.js','./electric-workspace.js','./electric-compact-header.js','./electric-navigation-bridge.js',
-  './electric-dispatch-journal-v2.js','./electric-catalog-cost-semantics.js','./electric-pricing-margins-semantics.js',
+  './electric-dispatch-journal-v2.js','./electric-catalog-cost-semantics.js','./electric-pricing-margins-semantics.js','./electric-job-material-cost-semantics.js',
   './electric-reference-data.js','./electric-calculators.js','./electric-catalog-v1.js','./electric-bom.js',
   './electric-residential-rules.js','./electric-residential.js','./electric-residential-pricing.js','./electric-residential-catalog-bridge.js','./electric-residential-takeoff.js',
   './electric-residential-live.js','./electric-residential-live-levels.js','./electric-residential-live-history.js','./electric-residential-live-workspace.js',

@@ -1,4 +1,4 @@
-/* Bruno Electric Estimating — app shell offline cache. Previous cache: bruno-electric-v51; accepted workflow baseline cache: bruno-electric-v51. */
+/* Bruno Electric Estimating — app shell offline cache. Previous cache: bruno-electric-v51; current: bruno-electric-v52. Historical audited baseline: bruno-electric-v45. */
 const CACHE = 'bruno-electric-v52';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [

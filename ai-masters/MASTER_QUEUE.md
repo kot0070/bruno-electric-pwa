@@ -1,22 +1,43 @@
 # Bruno Electric — Autonomous AI Master Queue
 
 ## Purpose
-This branch is planning/orchestration only. It MUST NOT modify PR #14 production code or invalidate the pinned v50 audit candidate.
+This branch is planning/orchestration only. It MUST NOT modify PR #14 production code or invalidate an accepted/frozen candidate.
 
-Current release candidate under independent audit:
-`5852749be6cd240b6e52bac15cacf4ffbfa6a288`
+## Current accepted candidate
+`7da0d0ef02858bf891e8f327e02312f7a80f6751`
 
-Current audit branch:
-`audit/workflow-overhaul-v50-5852749`
+Accepted math re-audit:
+`audit/electrical-math-v52-7da0d0e/audits/reports/ELECTRICAL_MATH_V52_7da0d0e.md`
+
+Math exact-head CI:
+- run #345
+- 622/622 deterministic tests PASS
+- tested SHA = expected SHA = accepted candidate
+
+PR #14 state: OPEN / NOT MERGED.
+Merge remains a user decision.
 
 ## Execution state machine
-`CURRENT_RELEASE_AUDIT -> CORRECTIVE_MASTER (only if blockers) -> RE_AUDIT -> MERGE DECISION -> ELECTRICAL_MATH_AUDIT_MASTER -> CORRECTIVE -> RE_AUDIT -> NEC_DOCUMENTS_SOURCES_AUDIT_MASTER -> CORRECTIVE -> RE_AUDIT -> DATA_INTEGRITY_PERSISTENCE_MASTER -> CORRECTIVE -> RE_AUDIT -> RESPONSIVE_PWA_UX_MASTER -> CORRECTIVE -> RE_AUDIT -> NEXT_PRODUCT_MASTER`
+`WORKFLOW_OVERHAUL -> WORKFLOW_CORRECTIVE -> WORKFLOW_REAUDIT -> ELECTRICAL_MATH_AUDIT -> MATH_CORRECTIVE -> MATH_REAUDIT -> NEC_DOCUMENTS_AUTONOMOUS_MASTER -> DATA_INTEGRITY_PERSISTENCE_MASTER -> RESPONSIVE_PWA_UX_MASTER -> NEXT_PRODUCT_MASTER`
+
+## Completed masters
+- Workflow overhaul/corrective/re-audit: ACCEPTED.
+- Electrical Math Audit + Corrective + exact-SHA Re-Audit: **A ACCEPT** on `7da0d0ef02858bf891e8f327e02312f7a80f6751`.
+
+## CURRENT MASTER
+`05_NEC_DOCUMENTS_SOURCES_AUTONOMOUS_MASTER_V52.md`
+
+Current stage inside that master:
+`ND1_CLAIM_INVENTORY`
+
+Start target SHA:
+`7da0d0ef02858bf891e8f327e02312f7a80f6751`
 
 ## Handoff contract
 Every AI chat must leave enough state in GitHub for another chat to continue without asking the user to restate context. Every master/report must include:
-- ROLE: IMPLEMENT / AUDIT ONLY / CORRECTIVE / RE-AUDIT
+- ROLE: IMPLEMENT / AUDIT ONLY / CORRECTIVE / RE-AUDIT / AUTONOMOUS CYCLE
 - repository + branch
-- exact TARGET_SHA or explicit `TO_BE_PINNED`
+- exact TARGET_SHA
 - immutable scope and exclusions
 - inputs/read-first files
 - invariants
@@ -26,22 +47,30 @@ Every AI chat must leave enough state in GitHub for another chat to continue wit
 - next action on PASS/BLOCKER
 - explicit merge policy
 
-## Current gate
-DO NOT start code-changing follow-up work while PR #14 is under audit. Planning masters may be prepared here. If v50 audit returns P0/P1, execute `CORRECTIVE_MASTER_TEMPLATE.md` first. If audit returns A (or clean B after bounded fixes), merge decision occurs before the next code-changing domain master is instantiated against the accepted release SHA.
+## Strict continuation rule
+1. Read this file.
+2. Read the CURRENT MASTER.
+3. Execute only its `CURRENT_STAGE`.
+4. Finish its gate and leave evidence.
+5. Reread the master before advancing.
+6. Do not send stage-by-stage user reports when the master says consolidated-report-only.
+7. Never merge automatically.
 
 ## Queued masters
-1. `01_ELECTRICAL_MATH_AUDIT_MASTER.md`
-   Independent audit of calculator formulas, units, rounding, boundaries, numeric coercion and table/data integrity.
-2. `02_NEC_DOCUMENTS_SOURCES_AUDIT_MASTER.md`
-   Independent provenance/document/code-source audit: NEC vs estimating assumptions, Texas/AHJ adoption metadata, source freshness, citations and fail-closed claims.
-3. `03_DATA_INTEGRITY_PERSISTENCE_AUDIT_MASTER.md`
+1. `05_NEC_DOCUMENTS_SOURCES_AUTONOMOUS_MASTER_V52.md` — CURRENT
+   Full autonomous claim/source/edition/jurisdiction/fail-closed audit cycle with corrective and re-audit stages if needed.
+2. `03_DATA_INTEGRITY_PERSISTENCE_AUDIT_MASTER.md`
    Cross-job, import/export, archive, historical snapshot, migrations and localStorage schema integrity.
-4. `04_RESPONSIVE_PWA_UX_AUDIT_MASTER.md`
+3. `04_RESPONSIVE_PWA_UX_AUDIT_MASTER.md`
    Phone/tablet/desktop primary workflows, offline shell, cache migration, accessibility and action discoverability.
-5. `CORRECTIVE_MASTER_TEMPLATE.md`
-   Developer remediation contract consuming an audit report.
-6. `RE_AUDIT_MASTER_TEMPLATE.md`
-   Independent exact-SHA re-audit contract after corrective work.
+4. `CORRECTIVE_MASTER_TEMPLATE.md`
+   Generic developer remediation contract.
+5. `RE_AUDIT_MASTER_TEMPLATE.md`
+   Generic independent exact-SHA re-audit contract.
 
-## Rule for target SHA
-The queued domain masters are templates until the prior release gate is accepted. Before execution, replace `TARGET_SHA = TO_BE_PINNED` with the exact accepted production/dev candidate SHA and create a separate audit branch from that exact SHA.
+## Historical templates
+- `01_ELECTRICAL_MATH_AUDIT_MASTER.md` — executed/superseded by accepted math cycle.
+- `02_NEC_DOCUMENTS_SOURCES_AUDIT_MASTER.md` — superseded by the stricter autonomous Master 05.
+
+## Merge policy
+No autonomous master may merge PR #14 or write to `main` unless the user explicitly requests the merge.

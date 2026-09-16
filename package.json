@@ -1,0 +1,13 @@
+{
+  "name": "bruno-electric-pwa",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test:deterministic": "node tests/run-node.js",
+    "test:e2e": "playwright test",
+    "test:e2e:chromium": "playwright test --project=chromium-desktop --project=chromium-phone --project=chromium-tablet"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.0"
+  }
+}

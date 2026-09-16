@@ -1,564 +1,208 @@
 # Bruno Electric — Function / Capability Audit Master
 
-MASTER_STATUS: READY
+MASTER_STATUS: ACTIVE
 CURRENT_STAGE: STAGE_0_BASELINE_AND_REQUIREMENTS_INDEX
 EXECUTION_MODE: STRICT_SEQUENTIAL
 IMPLEMENTATION_BRANCH: main
 AUDIT_BRANCH_POLICY: separate exact-SHA audit branches
+AUTHORITATIVE_SOURCE: this file + `dev-plans/FUNCTION_CAPABILITY_AUDIT_STATE.json`
 PRIMARY_GOAL: prove that declared product capabilities actually work end-to-end and match their governing plans/specifications
 
 ## Mission
+Audit Bruno Electric by USER CAPABILITY, not by source-file existence. A capability is only accepted when its requirement, reachable UI, runtime behavior, persistence/integration effects and real-browser execution agree.
 
-Perform a full functional/capability audit of Bruno Electric.
+Example chain:
+`Create Job -> Electrical Tasks -> calculate -> Save -> reload -> Apply to Job -> verify Job material provenance -> edit task -> prove Job unchanged -> explicit Update Job from Task`.
 
-This audit is not limited to checking whether functions or files exist. It must prove, with reproducible evidence, that every declared capability:
+A function existing in JavaScript, a green unit test, or a static source review is not enough to mark a user-facing workflow PASS.
 
-1. exists in the intended UI/workflow;
-2. reaches the intended runtime implementation;
-3. accepts valid inputs and rejects invalid/unsupported inputs correctly;
-4. produces the expected deterministic result;
-5. persists or mutates data only when the workflow says it should;
-6. preserves Job isolation and historical provenance;
-7. survives reload/import/export/PWA boundaries where applicable;
-8. does not silently break adjacent workflows;
-9. matches the governing Master plan, accepted audit records and current product contract;
-10. has an explicit status: PASS / PARTIAL / FAIL / UNTESTED / NOT_APPLICABLE.
+## Binding browser policy
+Browser E2E is mandatory, not optional. `dev-plans/FUNCTION_CAPABILITY_BROWSER_E2E_AMENDMENT.md` is retained only as historical rationale; if wording conflicts, THIS master controls.
 
-The audit unit is a USER CAPABILITY, not merely a JavaScript function.
+For a high-risk user-facing capability:
+`PASS = CONTRACT_TRACEABILITY + DETERMINISTIC_RUNTIME + INTEGRATION/PERSISTENCE + REAL_BROWSER_E2E`.
 
-Example capability chain:
-`Create Job -> open Electrical Tasks -> calculate -> Save -> reload -> Apply to Job -> verify material provenance -> edit task -> confirm Job is unchanged until explicit Update Job from Task`.
+Required browser implementation:
+- Playwright test runner in repository;
+- deterministic local static server;
+- Chromium mandatory in CI;
+- phone viewport 360–430 px;
+- tablet viewport 768–1024 px;
+- desktop viewport >=1200 px;
+- isolated browser state except persistence tests;
+- pageerror/uncaught/fatal required-load failures fail critical journeys;
+- trace/screenshots/report on failure where CI permits;
+- exact tested SHA printed and checked;
+- Browser E2E green is required together with deterministic CI green.
 
-A JavaScript function existing in source code is not evidence that the capability works.
+Mandatory browser journeys:
+1. app shell/navigation/deep-link/back-forward;
+2. Job A/B isolation;
+3. Catalog + standard/custom material + blank/zero Your Cost + reload;
+4. Residential calculate/save/reload/load/apply/history;
+5. Electrical Tasks Feeder calculate/save/reload/apply/edit/changed-since-apply/update/history;
+6. Branch Circuit, EVSE, HVAC, Motor, Transformer Feed, Generator/Feeder, Generic Long Run;
+7. Professional Task Solver explicit extraction/no guessing/no auto-save/apply;
+8. Quote -> Approved Quote immutability -> Fixed-price Invoice, with T&M separate;
+9. Export/import representative supported Job;
+10. reload/storage resilience and stale identifiers;
+11. responsive action reachability at phone/tablet/desktop;
+12. service-worker/offline/upgrade assertions where deterministic browser execution supports them.
 
----
+If a browser limitation blocks a specific assertion, that assertion is `UNTESTED` unless another deterministic layer proves it; it is never silently PASS.
 
-# Non-negotiable principles
-
+## Non-negotiable invariants
 - PLAN CLAIM != IMPLEMENTED BEHAVIOR.
 - IMPLEMENTED CODE != REACHABLE UI.
 - REACHABLE UI != CORRECT RESULT.
 - CORRECT RESULT != CORRECT PERSISTENCE.
-- UNIT TEST PASS != END-TO-END CAPABILITY PASS.
-- CURRENT STATE != HISTORICAL SNAPSHOT.
-- Save != Apply.
-- Blank != zero.
-- Unknown != zero.
+- UNIT TEST PASS != E2E PASS.
+- BLANK != ZERO; UNKNOWN != ZERO.
 - Your Cost != Customer Price.
+- Save != Apply.
 - Live calculation != Approved Quote.
 - Residential != Commercial.
-- Job A state must never contaminate Job B.
-- Unsupported configuration must fail closed.
-- No capability may be marked PASS without evidence.
-- Any changed production SHA invalidates an audit pinned to an older SHA.
+- Job A must never contaminate Job B.
+- unsupported configuration fails closed.
+- approved/historical snapshots are not silently rewritten.
+- changed production SHA invalidates affected audit evidence.
+- no P0/P1 may be deferred to complete the master.
+
+## Capability evidence model
+Each capability has a stable ID and records at least:
+`capability_id, domain, name, governing_requirement, source_file/section, ui_entry, runtime_entry, modules, input_contract, expected_output, expected_side_effects, forbidden_side_effects, persistence_scope, job_isolation_required, historical_snapshot_required, offline_requirement, responsive_requirement, deterministic_test_ids, integration_test_ids, browser_e2e_required, browser_e2e_test_ids, negative_test_ids, exact_sha, status, severity_if_failed, finding_ids, notes`.
+
+Statuses: `PASS`, `PARTIAL`, `FAIL`, `UNTESTED`, `NOT_APPLICABLE`.
+Severities: P0 destructive/release-blocking; P1 functional/contract blocker; P2 important non-blocking; P3 improvement.
+
+## Four-layer proof
+L1 Contract/plan traceability.
+L2 Deterministic runtime and calculation/state semantics.
+L3 Workflow/persistence integration and forbidden-side-effect checks.
+L4 Real browser execution through the actual UI. High-risk user-facing capabilities require all applicable layers.
+
+## Minimum domains
+App navigation; Job lifecycle/isolation; Dispatch/Journal; Catalog; custom/special-order materials; Your Cost/quantity semantics; Residential estimator/takeoff/archive/history/apply; electrical calculators; Electrical Tasks shell/templates; Feeder; Branch; EVSE; HVAC; Motor; Transformer; Generator; Long Run; raceway; grounding/neutral/EGC; task takeoff; task archive/save/recalculate/apply/update; Task Solver; Quote; Approved Quote; Invoice; T&M; pricing/margin; import/export; malformed/legacy data; PWA/offline/upgrade; responsive layouts; NEC/jurisdiction/provenance. Runtime-discovered domains must be added.
+
+# STRICT STAGE LOOP
+For every stage:
+`DISCOVER -> DEFINE EXPECTED CONTRACT -> IMPLEMENT TEST/AUDIT HARNESS AS NEEDED -> RUN DETERMINISTIC TESTS -> RUN EXACT-HEAD CI -> INDEPENDENT AUDIT -> CORRECT EVERY P0/P1 -> EXACT-HEAD CI -> RE-AUDIT -> ACCEPT`.
+
+Audit role cannot modify production behavior or weaken expectations to match current runtime.
 
 ---
 
-# Audit evidence model
+# STAGE 0 — Baseline + Requirements Index + Browser Baseline
+STATUS: ACTIVE
 
-Every capability receives a Capability ID and one row in the canonical matrix.
-
-Required fields:
-
-```text
-capability_id
-product_domain
-capability_name
-governing_requirement
-requirement_source_file
-requirement_source_section
-ui_entry
-runtime_entry
-primary_modules
-input_contract
-expected_output
-expected_side_effects
-forbidden_side_effects
-persistence_scope
-job_isolation_required
-historical_snapshot_required
-offline_requirement
-responsive_requirement
-unit_test_evidence
-integration_test_evidence
-manual_or_browser_evidence
-negative_test_evidence
-exact_sha
-status
-severity_if_failed
-finding_ids
-notes
-```
-
-Canonical statuses:
-
-- `PASS` — requirement is proven end-to-end.
-- `PARTIAL` — meaningful portion works but requirement is incomplete.
-- `FAIL` — behavior contradicts requirement or is broken.
-- `UNTESTED` — implementation may exist but evidence is insufficient.
-- `NOT_APPLICABLE` — capability is intentionally outside current supported scope and this is documented.
-
-No `UNKNOWN = PASS` shortcut is allowed.
-
----
-
-# Severity model
-
-## P0 — Release blocker / destructive
-Examples:
-- cross-Job data contamination;
-- silent destructive migration;
-- approved quote mutation;
-- materially wrong electrical calculation presented as valid;
-- silent cost-domain substitution;
-- Apply/Update action mutating the wrong Job;
-- data loss without explicit destructive user action.
-
-## P1 — Functional blocker / contract violation
-Examples:
-- advertised function cannot be completed;
-- UI action is disconnected from runtime;
-- Save behaves like Apply;
-- import/export loses supported data;
-- required workflow state cannot be restored;
-- plan claims a completed capability that current runtime does not provide;
-- required fail-closed behavior instead returns a fabricated result.
-
-## P2 — Important non-blocking gap
-Examples:
-- weak error explanation;
-- missing secondary negative test;
-- incomplete responsive optimization where workflow remains usable;
-- missing observability/evidence for a low-risk path.
-
-## P3 — Improvement
-Examples:
-- wording, discoverability, minor redundancy, developer ergonomics.
-
-Master cannot complete with any P0/P1 open.
-
----
-
-# Four-layer proof rule
-
-A capability should be tested at four layers when applicable.
-
-### L1 — Contract / plan traceability
-Prove the feature is actually required, optional or unsupported.
-Sources may include:
-- accepted Master plans;
-- current state JSON files;
-- accepted audit reports;
-- current developer reports;
-- current UI wording and explicitly documented product contract.
-
-### L2 — Runtime / deterministic behavior
-Prove modules, functions and calculations behave correctly with deterministic tests.
-Include valid, boundary, blank, zero, malformed and unsupported inputs where relevant.
-
-### L3 — Workflow / persistence integration
-Prove the user action reaches the correct runtime and causes exactly the intended side effects.
-Examples:
-- Save only saves;
-- Apply creates Job material snapshots;
-- Quote approval freezes the approved snapshot;
-- invoice uses the approved snapshot;
-- switching Jobs changes the active task/material/archive scope correctly.
-
-### L4 — UI / field execution
-Prove the user can actually reach and complete the workflow on supported layouts and PWA state.
-Prefer browser automation or reproducible DOM/runtime harnesses where available.
-When real-device automation is unavailable, status must explicitly distinguish automated evidence from source/static evidence.
-
-A high-risk capability cannot receive PASS solely from L1 + L2 if L3 or L4 is materially required.
-
----
-
-# Canonical capability domains
-
-The audit must inventory at least these domains before testing begins:
-
-1. App shell / primary navigation / deep links / back-forward behavior
-2. Job lifecycle / Job switching / Job isolation
-3. Dispatch / Journal
-4. Catalog
-5. Custom / Special-order materials
-6. Material quantity and Your Cost semantics
-7. Residential estimator
-8. Residential takeoff / archive / history / apply-to-job
-9. Electrical core calculators
-10. Electrical Tasks shell and templates
-11. Feeder / Panel Run
-12. Branch Circuit
-13. EVSE
-14. HVAC
-15. Motor
-16. Transformer Feed
-17. Generator / Feeder
-18. Long-distance voltage drop
-19. Raceway engine
-20. Grounding / neutral / EGC semantics
-21. Electrical Task material takeoff
-22. Electrical Task save/archive/recalculate/apply/update workflow
-23. Professional Task Solver
-24. Quote lifecycle
-25. Approved Quote immutability
-26. Fixed-price Invoice
-27. T&M separation
-28. Pricing / markup / margin semantics
-29. Import / Export
-30. Legacy / partial / malformed data behavior
-31. PWA install/cache/offline/upgrade behavior
-32. Responsive phone/tablet/desktop usability
-33. NEC / jurisdiction / source provenance surfaces
-
-Additional domains discovered from current `main` must be added; this list is a floor, not a ceiling.
-
----
-
-# STAGE 0 — Baseline + requirements index
-STATUS: READY
-
-Goal: establish an authoritative exact-head baseline and build a requirements inventory before evaluating behavior.
-
-Required work:
-- pin exact current `main` SHA;
-- confirm exact-head CI baseline and deterministic test count;
-- index all active Master plans, accepted state JSON, developer reports and accepted audit reports;
-- identify stale plans that no longer describe current product state;
+Required:
+- pin exact current `main`;
+- verify exact-head deterministic CI and test count;
+- inventory current/legacy/stale plans, state ledgers, developer reports and accepted audit evidence;
+- explicitly classify stale governance documents instead of treating them as current truth;
+- inspect browser-test infrastructure (`package.json`, Playwright config/tests, CI workflow, test server);
+- record Browser E2E baseline as PRESENT/PARTIAL/ABSENT;
 - create `audits/function-capability/REQUIREMENTS_INDEX.md`;
-- create initial capability registry with stable IDs;
-- explicitly separate CURRENT REQUIREMENT, LEGACY REQUIREMENT and UNSUPPORTED/DEFERRED scope.
+- create initial `audits/function-capability/capabilities.json` with stable IDs and `browser_e2e_required` fields.
 
-Gate:
-- exact baseline SHA recorded;
-- no requirement is silently inferred from chat memory;
-- every capability has at least one traceable source or is explicitly classified as discovered runtime functionality.
+Gate: exact baseline recorded; deterministic CI proven; every initial capability has a traceable source/classification; Browser baseline explicitly known; no requirement inferred only from chat memory.
 
 ---
 
-# STAGE 1 — Runtime capability inventory
+# STAGE 1 — Runtime Capability Inventory
 STATUS: LOCKED
-
-Goal: inventory what the current product can actually execute.
-
-Required work:
-- map UI controls/routes to runtime handlers;
-- map runtime handlers to storage/calculation/services;
-- identify dead/unreachable runtime functions;
-- identify visible UI actions with no working runtime path;
-- identify duplicated or conflicting implementations;
-- identify dormant prototype files not loaded into production;
-- map service-worker/core-shell loading paths.
-
-Deliverables:
-- `audits/function-capability/RUNTIME_CAPABILITY_MAP.md`
-- machine-readable `audits/function-capability/capabilities.json`
-
-Gate:
-Every current user-facing action belongs to a Capability ID or is documented as infrastructure-only.
+Map current UI controls/routes -> handlers -> runtime -> storage/services; identify dead/unreachable runtime, visible actions without a valid runtime path, duplicate/conflicting implementations, dormant prototypes and service-worker loading paths. Deliver `RUNTIME_CAPABILITY_MAP.md` and expand `capabilities.json`. Every user action must map to a Capability ID or infrastructure-only classification.
 
 ---
 
-# STAGE 2 — Requirement-to-runtime gap audit
+# STAGE 2 — Requirement-to-Runtime Gap Audit
 STATUS: LOCKED
-
-For every capability compare:
-
-`PLAN / SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT`
-
-Classify:
-- implemented exactly;
-- implemented differently but valid and documented;
-- partially implemented;
-- missing;
-- unreachable;
-- implemented but undocumented;
-- obsolete plan claim.
-
-Do not fix production code in the audit role.
-
-Deliverable:
-`audits/reports/FUNCTION_CAPABILITY_STAGE2_TRACEABILITY.md`
-
-Any discovered P0/P1 remains a blocker and becomes a corrective item after audit evidence is frozen.
+For every capability compare `PLAN/SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT`. Classify exact/different-valid/partial/missing/unreachable/undocumented/obsolete. Auditor does not fix production. Freeze findings with exact SHA.
 
 ---
 
-# STAGE 3 — Core workflow executable scenarios
+# STAGE 3 — Executable Core Workflows + Playwright Foundation
 STATUS: LOCKED
-
-Create deterministic end-to-end scenario tests for critical user journeys.
-
-Minimum scenarios:
-
-### Job + materials
-- create/use Job A;
-- add standard material;
-- add custom material;
-- blank Your Cost remains unresolved;
-- explicit zero remains zero;
-- switch to Job B and prove isolation;
-- switch back to Job A and prove restoration.
-
-### Residential
-- valid residential calculation;
-- save/archive;
-- reload;
-- apply to Job;
-- verify historical snapshot;
-- update current calculation and prove prior applied snapshot does not mutate silently.
-
-### Electrical Tasks
-- Feeder task calculation;
-- Save;
-- reload;
-- Recalculate;
-- Apply to Job;
-- edit task;
-- verify `CHANGED_SINCE_APPLY`;
-- explicit Update Job from Task;
-- verify material history/provenance.
-
-### Quote / Invoice
-- build quote from current Job state;
-- approve quote;
-- mutate live Job after approval;
-- prove approved quote is unchanged;
-- create fixed-price invoice from approved snapshot;
-- verify T&M path remains separate.
-
-### Import / Export
-- export representative Job containing current supported records;
-- import into clean state;
-- prove supported records survive;
-- prove unrelated active-job state is not inherited.
-
-Each scenario must assert both intended side effects and forbidden side effects.
+Implement Playwright infrastructure and mandatory journeys. Also retain deterministic integration tests. Minimum journeys include Job/materials isolation, Residential, Electrical Tasks, advanced templates, Task Solver, Quote/Approved Quote/Invoice, Import/Export and reload resilience. CI must require deterministic suite GREEN AND Playwright GREEN against the same exact SHA.
 
 ---
 
-# STAGE 4 — Function-level deterministic audit
+# STAGE 4 — Function-Level Deterministic Audit
 STATUS: LOCKED
-
-Goal: complement capability testing with lower-level executable coverage.
-
-Build a production-function inventory for high-value modules and classify each exported/public function:
-- directly tested;
-- indirectly tested through integration;
-- trivial accessor/pure plumbing;
-- unreachable/dead;
-- untested high-risk.
-
-Important: 100% function-call coverage alone is NOT the acceptance criterion.
-
-For deterministic calculation and persistence modules, add targeted tests for:
-- branches;
-- invalid inputs;
-- boundary values;
-- rollback/error paths;
-- duplicate IDs/stale IDs;
-- blank/zero distinctions;
-- unsupported configurations.
-
-Deliverables:
-- `audits/function-capability/FUNCTION_COVERAGE_MAP.md`
-- coverage metrics if a safe instrumentation method is introduced.
-
-A coverage percentage may be reported, but it must never replace semantic assertions.
+Inventory exported/public high-value functions: directly tested, integration-tested, trivial plumbing, dead/unreachable, untested high-risk. Add targeted branch/boundary/invalid/rollback/stale-ID/blank-zero/unsupported tests. Coverage metrics may locate gaps but never prove correctness.
 
 ---
 
-# STAGE 5 — Negative / fault-injection audit
+# STAGE 5 — Negative / Fault Injection
 STATUS: LOCKED
-
-Prove the app behaves safely when things go wrong.
-
-Test at least:
-- malformed top-level storage JSON;
-- malformed partial records;
-- missing referenced task/material IDs;
-- stale active IDs;
-- unsupported calculator inputs;
-- impossible raceway/configuration result;
-- failed Apply/Update with rollback;
-- import with incomplete optional fields;
-- service-worker offline fallback;
-- stale cache upgrade;
-- unavailable optional assets;
-- duplicate/repeated user action where idempotency matters.
-
-Expected behavior must be explicit: fail closed, preserve prior data, explain unresolved state, or safely no-op depending on contract.
+Test malformed JSON/partial records, stale/missing IDs, unsupported calculations, impossible raceway/configurations, failed Apply/Update rollback, incomplete imports, repeated actions, optional asset failures, stale caches and browser-reproducible negative flows. Expected fail-closed/preserve/no-op behavior must be explicit.
 
 ---
 
-# STAGE 6 — UI action wiring audit
+# STAGE 6 — UI Action Wiring Audit
 STATUS: LOCKED
-
-Goal: find buttons, selectors, links or controls that look functional but do not complete the promised action.
-
-For each actionable control verify:
-- visible/reachable in intended project mode;
-- handler is bound;
-- handler reaches intended domain action;
-- disabled/hidden states are correct;
-- no accidental double-handler override;
-- action feedback reflects actual result;
-- keyboard/touch activation works where automation permits;
-- navigation does not hide required final action.
-
-Special attention:
-- dynamic Stage UI overlays;
-- onchange reassignment;
-- mobile bottom navigation;
-- task-type switching;
-- Save / Apply / Update distinctions;
-- modal/select interactions.
-
-Deliverable:
-`audits/reports/FUNCTION_CAPABILITY_STAGE6_UI_WIRING.md`
+For every actionable control verify reachability, correct handler, correct domain action, disabled/hidden states, no handler override, truthful feedback, keyboard/touch where applicable, no mobile navigation obstruction. Real Browser E2E evidence is required for materially user-facing actions.
 
 ---
 
-# STAGE 7 — Cross-module regression matrix
+# STAGE 7 — Cross-Module Regression Matrix
 STATUS: LOCKED
-
-Run a matrix proving changes or actions in one domain do not corrupt another.
-
-Required pairs include:
-- Catalog <-> Job Materials
-- Job Materials <-> Quote
-- Quote <-> Approved Quote
-- Approved Quote <-> Invoice
-- Electrical Tasks <-> Job Materials
-- Residential <-> Job Materials
-- Custom Materials <-> pricing/margin math
-- Job switching <-> every saved/archive domain
-- Import/Export <-> archive/history/provenance
-- PWA update <-> stored Job data
-
-Every pair receives PASS/PARTIAL/FAIL/UNTESTED with evidence.
+Required pairs include Catalog<->Job Materials, Job Materials<->Quote, Quote<->Approved Quote, Approved Quote<->Invoice, Electrical Tasks<->Job Materials, Residential<->Job Materials, Custom Materials<->pricing, Job switching<->all scoped archives, Import/Export<->history/provenance, PWA update<->stored Job data. Record PASS/PARTIAL/FAIL/UNTESTED with evidence.
 
 ---
 
-# STAGE 8 — Responsive / PWA executable audit
+# STAGE 8 — Responsive / PWA Browser Audit
 STATUS: LOCKED
-
-Validate supported layout contracts:
-- phone target 360–430 px;
-- tablet 768–1024 px;
-- desktop >=1200 px.
-
-Verify critical actions are reachable and not hidden behind fixed navigation.
-Verify long forms/results do not suffer critical horizontal overflow.
-Verify offline core shell and service-worker upgrade behavior.
-
-If real-device or screenshot automation is unavailable, explicitly record the evidence limit; do not claim visual PASS beyond available proof.
+Run Playwright phone/tablet/desktop profiles. Verify critical actions reachable, no critical horizontal overflow, bottom navigation not covering required controls, long forms/tables usable. Run service-worker/offline/upgrade scenarios where deterministic. Browser limitations are recorded, not guessed away.
 
 ---
 
-# STAGE 9 — Corrective master generation
+# STAGE 9 — Corrective Master
 STATUS: LOCKED
-
-After Stages 0–8 freeze findings:
-- create a corrective master from every P0/P1 and selected P2;
-- group corrections by root cause, not by symptom;
-- production fixes go to `main` under the repository's current development policy;
-- every correction gets deterministic regression tests;
-- run exact-head CI after corrections.
-
-No finding may disappear from the ledger. It moves from OPEN -> FIXED_PENDING_REAUDIT -> VERIFIED_CLOSED.
+Freeze Stages 0–8 findings, create corrective tasks for every P0/P1 and selected P2, group by root cause, fix on `main`, add deterministic and browser regressions. Finding lifecycle: `OPEN -> FIXED_PENDING_REAUDIT -> VERIFIED_CLOSED`; findings are never deleted from ledger.
 
 ---
 
-# STAGE 10 — Independent re-audit
+# STAGE 10 — Independent Re-Audit
 STATUS: LOCKED
-
-Create a new exact-SHA audit branch.
-The re-auditor must:
-- verify each corrective finding independently;
-- rerun affected capability scenarios;
-- run protected regression matrix;
-- confirm no new P0/P1;
-- verify exact-head CI provenance.
-
-Changed code invalidates prior PASS evidence for affected capabilities until re-tested.
+New exact-SHA audit branch. Re-run affected deterministic + Playwright scenarios and protected regression matrix; verify corrective findings independently, exact-head CI provenance and zero new P0/P1.
 
 ---
 
-# STAGE 11 — Final capability certification
+# STAGE 11 — Final Capability Certification
 STATUS: LOCKED
-
-Completion requires:
-- every inventoried capability classified;
-- zero P0;
-- zero P1;
-- every declared current requirement mapped to implementation or explicitly unsupported scope;
-- critical workflows have executable evidence;
-- Job isolation matrix green;
-- Save/Apply/Approved snapshot invariants green;
-- exact final SHA + exact-head CI green;
-- final independent audit A_ACCEPT.
+Requires all capabilities classified; P0=0; P1=0; all current requirements mapped or explicitly unsupported; critical workflows have deterministic + browser evidence; Job isolation / Save-vs-Apply / approved snapshot invariants green; exact final SHA; deterministic CI green; Playwright E2E green; final independent A_ACCEPT.
 
 Final deliverables:
 - `audits/function-capability/CAPABILITY_MATRIX.md`
 - `audits/function-capability/capabilities.json`
 - `audits/function-capability/FUNCTION_COVERAGE_MAP.md`
+- browser test report/artifact references
 - `audits/reports/FUNCTION_CAPABILITY_FINAL_AUDIT.md`
-- `dev-reports/FUNCTION_CAPABILITY_CORRECTIVE_REPORT.md` if corrections were required
-- final master state JSON.
+- corrective report if needed
+- final state JSON.
 
-MASTER_COMPLETE only after final re-audit has 0 P0/P1.
+MASTER_COMPLETE only after final exact-SHA re-audit has 0 P0/P1 and both deterministic and mandatory Browser E2E gates are green.
 
----
+## Autonomous user-intervention policy
+Playwright setup, dependencies, static server, test fixtures, selectors, CI, traces/screenshots and audit execution are autonomous repository work. Ask the user only for a genuine external blocker such as unavailable third-party credentials; local/PWA Bruno Electric workflows do not require user participation.
 
-# Recommended automation architecture
-
-Use three complementary test layers:
-
-1. **Node deterministic tests** — calculation, normalization, persistence, state transitions.
-2. **DOM/workflow harness** — load app modules in controlled DOM/localStorage environment and activate real UI handlers.
-3. **Browser E2E** — recommended for the highest-value workflows when a browser automation runner is introduced; verify actual navigation, click/type flows, reload and responsive breakpoints.
-
-Optional later enhancement:
-- instrument test-only function/branch coverage with a standard JS coverage tool;
-- publish coverage artifact from CI;
-- use coverage only to locate untested code, never as proof of correctness.
-
----
-
-# Audit execution loop
-
-For each stage:
-
-`DISCOVER -> SPECIFY EXPECTED BEHAVIOR -> TEST -> COLLECT EVIDENCE -> CLASSIFY -> AUDIT -> CORRECT P0/P1 -> EXACT-HEAD CI -> RE-AUDIT -> ACCEPT`
-
-Independent auditor restrictions:
-- no production code edits;
-- no weakening tests;
-- no changing expected result merely to match current runtime;
-- no PASS without reproducible evidence;
-- findings must reference exact SHA, files/modules, Capability ID and failed contract.
-
----
-
-# Handoff
-
+## Handoff
 ```yaml
 handoff:
   role_completed: ORCHESTRATOR
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
-  verdict_or_gate: FUNCTION_CAPABILITY_AUDIT_MASTER_READY
+  verdict_or_gate: STAGE_0_ACTIVE
   blockers: []
   files_to_read_next:
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_STATE.json
     - dev-plans/ELECTRICAL_TASKS_AUTONOMOUS_MASTER.md
-    - dev-plans/AUTONOMOUS_AI_HANDOFF_PROTOCOL.md
   next_role: AUDIT_ORCHESTRATOR
-  next_action: Execute Stage 0 against current main, build authoritative requirements index and capability registry, then continue sequentially without skipping gates.
+  next_action: Complete Stage 0 baseline/requirements/browser-infrastructure inventory, exact-head CI evidence and initial capability registry, then audit and accept before Stage 1.
   prohibited_actions:
     - mark_capability_pass_without_evidence
     - silently_change_requirement_to_match_runtime
+    - skip_browser_e2e_for_high_risk_user_capability
     - skip_p0_p1_corrective_cycle
 ```

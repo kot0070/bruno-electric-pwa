@@ -1,0 +1,13 @@
+/* Bruno Electric — project calculator mode selector. Residential code tools are isolated from commercial mode. */
+(function(){
+'use strict';
+var KEY='bruno-electric-project-mode-v1';
+function q(s,r){return (r||document).querySelector(s)}
+function qa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function mode(){var v=localStorage.getItem(KEY);return v==='commercial'?'commercial':'residential'}
+function setMode(v){localStorage.setItem(KEY,v==='commercial'?'commercial':'residential');apply()}
+function apply(){var m=mode();document.documentElement.dataset.projectMode=m;var sel=q('#be-project-mode');if(sel)sel.value=m;var note=q('#be-project-mode-note');if(note)note.textContent=m==='commercial'?'Commercial mode: Residential-specific NEC dwelling calculators are hidden. Core/equipment calculators remain available; commercial code decisions still require the applicable occupancy/AHJ rules.':'Residential mode: dwelling/live takeoff tools are available.';var residential=['res','res-live','res-takeoff'];residential.forEach(function(id){var b=q('#tool-nav [data-tool="'+id+'"]');if(b)b.style.display=m==='commercial'?'none':''});var active=q('#tool-nav [data-tool].active');if(m==='commercial'&&active&&residential.indexOf(active.dataset.tool)>=0){var fallback=q('#tool-nav [data-tool="amp"]');if(fallback)fallback.click()}window.dispatchEvent(new CustomEvent('bruno:project-mode-changed',{detail:{mode:m}}))}
+function install(){if(!/electrical-tools\.html$/i.test(location.pathname)||q('#be-project-mode-wrap'))return;var work=q('.work')||q('main')||document.body;var box=document.createElement('section');box.id='be-project-mode-wrap';box.className='card';box.style.margin='0 0 12px';box.innerHTML='<div style="display:flex;gap:.7rem;align-items:end;flex-wrap:wrap"><div class="field" style="min-width:220px"><label>Project type</label><select id="be-project-mode"><option value="residential">Residential / dwelling</option><option value="commercial">Commercial</option></select></div><div id="be-project-mode-note" style="flex:1;min-width:260px;color:var(--muted);font-size:.82rem;padding-bottom:.45rem"></div></div>';work.insertBefore(box,work.firstChild);q('#be-project-mode').addEventListener('change',function(){setMode(this.value)});apply()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(install,100)},{once:true});else setTimeout(install,100);
+window.BrunoProjectMode={get:mode,set:setMode,apply:apply};
+})();

@@ -33,21 +33,13 @@ require('./residential-live-levels.test.js');
 require('./residential-live-history.test.js');
 require('./residential-live-workspace.test.js');
 require('./dispatch-journal-v2.test.js');
+require('./project-calculator.test.js');
 require('./phase3-equipment.test.js');
 require('./service-worker.test.js');
 
 Promise.all(global.BRUNO_ASYNC_TESTS).then(function(){
   var r = global.BRUNO_TEST_RESULTS;
-  if (!r) {
-    console.error('No test results produced');
-    process.exit(2);
-  }
+  if (!r) { console.error('No test results produced'); process.exit(2); }
   console.log('Bruno Electric deterministic tests: ' + r.pass + '/' + r.total + ' passed');
-  if (r.fail) {
-    r.results.filter(function(x){return !x.ok}).forEach(function(x){console.error('FAIL — '+x.name+': '+x.error);});
-    process.exit(1);
-  }
-}).catch(function(err){
-  console.error(err&&err.stack||err);
-  process.exit(1);
-});
+  if (r.fail) { r.results.filter(function(x){return !x.ok}).forEach(function(x){console.error('FAIL — '+x.name+': '+x.error);}); process.exit(1); }
+}).catch(function(err){ console.error(err&&err.stack||err); process.exit(1); });

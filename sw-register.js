@@ -12,17 +12,6 @@
     document.head.appendChild(d);
   }
 
-  function loadProjectMode() {
-    if (!/electrical-tools\.html$/i.test(location.pathname)) return;
-    if (window.BrunoProjectMode || document.querySelector('script[data-be-project-mode]')) return;
-    var p=document.createElement('script');
-    p.src='./electric-project-mode.js';
-    p.defer=true;
-    p.dataset.beProjectMode='1';
-    p.onerror=function(){};
-    document.head.appendChild(p);
-  }
-
   function loadCompactHeader() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoCompactHeader || document.querySelector('script[data-be-compact-header]')) return;
@@ -85,7 +74,6 @@
   function loadAppNavigation() {
     loadCompactHeader();
     loadDispatchJournal();
-    loadProjectMode();
     loadResidentialWorkspaceBridge();
     if (window.BrunoElectricAppNavigation) { loadWorkspaceEnhancement(); return; }
     if (document.querySelector('script[data-be-app-nav]')) return;
@@ -98,14 +86,9 @@
     document.head.appendChild(n);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadAppNavigation, { once: true });
-  } else {
-    loadAppNavigation();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadAppNavigation, { once: true });
+  else loadAppNavigation();
 
   if (!('serviceWorker' in navigator)) return;
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function () {});
-  });
+  window.addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function () {}); });
 })();

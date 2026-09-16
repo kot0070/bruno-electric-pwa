@@ -1,0 +1,22 @@
+'use strict';
+(function(){
+var out=global.BRUNO_TEST_RESULTS||{total:0,pass:0,fail:0,results:[]};
+function test(name,fn){out.total++;try{fn();out.pass++;out.results.push({name:name,ok:true})}catch(e){out.fail++;out.results.push({name:name,ok:false,error:e.message})}}
+function is(a,b){if(a!==b)throw new Error('expected '+JSON.stringify(b)+', got '+JSON.stringify(a))}
+function ok(v,m){if(!v)throw new Error(m||'assertion failed')}
+function throws(fn,m){var hit=false;try{fn()}catch(e){hit=true}ok(hit,m||'expected throw')}
+var A=global.BrunoElectricalTaskArchive,T=global.BrunoElectricalTaskMaterialTakeoff,C=global.BrunoElectricalCatalogV1;
+function input(distance){return{loadAmps:'300',voltage:'480',phase:'3',distanceFt:String(distance||50),material:'Cu',installation:'EMT',conductorType:'THHN_THWN2',loadBasis:'NONCONTINUOUS',vdTargetPct:'3',ambientC:'30',ccc:'3',terminalRating:'75',parallelAllowed:false,maxConductorSize:'',racewayStrategy:'SEPARATE_SETS',ocpdAmps:'300',neutralMode:'NONE',egcMaterial:'Cu'}}
+function task(rev,distance){return{id:'task-6',revision:rev||1,taskType:'FEEDER_PANEL_RUN',name:'Feeder',inputs:input(distance),sourceEdition:'2026',jurisdiction:'Texas'}}
+function seed(id,cost){var r=C.items.find(function(x){return x.id===id}),c=JSON.parse(JSON.stringify(r));c.yourCost=String(cost);return c}
+function job(rev,distance){localStorage.setItem('bruno-electric-v1',JSON.stringify({id:'job-stage6',catalog:[seed('ecat-thhn-cu-350',2),seed('ecat-thhn-cu-4',1),seed('ecat-emt-250',3)],materialsUsed:[],materialsUnresolved:[],electricalTasks:[task(rev,distance)],electricalTaskActiveId:'task-6'}))}
+function plan(rev,distance){var x=input(distance),g={ocpdAmps:x.ocpdAmps,neutralMode:x.neutralMode,egcMaterial:x.egcMaterial};return T.build(x,g,{id:'task-6',revision:rev,sourceEdition:'2026',jurisdiction:'Texas'},{})}
+test('Stage 6 archive status moves SAVED to APPLIED TO JOB',function(){job(1);is(A.status(task(1)),'SAVED');A.apply(plan(1));is(A.status(task(1)),'APPLIED_TO_JOB')});
+test('later saved revision reports CHANGED SINCE APPLY',function(){job(1);A.apply(plan(1));var j=JSON.parse(localStorage.getItem('bruno-electric-v1'));j.electricalTasks=[task(2)];localStorage.setItem('bruno-electric-v1',JSON.stringify(j));is(A.status(task(2)),'CHANGED_SINCE_APPLY')});
+test('rename is explicit save and advances revision without altering historical material',function(){job(1);A.apply(plan(1));var before=JSON.parse(localStorage.getItem('bruno-electric-v1')).materialsUsed.length,r=A.rename('task-6','Renamed feeder'),after=JSON.parse(localStorage.getItem('bruno-electric-v1')).materialsUsed.length;is(r.name,'Renamed feeder');is(r.revision,2);is(before,after);is(A.status(r),'CHANGED_SINCE_APPLY')});
+test('load selects only task inside active Job',function(){job(1);is(A.load('task-6').id,'task-6');throws(function(){A.load('other')})});
+test('recalculate saves a new task revision and deterministic result',function(){job(1);var r=A.recalculate('task-6');is(r.revision,2);ok(r.result,'result missing');ok(r.status,'status missing')});
+test('Update Job from Task archives old snapshots and installs new revision snapshots',function(){job(1);A.apply(plan(1));var j=JSON.parse(localStorage.getItem('bruno-electric-v1'));j.electricalTasks=[task(2)];localStorage.setItem('bruno-electric-v1',JSON.stringify(j));var r=A.update(plan(2)),done=JSON.parse(localStorage.getItem('bruno-electric-v1'));is(r.updated,true);is(done.electricalTaskMaterialHistory.length,1);is(done.electricalTaskMaterialHistory[0].sourceTaskId,'task-6');ok(done.materialsUsed.every(function(x){return Number(x.sourceTaskRevision)===2}),'active materials should be revision 2');ok(done.electricalTaskMaterialHistory[0].materialsUsed.every(function(x){return Number(x.sourceTaskRevision)===1}),'history should preserve revision 1')});
+test('failed Update Job rolls back active materials/history transaction',function(){job(1);A.apply(plan(1));var before=localStorage.getItem('bruno-electric-v1'),bad=plan(1);bad.sourceJobId='other-job';throws(function(){A.update(bad)});var after=localStorage.getItem('bruno-electric-v1'),b=JSON.parse(before),a=JSON.parse(after);is(a.materialsUsed.length,b.materialsUsed.length);is((a.electricalTaskMaterialHistory||[]).length,(b.electricalTaskMaterialHistory||[]).length)});
+global.BRUNO_TEST_RESULTS=out;
+})();

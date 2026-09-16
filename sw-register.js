@@ -12,6 +12,17 @@
     document.head.appendChild(c);
   }
 
+  function loadPricingMarginsSemantics() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoPricingMarginsSemantics || document.querySelector('script[data-be-pricing-margins-semantics]')) return;
+    var m=document.createElement('script');
+    m.src='./electric-pricing-margins-semantics.js';
+    m.defer=true;
+    m.dataset.bePricingMarginsSemantics='1';
+    m.onerror=function(){};
+    document.head.appendChild(m);
+  }
+
   function loadDispatchJournal() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoDispatchJournalV2 || document.querySelector('script[data-be-dispatch-v2]')) return;
@@ -84,6 +95,7 @@
 
   function loadAppNavigation() {
     loadCatalogCostSemantics();
+    loadPricingMarginsSemantics();
     loadCompactHeader();
     loadDispatchJournal();
     loadResidentialWorkspaceBridge();

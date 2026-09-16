@@ -15,5 +15,7 @@ function groupForTab(tab){for(var i=0;i<groups.length;i++)for(var j=0;j<groups[i
 function validTabForGroup(g,tab){if(!g||!tab)return false;for(var i=0;i<g.items.length;i++)if(g.items[i][0]===tab)return true;return false}
 function parseWorkspaceHash(raw){raw=String(raw==null?(window.location&&window.location.hash||''):raw).replace(/^#/,'');if(!raw)return null;var p=new URLSearchParams(raw),key=String(p.get('be')||'').toUpperCase();if(['JOB','ESTIMATE','BILLING','MORE'].indexOf(key)<0)return null;var g=group(key),tab=String(p.get('tab')||'');if(!validTabForGroup(g,tab))tab=g.defaultTab;return{key:g.key,tab:tab}}
 function workspaceHref(key,tab){if(key==='ELECTRICAL'||tab==='__tools')return './electrical-tools.html';var g=group(key),resolved=validTabForGroup(g,tab)?tab:g.defaultTab;return './index.html#be='+encodeURIComponent(g.key)+'&tab='+encodeURIComponent(resolved)}
+function loadAppBackupDispatch(){if(/electrical-tools\.html$/i.test(location.pathname)||window.BrunoAppBackupDispatch||document.querySelector('script[data-be-app-backup-dispatch]'))return;var s=document.createElement('script');s.src='./electric-app-backup-dispatch.js';s.defer=true;s.setAttribute('data-be-app-backup-dispatch','1');document.head.appendChild(s)}
 window.BrunoElectricAppNavigation={groups:groups,group:group,groupForTab:groupForTab,workspaceHref:workspaceHref,parseWorkspaceHash:parseWorkspaceHash};
+loadAppBackupDispatch();
 })();

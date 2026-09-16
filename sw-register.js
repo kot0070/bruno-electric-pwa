@@ -45,6 +45,17 @@
     document.head.appendChild(m);
   }
 
+  function loadJobMaterialCostSemantics() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoJobMaterialCostSemantics || document.querySelector('script[data-be-job-material-cost-semantics]')) return;
+    var j=document.createElement('script');
+    j.src='./electric-job-material-cost-semantics.js';
+    j.defer=true;
+    j.dataset.beJobMaterialCostSemantics='1';
+    j.onerror=function(){};
+    document.head.appendChild(j);
+  }
+
   function loadDispatchJournal() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoDispatchJournalV2 || document.querySelector('script[data-be-dispatch-v2]')) return;
@@ -119,6 +130,7 @@
     prepareStrictMarginsRuntime();
     loadCatalogCostSemantics();
     loadPricingMarginsSemantics();
+    loadJobMaterialCostSemantics();
     loadCompactHeader();
     loadDispatchJournal();
     loadResidentialWorkspaceBridge();

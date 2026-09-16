@@ -1,7 +1,7 @@
 /* Bruno Electric — Electrical Tasks job-scoped persistence API. */
 (function(root){
 'use strict';
-var JOB_KEY='bruno-electric-v1',VERSION='electrical-tasks-shell-v5',FIELD='electricalTasks',ACTIVE='electricalTaskActiveId';
+var JOB_KEY='bruno-electric-v1',VERSION='electrical-tasks-shell-v6',FIELD='electricalTasks',ACTIVE='electricalTaskActiveId';
 var TYPES=Object.freeze([
   {id:'FEEDER_PANEL_RUN',label:'Feeder / Panel Run',enabled:true},
   {id:'BRANCH_CIRCUIT_RUN',label:'Branch Circuit Run',enabled:true},
@@ -13,7 +13,7 @@ var TYPES=Object.freeze([
   {id:'TRANSFORMER_FEED',label:'Transformer Feed',enabled:false},
   {id:'MOTOR_CIRCUIT',label:'Motor Circuit',enabled:false},
   {id:'EVSE_CIRCUIT',label:'EVSE Circuit',enabled:true},
-  {id:'HVAC_CIRCUIT',label:'HVAC Circuit',enabled:false},
+  {id:'HVAC_CIRCUIT',label:'HVAC Circuit',enabled:true},
   {id:'GENERATOR_FEEDER',label:'Generator / Feeder',enabled:false},
   {id:'GENERIC_CUSTOM',label:'Generic Custom Electrical Task',enabled:false}
 ]);
@@ -29,7 +29,7 @@ function raw(v){return v==null?'':String(v)}
 function currentEdition(j){var v=j&&(j.necEdition||j.codeEdition||j.edition);return v==null||String(v).trim()===''?null:String(v)}
 function currentJurisdiction(j){var v=j&&(j.jurisdiction||j.ahj);return v==null||String(v).trim()===''?null:String(v)}
 function circuitInputs(seed){seed=seed||{};return{loadAmps:raw(seed.loadAmps),voltage:raw(seed.voltage),phase:raw(seed.phase),distanceFt:raw(seed.distanceFt),material:raw(seed.material),installation:raw(seed.installation),conductorType:raw(seed.conductorType),loadBasis:raw(seed.loadBasis),vdTargetPct:raw(seed.vdTargetPct),ambientC:raw(seed.ambientC),ccc:raw(seed.ccc),terminalRating:raw(seed.terminalRating),parallelAllowed:seed.parallelAllowed===true,maxConductorSize:raw(seed.maxConductorSize),racewayStrategy:raw(seed.racewayStrategy),ocpdAmps:raw(seed.ocpdAmps),neutralMode:raw(seed.neutralMode),egcMaterial:raw(seed.egcMaterial),taskSpecific:clone(seed.taskSpecific||{})}}
-function supportedInputs(type,seed){if(type==='FEEDER_PANEL_RUN'||type==='BRANCH_CIRCUIT_RUN'||type==='EVSE_CIRCUIT')return circuitInputs(seed);return{}}
+function supportedInputs(type,seed){if(type==='FEEDER_PANEL_RUN'||type==='BRANCH_CIRCUIT_RUN'||type==='EVSE_CIRCUIT'||type==='HVAC_CIRCUIT')return circuitInputs(seed);return{}}
 function make(type,seed,j){var meta=typeMeta(type);if(!meta)throw new Error('Unsupported Electrical Task type');if(!meta.enabled)throw new Error(meta.label+' is not enabled in this stage');seed=seed||{};var t=now();return{id:uid(),taskType:type,name:raw(seed.name)||meta.label,createdAt:t,updatedAt:t,revision:1,status:'DRAFT',inputs:supportedInputs(type,seed.inputs),assumptions:{},result:null,candidates:[],calculationSteps:[],warnings:[],unresolved:[],sourceEdition:currentEdition(j||{}),jurisdiction:currentJurisdiction(j||{}),engineVersion:VERSION}}
 function normalize(task,existing,j){if(!task||typeof task!=='object'||Array.isArray(task))throw new Error('Electrical Task must be an object');var meta=typeMeta(task.taskType);if(!meta||!meta.enabled)throw new Error('Unsupported or not-yet-enabled Electrical Task type');var created=existing&&existing.createdAt||task.createdAt||now(),rev=existing?((Number(existing.revision)||1)+1):(Number(task.revision)||1),hasResult=!!task.result||task.status==='NO SUPPORTED CONFIGURATION';return{id:existing&&existing.id||task.id||uid(),taskType:meta.id,name:raw(task.name).trim()||meta.label,createdAt:created,updatedAt:now(),revision:rev,status:hasResult?(task.status||'CALCULATED'):'DRAFT',inputs:supportedInputs(meta.id,task.inputs),assumptions:clone(task.assumptions||{}),result:clone(task.result),candidates:clone(task.candidates||[]),calculationSteps:clone(task.calculationSteps||[]),warnings:clone(task.warnings||[]),unresolved:clone(task.unresolved||[]),sourceEdition:task.sourceEdition==null?currentEdition(j||{}):task.sourceEdition,jurisdiction:task.jurisdiction==null?currentJurisdiction(j||{}):task.jurisdiction,engineVersion:task.engineVersion||VERSION}}
 function list(){var j=readJob();if(!j)return[];return clone(rows(j))}

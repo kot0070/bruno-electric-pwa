@@ -118,8 +118,23 @@ Gate: ACCEPTED.
 ---
 
 # STAGE 1 — Runtime Capability Inventory
-STATUS: ACTIVE
+STATUS: REAUDIT_PENDING
 Map current UI controls/routes -> handlers -> runtime -> storage/services; identify dead/unreachable runtime, visible actions without a valid runtime path, duplicate/conflicting implementations, dormant prototypes and service-worker loading paths. Deliver `RUNTIME_CAPABILITY_MAP.md` and expand `capabilities.json`. Every user action must map to a Capability ID or infrastructure-only classification.
+
+Current Stage 1 evidence:
+- runtime inventory/registry expansion exact SHA: `138b3de84f158d57ec0046d6dbed80049c1ba299`;
+- exact-head deterministic CI at inventory SHA: run #536 / id `35160109516`, SUCCESS;
+- independent audit branch: `audit/function-capability-stage1-138b3de`;
+- independent audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE1_AUDIT_138b3de.md`;
+- audit verdict: `A_REJECT_CORRECTIVE_REQUIRED`, P0=0, P1=1;
+- finding `FCA-S1-P1-001`: full app backup omitted the current visible Dispatch Journal v3 standalone data/settings;
+- corrective implementation adds current Dispatch Journal v3 export/restore bridge, deterministic regressions and PWA cache inclusion;
+- corrective code SHA: `7b39a8fb55be5a525cf157124fcb14e42903c758`;
+- exact-head deterministic CI at corrective code SHA: run #543 / id `35163156620`, SUCCESS, 770/770 tests;
+- finding state: `FIXED_PENDING_REAUDIT`;
+- `FCA-S1-P2-001` dual Dispatch persistence models remains a Stage 2 architectural classification item, not a Stage 1 blocker.
+
+Gate: independent exact-SHA re-audit required. Stage 2 remains locked until re-audit verdict is `A_ACCEPT` with P0=0/P1=0.
 
 ---
 
@@ -200,14 +215,15 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 handoff:
   role_completed: ORCHESTRATOR
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
-  verdict_or_gate: STAGE_1_ACTIVE
+  verdict_or_gate: STAGE_1_REAUDIT_PENDING
   blockers: []
   files_to_read_next:
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_STATE.json
+    - audits/function-capability/RUNTIME_CAPABILITY_MAP.md
     - audits/function-capability/capabilities.json
-  next_role: AUDIT_ORCHESTRATOR
-  next_action: Complete Stage 1 runtime capability inventory by mapping current UI/actions to handlers, runtime modules and persistence/services, create RUNTIME_CAPABILITY_MAP.md, expand capabilities.json, run exact-head CI and independent audit before Stage 2.
+  next_role: INDEPENDENT_AUDITOR
+  next_action: Pin current main exact SHA after Stage 1 governance update, require exact-head deterministic CI success, create separate exact-SHA re-audit branch, verify FCA-S1-P1-001 is closed without regression, and accept Stage 1 only if P0=0/P1=0. Then unlock Stage 2.
   prohibited_actions:
     - mark_capability_pass_without_evidence
     - silently_change_requirement_to_match_runtime

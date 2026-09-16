@@ -3,20 +3,13 @@
 **Branch:** `dev/custom-special-order-materials`  
 **Execution mode:** STRICT SEQUENTIAL  
 **Audit mode:** ONE INDEPENDENT FULL AUDIT AFTER ALL STAGES  
-**Current stage:** `STAGE_8_FINAL_INTEGRATION_GATE`  
-**Overall state:** `IN_PROGRESS`
+**Current stage:** `COMPLETE_AWAITING_INDEPENDENT_AUDIT`  
+**Overall state:** `IMPLEMENTATION_COMPLETE / DO_NOT_MERGE_BEFORE_AUDIT`
 
 ## NON-NEGOTIABLE EXECUTION RULES
-1. Work on exactly one `CURRENT_STAGE` at a time.
-2. DO NOT start the next stage until every acceptance criterion and required regression for the current stage is GREEN.
-3. After finishing each stage, RE-READ THIS FILE from the repository before changing any code for the next stage.
-4. Update this file after each completed stage with status, implementation SHA(s), tests/evidence, follow-up risks and next `Current stage`.
-5. If a stage fails CI or an acceptance criterion, remain on that stage until corrected.
-6. Do not silently weaken an acceptance criterion to advance.
-7. Do not merge PR #14 during this plan.
-8. Do not create an independent audit task after intermediate stages. The independent audit is created only after `STAGE_8_FINAL_INTEGRATION_GATE` is GREEN.
-9. Preserve existing accepted safety contracts: blank `Your Cost` != explicit `0`; unresolved cost never enters numeric project material-cost math; historical Job Materials are immutable snapshots; Residential/Commercial isolation remains intact; historical helper-tax semantics remain intact; exact-head CI must test the real PR head SHA.
-10. Any navigation, storage, import/export, archive, quote, or invoice change must be tested for phone/tablet/desktop and reload persistence where applicable.
+1. Do not merge PR #14 before independent audit acceptance.
+2. Preserve accepted safety contracts: blank `Your Cost` != explicit `0`; unresolved cost never enters numeric project material-cost math; historical Job Materials are immutable snapshots; Residential/Commercial isolation remains intact; historical helper-tax semantics remain intact; exact-head CI must test the real PR head SHA.
+3. Independent audit must use the exact SHA pinned in `audits/TASK_CURRENT.md` and must not modify production code, PR metadata, or merge state.
 
 ---
 ## STAGE 1 — NAVIGATION / DEEP-LINK CORRECTNESS
@@ -38,43 +31,27 @@
 **Status:** `DONE` — exact-head CI #286 SUCCESS on `3aa18cf6ce3d3529dfc0b75ce99b9975c1511f1c`.
 
 ## STAGE 7 — CATALOG / JOB MATERIALS UX CLARITY + CUSTOM MATERIAL COMPLETION
+**Status:** `DONE` — exact-head CI #291 SUCCESS on `f8e1d4d4339bacbd4c6e6f07a17427fdc056d2c9`.
+
+## STAGE 8 — FINAL INTEGRATION GATE / PWA / EXPORT-IMPORT / EXACT-HEAD CI
 **Status:** `DONE`
 
 ### Implemented
-- Existing Custom / Special-order workflow remains first-class at top of Catalog with create/edit/delete, persisted Catalog Qty, row-specific Add Qty override and strict Add-to-Job routing.
-- Added `electric-catalog-job-ux-semantics.js` to expose row-level `CATALOG`, `CUSTOM / SPECIAL ORDER`, and `USED ON JOB ×qty` semantics.
-- Job Material resolved rows receive source markers distinguishing `CUSTOM SNAPSHOT`, `CATALOG SNAPSHOT`, `GENERATED · source`, and `MANUAL JOB SNAPSHOT`.
-- Catalog and Job Materials now carry explicit explanatory legends: Catalog rows are definitions; Job Materials are historical snapshots.
-- Project-scoped Custom definitions remain inside active `bruno-electric-v1` job state; prior device-global Custom registries are non-authoritative and cannot leak between imported/replaced jobs.
-- strict blank / explicit zero / positive Your Cost semantics and positive Qty enforcement remain covered.
-- Catalog edit/delete preserves already-added Job Material history.
-- Responsive semantic badge styling includes phone breakpoint and existing Custom form retains phone/tablet/desktop layouts.
+- Final PWA cache bumped to `bruno-electric-v50`.
+- v50 CORE_SHELL includes all new workflow runtime modules: Job summary semantics, Quote lifecycle, Catalog/Job UX semantics, Custom materials, Residential wire takeoff, Apply-to-Job and Save/archive UX.
+- Owned stale Bruno Electric caches are deleted while unrelated caches remain untouched.
+- Final integration tests verify bootstrap↔PWA runtime parity, Save/Apply/Approval boundaries, unresolved-cost continuity, project-scoped data authority and responsive contracts.
+- Custom definitions remain inside active Job state and are isolated across Job replacement/import.
+- Applied Residential provenance and Quote approval lifecycle remain persisted in active Job state.
+- Existing Residential/Commercial isolation, historical helper-tax and shared calculator regressions remain in the deterministic suite.
+- Developer implementation report created at `dev-reports/WORKFLOW_OVERHAUL_V50_FINAL.md`.
+- Production/runtime implementation is frozen at `cd474824c1a45bcc1edaf655a30a26880f00bc05`; later commits are documentation/evidence only.
 
 ### Completion evidence
-- UX/bootstrap/test SHAs include `16c91cdf51c63ad2fe3732c33f4e5ce4d2efbaca`, `913cdcee9d015a180255bd7c2ebf143bf61946aa`, `ed307f61880132a3e88ac7faf901711fe16f1242`, `f8e1d4d4339bacbd4c6e6f07a17427fdc056d2c9`.
-- Exact-head CI run #291 — SUCCESS on `f8e1d4d4339bacbd4c6e6f07a17427fdc056d2c9`.
-
----
-## STAGE 8 — FINAL INTEGRATION GATE / PWA / EXPORT-IMPORT / EXACT-HEAD CI
-**Status:** `IN_PROGRESS`
-
-### Required implementation
-- Final PWA cache/core-shell version bump including every new runtime module.
-- Validate stale owned-cache cleanup and unrelated-cache preservation.
-- Full import/export/new-job isolation across Custom definitions, applied Residential provenance and Quote approval lifecycle.
-- Full deterministic suite across all prior stages plus legacy shared regressions.
-- Responsive phone/tablet/desktop static/runtime contract verification for newly introduced controls.
-- Preserve Residential/Commercial isolation and historical helper-tax behavior.
-- Freeze exact PR candidate SHA only after all code/tests/docs are complete.
-- Produce developer implementation report tied to frozen exact SHA and exact-head CI run.
-- Create one independent `AUDIT ONLY` branch with `audits/TASK_CURRENT.md` + `audits/PROTOCOL.md` pinned to the frozen candidate.
-- Do not merge PR #14 before independent audit acceptance.
-
-### Completion evidence
-- Candidate SHA: `PENDING`
-- CI/test evidence: `PENDING`
-- Developer report: `PENDING`
-- Independent audit task: `PENDING`
+- PWA/test/runtime SHAs include `fc8881807f3bf92e0d26e55dd066027ecef3ce5d`, `28d70127c83d44a30c5667574fd8618d848fc274`, `01cef4e23f244bc58531f7208e6e1b7c0047d039`, `cd474824c1a45bcc1edaf655a30a26880f00bc05`.
+- Runtime exact-head CI #296 — SUCCESS on `cd474824c1a45bcc1edaf655a30a26880f00bc05`.
+- Developer report commit: `183f9529e1988f39acde09243b89357962ad1f35`.
+- Final metadata HEAD created by this commit must receive one final exact-head CI SUCCESS before audit branch creation.
 
 ---
 # FINAL AUDIT SCOPE

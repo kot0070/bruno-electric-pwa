@@ -1,1 +1,0 @@
-C1 implementation in progress. Authoritative Residential archive is moving from device-global legacy storage to job-owned state. Legacy archive remains preserved only for explicit recovery. Do not treat this note as completion evidence.

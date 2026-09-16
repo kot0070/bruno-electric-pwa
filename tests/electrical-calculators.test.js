@@ -24,6 +24,7 @@ test('CCC zero rejected',function(){throws(function(){C._test.cccFactor(0)})});
 test('CCC negative rejected',function(){throws(function(){C._test.cccFactor(-1)})});
 test('CCC blank rejected',function(){throws(function(){C._test.cccFactor('')})});
 test('CCC NaN rejected',function(){throws(function(){C._test.cccFactor(NaN)})});
+test('ambient below supported table range rejected',function(){throws(function(){C._test.tempFactor(90,9.9)})});
 
 test('ampacity normal: #6 Cu 90C / 75C terminals',function(){var r=C.ampacity({material:'Cu',size:'6',insulationRating:90,terminalRating:75,ccc:3,ambientC:30,loadAmps:50,continuous:false});eq(r.result.baseAmpacity,75);eq(r.result.finalAllowableAmpacity,65);is(r.status,'PASS')});
 test('ampacity corrected Cu #14 60C',function(){var r=C.ampacity({material:'Cu',size:'14',insulationRating:60,terminalRating:60,ccc:3,ambientC:30,loadAmps:15});eq(r.result.baseAmpacity,15);eq(r.result.finalAllowableAmpacity,15)});
@@ -34,9 +35,15 @@ test('ampacity fail above adjusted ampacity',function(){var r=C.ampacity({materi
 test('ampacity invalid conductor',function(){throws(function(){C.ampacity({material:'Cu',size:'5',loadAmps:20})})});
 ['Copper','foo',''].forEach(function(v){test('ampacity invalid material '+JSON.stringify(v)+' rejected',function(){throws(function(){C.ampacity({material:v,size:'6',loadAmps:20})})})});
 test('ampacity fractional CCC rejected',function(){throws(function(){C.ampacity({material:'Cu',size:'6',ccc:3.5,loadAmps:20})})});
+test('ampacity blank required load rejected',function(){throws(function(){C.ampacity({material:'Cu',size:'6',loadAmps:''})})});
+test('ampacity explicit zero insulation rating rejected rather than defaulted',function(){throws(function(){C.ampacity({material:'Cu',size:'6',insulationRating:0,terminalRating:75,loadAmps:20})})});
+test('ampacity blank insulation rating rejected rather than defaulted',function(){throws(function(){C.ampacity({material:'Cu',size:'6',insulationRating:'',terminalRating:75,loadAmps:20})})});
 
 test('voltage drop normal',function(){var r=C.voltageDrop({voltage:240,phase:1,material:'Cu',size:'6',distanceFt:100,current:40,powerFactor:1,targetPct:3});eq(r.result.voltsDropped,3.93,.01);eq(r.result.percentDropped,1.64,.01);is(r.status,'PASS')});
-test('voltage drop 3 phase',function(){var r=C.voltageDrop({voltage:480,phase:3,material:'Cu',size:'6',distanceFt:100,current:50,powerFactor:.9,targetPct:3});eq(r.result.voltsDropped,3.83,.02);eq(r.result.percentDropped,.80,.02)});
+test('voltage drop 3 phase resistance-only K method does not improve at lower PF',function(){var r=C.voltageDrop({voltage:480,phase:3,material:'Cu',size:'6',distanceFt:100,current:50,powerFactor:.9,targetPct:3});eq(r.result.voltsDropped,4.26,.02);eq(r.result.percentDropped,.89,.02);is(r.result.method,'RESISTANCE_ONLY_K')});
+test('voltage drop PF cannot turn 3.29 percent K-drop into false PASS',function(){var r=C.voltageDrop({voltage:240,phase:1,material:'Cu',size:'12',distanceFt:100,current:20,powerFactor:.8,targetPct:3});eq(r.result.voltsDropped,7.9,.02);eq(r.result.percentDropped,3.29,.02);is(r.status,'REVIEW')});
+test('voltage drop blank current rejected',function(){throws(function(){C.voltageDrop({voltage:240,phase:1,material:'Cu',size:'12',distanceFt:50,current:''})})});
+test('voltage drop blank distance rejected',function(){throws(function(){C.voltageDrop({voltage:240,phase:1,material:'Cu',size:'12',distanceFt:'',current:10})})});
 test('voltage drop string phase 1 accepted',function(){var r=C.voltageDrop({voltage:240,phase:'1',material:'Cu',size:'6',distanceFt:10,current:5,targetPct:3});is(r.module,'voltageDrop')});
 test('voltage drop string phase 3 accepted',function(){var r=C.voltageDrop({voltage:480,phase:'3',material:'Cu',size:'6',distanceFt:10,current:5,targetPct:3});is(r.module,'voltageDrop')});
 test('voltage drop invalid PF',function(){throws(function(){C.voltageDrop({voltage:240,phase:1,material:'Cu',size:'12',distanceFt:50,current:10,powerFactor:1.2})})});
@@ -70,6 +77,6 @@ test('transformer string phase 3 accepted',function(){var r=C.transformerCurrent
 
 var pass=results.filter(function(x){return x.ok}).length,fail=results.length-pass;
 window.BRUNO_TEST_RESULTS={total:results.length,pass:pass,fail:fail,results:results};
-var host=document.getElementById('results');if(host){host.innerHTML='<h1>Electrical Calculator Tests</h1><p><b>'+pass+'/'+results.length+' passed</b></p>'+results.map(function(x){return '<div style="padding:6px;color:'+(x.ok?'#3dd68c':'#f07178')+'">'+(x.ok?'PASS':'FAIL')+' — '+x.name+(x.error?' — '+x.error:'')+'</div>'}).join('')}
+var host=document.getElementById('results');if(host){host.innerHTML='<h1>Electrical Calculator Tests</h1><p><b>'+pass+'/'+results.length+' passed</b></p>'+results.map(function(x){return '<div style="padding:6px;color:'+(x.ok?'#3dd68c':'#f07178')+'">'+(x.ok?'PASS':'FAIL')+' — '+x.name+(x.error?' — '+x.error:'')+'</div>').join('')}
 if(fail)console.error('Bruno Electrical tests failed',results);else console.log('Bruno Electrical tests passed',results);
 })();

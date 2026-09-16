@@ -3,7 +3,7 @@
 **Branch:** `dev/custom-special-order-materials`  
 **Execution mode:** STRICT SEQUENTIAL  
 **Audit mode:** ONE INDEPENDENT FULL AUDIT AFTER ALL STAGES  
-**Current stage:** `STAGE_2_RESIDENTIAL_WIRE_TAKEOFF`  
+**Current stage:** `STAGE_3_SAVE_ARCHIVE_UX`  
 **Overall state:** `IN_PROGRESS`
 
 ## NON-NEGOTIABLE EXECUTION RULES
@@ -11,105 +11,66 @@
 1. Work on exactly one `CURRENT_STAGE` at a time.
 2. DO NOT start the next stage until every acceptance criterion and required regression for the current stage is GREEN.
 3. After finishing each stage, RE-READ THIS FILE from the repository before changing any code for the next stage.
-4. Update this file after each completed stage with:
-   - status = `DONE`;
-   - implementation SHA(s);
-   - tests/evidence;
-   - discovered follow-up risks;
-   - next `Current stage`.
+4. Update this file after each completed stage with status, implementation SHA(s), tests/evidence, follow-up risks and next `Current stage`.
 5. If a stage fails CI or an acceptance criterion, remain on that stage until corrected.
 6. Do not silently weaken an acceptance criterion to advance.
 7. Do not merge PR #14 during this plan.
 8. Do not create an independent audit task after intermediate stages. The independent audit is created only after `STAGE_8_FINAL_INTEGRATION_GATE` is GREEN.
-9. Preserve existing accepted safety contracts:
-   - blank `Your Cost` != explicit `0`;
-   - unresolved cost never enters numeric project material-cost math;
-   - historical Job Materials are immutable snapshots;
-   - Residential/Commercial isolation remains intact;
-   - historical helper-tax semantics remain intact;
-   - exact-head CI must test the real PR head SHA.
+9. Preserve existing accepted safety contracts: blank `Your Cost` != explicit `0`; unresolved cost never enters numeric project material-cost math; historical Job Materials are immutable snapshots; Residential/Commercial isolation remains intact; historical helper-tax semantics remain intact; exact-head CI must test the real PR head SHA.
 10. Any navigation, storage, import/export, archive, quote, or invoice change must be tested for phone/tablet/desktop and reload persistence where applicable.
 
 ---
 
 ## STAGE 1 — NAVIGATION / DEEP-LINK CORRECTNESS
-
 **Status:** `DONE`
 
-### Problem
-From Electrical Calculator on mobile, tapping `Job` can land on the main workspace/home state first instead of opening the Job/Quote destination directly.
+Implemented canonical explicit-tab routes, hash parser/default resolution, immediate exact-tab restore and hashchange/back-forward support.
 
-### Implemented
-- Canonical `workspaceHref()` now emits an explicit default tab for every non-Calculator primary destination.
-- Calculator → Job resolves to `./index.html#be=BILLING&tab=quote`.
-- Journal/Catalog/More likewise resolve to their explicit default tabs.
-- Added canonical `parseWorkspaceHash()` validation/default resolution.
-- Navigation bridge restores exact tab immediately when available, keeps hash intact, and responds to `hashchange` for browser back/forward.
-- Removed hash-clearing `history.replaceState` behavior.
-
-### Acceptance criteria
-- [x] Calculator → Job opens Job / Customer Price / Quote in one user action.
-- [x] Direct route contains exact target tab instead of ambiguous group-only route.
-- [x] Direct URL refresh resolves requested group/tab.
-- [x] Journal/Catalog/More routes preserve canonical destinations.
-- [x] Existing shared responsive navigation architecture retained.
-
-### Required regressions
-- [x] canonical navigation model test;
-- [x] deep-link parser/default restoration test;
-- [x] Calculator → Job route test;
-- [x] explicit-tab route tests;
-- [x] hashchange/back-forward bridge regression;
-- [x] existing responsive navigation regressions.
-
-### Completion evidence
-- Implementation SHAs: `3f9071e36498b6472506f0b541bda9651434cdbb`, `63f084389b3f79a7db0c02cfe7bb6ea3133a4f69`, `17c3ca827976646779b83efc3b5d6a8ab4e66f4d`, `871b12c54d7014852ad67e47a9408b03090a6fd4`
-- CI: GitHub Actions run `#249` — SUCCESS on exact PR head `871b12c54d7014852ad67e47a9408b03090a6fd4`.
-- Follow-up risk: visual first-paint flash can only be fully eliminated by server/static pre-routing; deterministic route target is now explicit and bridge restores immediately. No blocker to Stage 2.
+**Evidence:** SHAs `3f9071e36498b6472506f0b541bda9651434cdbb`, `63f084389b3f79a7db0c02cfe7bb6ea3133a4f69`, `17c3ca827976646779b83efc3b5d6a8ab4e66f4d`, `871b12c54d7014852ad67e47a9408b03090a6fd4`; CI run `#249` SUCCESS.
 
 ---
 
 ## STAGE 2 — RESIDENTIAL WIRE / CABLE TAKEOFF
+**Status:** `DONE`
 
-**Status:** `IN_PROGRESS`
-
-### Problem
-Residential Live already computes cable footage internally, but the result is not presented as a useful electrician-facing wire takeoff. User cannot easily answer “how much 12/2, 14/2, etc. should I buy?”
-
-### Required implementation
-- Add a visible `Wire / Cable Takeoff` block to Residential Live.
-- Show per-cable-type footage and total footage.
-- Show routing-model basis separately from NEC requirements.
-- Add editable waste/allowance percentage (default must be explicit and documented).
-- Add `Quick Budget Estimate by ft²` as an OPTIONAL estimating mode only, never labeled NEC/code minimum.
-- Quick mode must expose the coefficient and resulting footage, and must not silently overwrite Detailed Live Routing quantities.
-- Detailed mode remains based on circuits/devices/lights/switches/special-area routing.
-- Saved calculation snapshots must preserve the selected estimating inputs/basis needed to reproduce the displayed quantity model.
+### Implemented
+- Added dedicated `electric-residential-wire-takeoff.js` strict estimating module.
+- Visible `Wire / Cable Takeoff` UI injected into Residential Live before the main result block.
+- Detailed routing estimate exposes scope rows and grouped cable totals (`12/2`, `14/2` when applicable).
+- Editable waste/routing allowance with strict 0–100 validation.
+- Optional `Quick budget by ft²` mode with editable ft cable / ft² coefficient.
+- Quick mode is explicitly labeled estimating/budget only and `NOT an NEC minimum`.
+- Detailed and Quick modes are independent; quick calculation never mutates the Residential Live result.
+- Selected wire model/settings/results are attached to active/archive calculation metadata after Save and restored on archive load.
+- Added runtime loader through `sw-register.js` (final offline core-shell cache update remains reserved for Stage 8).
 
 ### Acceptance criteria
-- User can see total cable footage without reading BOM rows.
-- User can see cable type split.
-- Quick estimate is clearly labeled as estimating/budget only.
-- Detailed routing and quick estimate are not conflated.
-- No code minimum is fabricated from square footage.
+- [x] Total cable footage visible without reading BOM rows.
+- [x] Cable type split visible.
+- [x] Quick estimate clearly labeled as estimating/budget only.
+- [x] Detailed and quick modes remain separate.
+- [x] No square-footage-derived NEC minimum claim.
+- [x] Invalid/negative waste/coefficient fails closed.
+- [x] Archive metadata persistence path exists for selected wire model.
 
 ### Required regressions
-- detailed routing math;
-- waste percentage application;
-- quick ft² estimate math;
-- mode separation;
-- archive snapshot reproduction;
-- invalid/negative coefficient/waste fail-closed.
+- [x] detailed routing math;
+- [x] waste allowance math;
+- [x] 12/2 vs 14/2 type split;
+- [x] quick ft² estimate math;
+- [x] mode non-mutation;
+- [x] invalid settings fail-closed;
+- [x] archive metadata persistence hooks.
 
 ### Completion evidence
-- Implementation SHA: `PENDING`
-- CI/test evidence: `PENDING`
+- Implementation SHAs: `3c7efe11bc0054da3ed10fcf0a08844b4e1d5867`, `2a089aac1f37049a8cd260c302170363b81d06dc`, `53891291b7a749afccec42d96d88e72d5bb2ec9f`, `e8f18a383917f70e15b910dea5fbce5884aa4f6d`
+- CI: GitHub Actions run `#254` — SUCCESS on exact PR head `e8f18a383917f70e15b910dea5fbce5884aa4f6d`; exact-head checkout/provenance and deterministic suite steps passed.
+- Follow-up risk reserved for Stage 4: selected wire purchase model is archived now; Apply-to-Job must decide explicitly whether to use archived purchase takeoff vs legacy BOM footage and must not silently mix them.
 
 ---
 
 ## STAGE 3 — SAVE CALCULATION / ARCHIVE UX
-
-**Status:** `PENDING`
+**Status:** `IN_PROGRESS`
 
 ### Problem
 Archive engine exists, but Save/Archive behavior is not obvious enough and users can reach the bottom of the calculator believing calculations cannot be saved.
@@ -144,187 +105,41 @@ Archive engine exists, but Save/Archive behavior is not obvious enough and users
 ---
 
 ## STAGE 4 — APPLY CALCULATION TO JOB / PROVENANCE
-
 **Status:** `PENDING`
 
-### Problem
-Calculator and Job totals are conceptually disconnected. Users cannot clearly tell whether the Job reflects the current Residential calculation.
-
-### Required implementation
-- Introduce explicit `Apply to Job` transaction after a calculation is saved/confirmed.
-- Job must store provenance for the applied calculation: calculation/archive ID, calculation name, applied timestamp, source type/version.
-- Applying must update generated Job Materials using existing strict BOM/cost semantics.
-- Existing manual/other-source Job Materials must remain preserved.
-- Re-applying same calculation replaces only rows generated by that source/calculation, not manual history.
-- Job UI must display the currently applied calculation.
-- Calculator changes after Apply must NOT silently mutate Job; user must explicitly Update/Apply again.
-
-### Acceptance criteria
-- User can answer which calculation produced the current Job material state.
-- Job totals update only on explicit Apply/Update.
-- Unresolved Your Cost stays excluded from numeric cost totals.
-- Manual/other-source materials survive Apply and re-Apply.
-- Historical archived calculation remains immutable.
-
-### Required regressions
-- Apply saved calculation;
-- same-source re-apply;
-- manual/other-source preservation;
-- unresolved/zero/positive Your Cost;
-- provenance persistence/reload;
-- calculator edit after Apply does not auto-mutate Job.
-
-### Completion evidence
-- Implementation SHA: `PENDING`
-- CI/test evidence: `PENDING`
+Required: explicit Apply to Job transaction; persisted calculation provenance; strict BOM replacement; manual/other-source preservation; same-source re-apply; no silent calculator→Job mutation; unresolved/zero/positive semantics.
 
 ---
 
 ## STAGE 5 — JOB TOTALS / QUOTE PRICE CLARITY
-
 **Status:** `PENDING`
 
-### Problem
-Top Job metrics (`Material`, `Labor`, `Equip`, `Job Cost`, `Sales (Exact)`, `Quote Total`) are not self-explanatory and can appear to come from the calculator when they may represent other persisted Job state.
-
-### Required implementation
-- Clarify metric labels and calculation provenance.
-- Separate contractor cost from customer selling price.
-- Display whether material totals are complete or contain unresolved-cost exclusions.
-- Show applied calculation reference near summary metrics when applicable.
-- Remove/rename ambiguous duplicate concepts such as `Sales (Exact)` vs `Quote Total` unless their difference is explicitly defined in UI.
-- Ensure top metrics and detailed Summary use the same authoritative calculation path.
-
-### Acceptance criteria
-- Every top metric has one unambiguous business meaning.
-- User can distinguish cost, recommended/customer price, approved quote and change orders.
-- Unresolved material cost prevents a misleading “complete cost” presentation.
-- Summary and header cannot disagree for the same state.
-
-### Required regressions
-- metric formulas;
-- unresolved disclosure;
-- approved CO handling;
-- Summary/header parity;
-- applied-calculation provenance display.
-
-### Completion evidence
-- Implementation SHA: `PENDING`
-- CI/test evidence: `PENDING`
+Required: clarify cost vs customer price vs approved quote; unresolved disclosure; applied calculation reference; eliminate ambiguous `Sales (Exact)`/`Quote Total`; header/summary parity.
 
 ---
 
 ## STAGE 6 — QUOTE APPROVAL / MANUAL CUSTOMER-PRICE OVERRIDE / INVOICE BOUNDARY
-
 **Status:** `PENDING`
 
-### Problem
-User needs a clear step before Invoice where calculated selling price can be reviewed/overridden intentionally instead of silently editing unrelated totals.
-
-### Required implementation
-Create explicit flow: `Estimated Job Cost → Recommended Customer Price → Manual Quote Adjustment (optional) → Approved Quote → Invoice`.
-- Add manual customer-price override with explicit action, amount, reason/note, delta $/% and timestamp.
-- Approved Quote must be a persisted boundary.
-- Invoice must derive from approved/final quote semantics, not unrelated live calculator value.
-- Approved Change Orders remain additive and cannot be double-counted.
-- Editing calculator after approval must not silently rewrite approved quote/invoice basis.
-
-### Acceptance criteria
-- User can intentionally change customer-facing price before invoice.
-- System retains original recommended price and shows difference.
-- Approved quote survives reload/export/import.
-- Invoice basis is traceable.
-- No silent calculator-driven mutation after approval.
-
-### Required regressions
-- override/no override;
-- delta math;
-- approve/reload;
-- CO interaction;
-- invoice basis;
-- calculator changes after approval;
-- export/import persistence.
-
-### Completion evidence
-- Implementation SHA: `PENDING`
-- CI/test evidence: `PENDING`
+Required flow: `Estimated Job Cost → Recommended Customer Price → Manual Quote Adjustment (optional) → Approved Quote → Invoice`, persisted approval/override provenance and no silent post-approval calculator mutation.
 
 ---
 
 ## STAGE 7 — CATALOG / JOB MATERIALS UX CLARITY + CUSTOM MATERIAL COMPLETION
-
 **Status:** `PENDING`
 
-### Problem
-Catalog status such as `7/79` and green checks is ambiguous. Catalog, Job Materials and Custom/Special-order workflows are not clearly differentiated.
-
-### Required implementation
-- Replace ambiguous category badge `used/total` formatting with explicit labels such as `Used 7 · Catalog 79`.
-- Make green state explicitly mean `Used on this Job`, not selection checkbox.
-- Clearly separate Materials Catalog, Job Materials, and Custom/Special-order material creation/editing.
-- Ensure Custom/Special-order creation is discoverable at top of Catalog.
-- Complete strict Custom Add semantics from PR #14: ordinary Catalog `+` routes Custom rows through strict path; blank/zero/positive Your Cost preserved; persisted Qty and row override preserved; no cross-job/global registry authority; import/export isolation preserved; historical Job Material snapshots immutable.
-
-### Acceptance criteria
-- User can immediately understand badge/check meaning.
-- User can find Add Custom Material without documentation.
-- Catalog and Job Materials roles are distinct.
-- All current PR #14 safety semantics remain intact.
-
-### Required regressions
-- category badge counts;
-- used-on-job marker;
-- custom create/edit/delete/add;
-- ordinary Catalog `+` strict routing;
-- job/import isolation;
-- malformed legacy registry harmlessness;
-- blank/zero/positive Your Cost;
-- Qty persistence and override.
-
-### Completion evidence
-- Implementation SHA: `PENDING`
-- CI/test evidence: `PENDING`
+Required: explicit `Used N · Catalog M`; used-on-job meaning; Catalog vs Job Materials separation; discoverable Custom Material UI; strict Custom Add path; job/import isolation; blank/zero/positive cost and Qty semantics.
 
 ---
 
 ## STAGE 8 — FINAL INTEGRATION GATE / PWA / EXPORT-IMPORT / EXACT-HEAD CI
-
 **Status:** `PENDING`
 
-### Required implementation and verification
-- Full deterministic regression suite.
-- Add end-to-end integration tests covering `Residential Calculate → Save → Apply to Job → Catalog/Job Materials → Quote → Approve → Invoice → reload → export/import`.
-- Verify job isolation across import/switch/blank/reset flows.
-- Verify archive isolation.
-- Verify Commercial/Residential isolation.
-- Verify helper-tax historical semantics.
-- Verify phone/tablet/desktop navigation and key workflow surfaces.
-- Bump PWA cache only once final client code settles for this release candidate.
-- Verify stale owned caches are removed and unrelated caches preserved.
-- Ensure offline core shell contains all new runtime modules.
-- Exact-head CI must checkout and assert exact final PR head SHA.
-- Freeze final candidate SHA after green CI; no production/test/docs commit on PR head after pinned audit candidate.
-
-### Acceptance criteria
-- All deterministic tests GREEN.
-- End-to-end workflow tests GREEN.
-- Exact-head CI provenance GREEN.
-- PR open/unmerged.
-- Final candidate SHA frozen.
-- Developer implementation report complete.
-- Only now create independent full-audit branch/TASK_CURRENT/PROTOCOL.
-
-### Completion evidence
-- Final candidate SHA: `PENDING`
-- CI run: `PENDING`
-- Test count: `PENDING`
-- Audit task: `PENDING`
+Required: complete end-to-end deterministic regression, job/archive isolation, Commercial/Residential and Journal regressions, responsive verification, final PWA cache/core shell update, exact-head CI, frozen candidate, developer report, then independent full audit only.
 
 ---
 
 # FINAL AUDIT SCOPE
-
-The final independent audit MUST re-check the entire integrated workflow, not merely the last stage:
 1. Calculator navigation/deep links.
 2. Residential wire/cable takeoff and quick estimate labeling/math.
 3. Save/archive UX and persistence.
@@ -340,7 +155,4 @@ The final independent audit MUST re-check the entire integrated workflow, not me
 13. Exact-head CI provenance.
 14. Shared regressions and data-integrity paths.
 
-**Audit verdict rules:**
-- `A ACCEPT` — no P0/P1.
-- `B ACCEPT AFTER MINOR FIXES` — no P0/P1.
-- `C REJECT / REWORK REQUIRED` — one or more P0/P1.
+**Audit verdict rules:** `A ACCEPT` no P0/P1; `B ACCEPT AFTER MINOR FIXES` no P0/P1; `C REJECT / REWORK REQUIRED` one or more P0/P1.

@@ -1,7 +1,7 @@
 # Bruno Electric — Function / Capability Audit Master
 
 MASTER_STATUS: ACTIVE
-CURRENT_STAGE: STAGE_1_RUNTIME_CAPABILITY_INVENTORY
+CURRENT_STAGE: STAGE_2_REQUIREMENT_TO_RUNTIME_GAP_AUDIT
 EXECUTION_MODE: STRICT_SEQUENTIAL
 IMPLEMENTATION_BRANCH: main
 AUDIT_BRANCH_POLICY: separate exact-SHA audit branches
@@ -105,42 +105,42 @@ Accepted evidence:
 - re-audit verdict: `A_ACCEPT`, P0=0, P1=0;
 - Browser E2E baseline: `ABSENT`, intentionally to be implemented at Stage 3, never treated as capability PASS evidence.
 
-Completed requirements:
-- pinned exact current main for Stage 0 audit;
-- verified exact-head deterministic CI and accounted for the unchanged 767-test inventory;
-- inventoried/classified current and stale governance sources;
-- inspected browser-test infrastructure and recorded Browser E2E baseline as ABSENT;
-- created `audits/function-capability/REQUIREMENTS_INDEX.md`;
-- created `audits/function-capability/capabilities.json` with stable IDs, per-capability governing source traceability and browser fields.
-
 Gate: ACCEPTED.
 
 ---
 
 # STAGE 1 — Runtime Capability Inventory
-STATUS: REAUDIT_PENDING
+STATUS: DONE_ACCEPTED
 Map current UI controls/routes -> handlers -> runtime -> storage/services; identify dead/unreachable runtime, visible actions without a valid runtime path, duplicate/conflicting implementations, dormant prototypes and service-worker loading paths. Deliver `RUNTIME_CAPABILITY_MAP.md` and expand `capabilities.json`. Every user action must map to a Capability ID or infrastructure-only classification.
 
-Current Stage 1 evidence:
+Accepted Stage 1 evidence:
 - runtime inventory/registry expansion exact SHA: `138b3de84f158d57ec0046d6dbed80049c1ba299`;
-- exact-head deterministic CI at inventory SHA: run #536 / id `35160109516`, SUCCESS;
-- independent audit branch: `audit/function-capability-stage1-138b3de`;
-- independent audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE1_AUDIT_138b3de.md`;
-- audit verdict: `A_REJECT_CORRECTIVE_REQUIRED`, P0=0, P1=1;
-- finding `FCA-S1-P1-001`: full app backup omitted the current visible Dispatch Journal v3 standalone data/settings;
-- corrective implementation adds current Dispatch Journal v3 export/restore bridge, deterministic regressions and PWA cache inclusion;
+- exact-head CI at inventory SHA: run #536 / id `35160109516`, SUCCESS;
+- initial audit branch: `audit/function-capability-stage1-138b3de`;
+- initial audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE1_AUDIT_138b3de.md`;
+- initial verdict: `A_REJECT_CORRECTIVE_REQUIRED`, P0=0, P1=1;
+- `FCA-S1-P1-001`: full app backup omitted current visible Dispatch Journal v3 standalone data/settings;
 - corrective code SHA: `7b39a8fb55be5a525cf157124fcb14e42903c758`;
-- exact-head deterministic CI at corrective code SHA: run #543 / id `35163156620`, SUCCESS, 770/770 tests;
-- finding state: `FIXED_PENDING_REAUDIT`;
-- `FCA-S1-P2-001` dual Dispatch persistence models remains a Stage 2 architectural classification item, not a Stage 1 blocker.
+- corrective CI: run #543 / id `35163156620`, SUCCESS, 770/770 tests;
+- independent re-audit exact SHA: `c04a1c6807ab40e142eea25d8fe40405ff139b86`;
+- re-audit CI: run #545 / id `35163241400`, SUCCESS;
+- re-audit branch: `audit/function-capability-stage1-reaudit-c04a1c6`;
+- re-audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE1_REAUDIT_c04a1c6.md`;
+- re-audit verdict: `A_ACCEPT`, P0=0, P1=0;
+- `FCA-S1-P1-001`: `VERIFIED_CLOSED`;
+- `FCA-S1-P2-001`: dual Dispatch persistence models retained as a Stage 2 architectural classification item, not a Stage 1 blocker.
 
-Gate: independent exact-SHA re-audit required. Stage 2 remains locked until re-audit verdict is `A_ACCEPT` with P0=0/P1=0.
+Capability status boundary: Stage 1 acceptance does not mark high-risk user-facing capabilities PASS; browser proof remains mandatory later.
+
+Gate: ACCEPTED.
 
 ---
 
 # STAGE 2 — Requirement-to-Runtime Gap Audit
-STATUS: LOCKED
+STATUS: ACTIVE
 For every capability compare `PLAN/SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT`. Classify exact/different-valid/partial/missing/unreachable/undocumented/obsolete. Auditor does not fix production. Freeze findings with exact SHA.
+
+Stage 2 must explicitly carry forward and classify `FCA-S1-P2-001` (dual Dispatch persistence models) and must not reinterpret the absence of Browser E2E as PASS evidence.
 
 ---
 
@@ -215,15 +215,16 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 handoff:
   role_completed: ORCHESTRATOR
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
-  verdict_or_gate: STAGE_1_REAUDIT_PENDING
+  verdict_or_gate: STAGE_2_ACTIVE
   blockers: []
   files_to_read_next:
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_STATE.json
+    - audits/function-capability/REQUIREMENTS_INDEX.md
     - audits/function-capability/RUNTIME_CAPABILITY_MAP.md
     - audits/function-capability/capabilities.json
   next_role: INDEPENDENT_AUDITOR
-  next_action: Pin current main exact SHA after Stage 1 governance update, require exact-head deterministic CI success, create separate exact-SHA re-audit branch, verify FCA-S1-P1-001 is closed without regression, and accept Stage 1 only if P0=0/P1=0. Then unlock Stage 2.
+  next_action: Start Stage 2 from current authoritative main. Pin exact SHA, create a separate exact-SHA Stage 2 audit branch, compare every capability PLAN/SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT, freeze findings, and classify FCA-S1-P2-001. Do not modify production from the audit branch.
   prohibited_actions:
     - mark_capability_pass_without_evidence
     - silently_change_requirement_to_match_runtime

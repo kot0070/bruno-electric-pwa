@@ -45,11 +45,29 @@
     "gate": "ACCEPTED"
   },
   "stage_1": {
-    "status": "ACTIVE",
+    "status": "REAUDIT_PENDING",
     "name": "Runtime capability inventory",
     "deliverable": "audits/function-capability/RUNTIME_CAPABILITY_MAP.md",
     "entry_sha": "846e8cd55aaa7a1fbeb28536dab008f21c8cc6b4",
-    "gate": "MAP_UI_TO_HANDLER_RUNTIME_STORAGE_THEN_EXACT_HEAD_CI_AND_INDEPENDENT_AUDIT"
+    "inventory_sha": "138b3de84f158d57ec0046d6dbed80049c1ba299",
+    "initial_ci_run": 536,
+    "initial_ci_run_id": 35160109516,
+    "initial_ci_conclusion": "success",
+    "initial_audit_branch": "audit/function-capability-stage1-138b3de",
+    "initial_audit_report": "audits/reports/FUNCTION_CAPABILITY_STAGE1_AUDIT_138b3de.md",
+    "initial_audit_verdict": "A_REJECT_CORRECTIVE_REQUIRED",
+    "corrective_finding": "FCA-S1-P1-001",
+    "corrective_finding_status": "FIXED_PENDING_REAUDIT",
+    "corrective_summary": "Full app backup now includes and restores the current visible Dispatch Journal v3 standalone data/settings while legacy backups remain non-destructive.",
+    "corrective_code_sha": "7b39a8fb55be5a525cf157124fcb14e42903c758",
+    "corrective_ci_run": 543,
+    "corrective_ci_run_id": 35163156620,
+    "corrective_ci_conclusion": "success",
+    "corrective_test_count": 770,
+    "p0_open": 0,
+    "p1_open": 1,
+    "p2_observations": ["FCA-S1-P2-001 dual Dispatch persistence models remain an architectural migration risk for Stage 2 classification"],
+    "gate": "INDEPENDENT_EXACT_SHA_REAUDIT_REQUIRED_BEFORE_ACCEPT"
   },
   "browser_e2e": {
     "required": true,
@@ -63,7 +81,7 @@
   },
   "stages": {
     "stage_0": {"status": "DONE_ACCEPTED", "name": "Baseline + requirements index + browser baseline"},
-    "stage_1": {"status": "ACTIVE", "name": "Runtime capability inventory"},
+    "stage_1": {"status": "REAUDIT_PENDING", "name": "Runtime capability inventory"},
     "stage_2": {"status": "LOCKED", "name": "Requirement-to-runtime gap audit"},
     "stage_3": {"status": "LOCKED", "name": "Executable core workflows + Playwright foundation"},
     "stage_4": {"status": "LOCKED", "name": "Function-level deterministic audit"},

@@ -1,4 +1,6 @@
 name: Electrical Calculator Tests
+# Audit gate: PR runs must test the exact pull-request head SHA, never the synthetic merge ref.
+# Final candidate trigger: this workflow commit is intentionally the last dev-branch change before audit.
 
 on:
   push:
@@ -29,6 +31,7 @@ on:
       - 'electrical-residential-live-levels-ui.js'
       - 'electric-workspace.js'
       - 'electric-compact-header.js'
+      - 'electric-custom-materials.js'
       - 'sw-register.js'
       - 'electric-phase3-rules.js'
       - 'electric-phase3.js'
@@ -47,7 +50,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact PR head
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Checkout push SHA
+        if: github.event_name != 'pull_request'
+        uses: actions/checkout@v4
+      - name: Verify tested HEAD provenance
+        shell: bash
+        run: |
+          ACTUAL="$(git rev-parse HEAD)"
+          echo "TESTED_HEAD_SHA=$ACTUAL"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            EXPECTED="${{ github.event.pull_request.head.sha }}"
+          else
+            EXPECTED="${{ github.sha }}"
+          fi
+          echo "EXPECTED_HEAD_SHA=$EXPECTED"
+          test "$ACTUAL" = "$EXPECTED"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

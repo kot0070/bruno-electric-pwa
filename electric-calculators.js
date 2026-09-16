@@ -5,6 +5,7 @@
   if (!R) throw new Error('BrunoElectricalRules must load before electric-calculators.js');
 
   function n(v, name) {
+    if (v === '' || v == null) throw new Error((name || 'value') + ' is required');
     const x = Number(v);
     if (!Number.isFinite(x)) throw new Error((name || 'value') + ' must be numeric');
     return x;
@@ -23,12 +24,16 @@
     if (allowed.indexOf(v) === -1) throw new Error((name || 'value') + ' is unsupported');
     return v;
   }
+  function optionalNumber(v, fallback, name) {
+    if (v == null) return fallback;
+    return n(v, name);
+  }
   function round(v, places) { const p = Math.pow(10, places == null ? 2 : places); return Math.round((v + Number.EPSILON) * p) / p; }
   function tempFactor(tempRating, ambientC) {
     const rows = R.TEMP_FACTORS[tempRating];
     if (!rows) throw new Error('Unsupported conductor temperature rating');
     const a = n(ambientC, 'ambient temperature');
-    if (a > rows[rows.length - 1][0]) throw new Error('Ambient temperature is outside the Phase 1 correction table range');
+    if (a < rows[0][0] || a > rows[rows.length - 1][0]) throw new Error('Ambient temperature is outside the Phase 1 correction table range');
     for (let i = 0; i < rows.length; i++) if (a <= rows[i][0]) return rows[i][1];
     return rows[rows.length - 1][1];
   }
@@ -40,10 +45,11 @@
   function tempIndex(rating) { return rating === 60 ? 0 : rating === 75 ? 1 : rating === 90 ? 2 : -1; }
 
   function ampacity(input) {
+    input = input || {};
     const material = oneOf(input.material, ['Cu','Al'], 'conductor material');
     const size = String(input.size || '');
-    const insulationRating = Number(input.insulationRating || 90);
-    const terminalRating = Number(input.terminalRating || 75);
+    const insulationRating = optionalNumber(input.insulationRating, 90, 'insulation temperature rating');
+    const terminalRating = optionalNumber(input.terminalRating, 75, 'terminal temperature rating');
     const row = R.AMPACITY[material] && R.AMPACITY[material][size];
     if (!row) throw new Error('Unsupported conductor size/material in Phase 1');
     const ii = tempIndex(insulationRating), ti = tempIndex(terminalRating);
@@ -79,6 +85,7 @@
   }
 
   function voltageDrop(input) {
+    input = input || {};
     const material = oneOf(input.material, ['Cu','Al'], 'conductor material');
     const size = String(input.size || '');
     const cmil = R.CMIL[size];
@@ -94,21 +101,25 @@
     const target = input.targetPct == null || input.targetPct === '' ? 3 : positive(input.targetPct, 'design target');
     const K = material === 'Al' ? 21.2 : 12.9;
     const multiplier = phase === 3 ? Math.sqrt(3) : 2;
-    const drop = multiplier * K * amps * distance * pf / cmil;
+    /* Resistance-only K method. Current is already the actual line current, so multiplying
+     * I×R by power factor would incorrectly reduce calculated drop at lower PF. A full AC
+     * model requires conductor R/X and phase angle; PF is retained only as disclosed input. */
+    const drop = multiplier * K * amps * distance / cmil;
     const pct = drop / voltage * 100;
     const atLoad = voltage - drop;
     return {
       module:'voltageDrop', status:pct <= target ? 'PASS' : 'REVIEW',
       steps:[
-        {label:'Method',value:(phase === 3 ? '√3' : '2') + ' × K × I × L × PF ÷ CM',status:'Estimating Assumption'},
+        {label:'Method',value:(phase === 3 ? '√3' : '2') + ' × K × I × L ÷ CM (resistance-only)',status:'Estimating Assumption'},
+        {label:'Entered power factor',value:pf,status:'Informational'},
         {label:'Conductor constant K',value:K,status:'Estimating Assumption'},
         {label:'Voltage dropped',value:round(drop),unit:'V',status:'Recommended'},
         {label:'Voltage drop',value:round(pct),unit:'%',status:'Recommended'},
         {label:'Voltage at load',value:round(atLoad),unit:'V',status:'Recommended'}
       ],
-      result:{voltsDropped:round(drop),percentDropped:round(pct),voltageAtLoad:round(atLoad),targetPct:target},
+      result:{voltsDropped:round(drop),percentDropped:round(pct),voltageAtLoad:round(atLoad),targetPct:target,powerFactor:pf,method:'RESISTANCE_ONLY_K'},
       reference:R.REFERENCES.voltageDrop,
-      warnings:['Voltage-drop percentages in this tool are design recommendations unless a specific NEC rule/equipment requirement makes a limit mandatory.','K-method is a practical estimating approximation; use impedance/reactance or engineering methods where needed.']
+      warnings:['Voltage-drop percentages in this tool are design recommendations unless a specific NEC rule/equipment requirement makes a limit mandatory.','K-method is a resistance-only estimating approximation. Entered power factor does not reduce I×R drop; use an impedance/reactance engineering method when AC reactance and phase angle are material.']
     };
   }
 

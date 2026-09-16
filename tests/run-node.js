@@ -41,6 +41,7 @@ require('./residential-wire-takeoff.test.js');
 require('./residential-save-archive-ux.test.js');
 require('./job-summary-semantics.test.js');
 require('./quote-lifecycle.test.js');
+require('./fixed-price-invoice.test.js');
 require('./catalog-job-ux-semantics.test.js');
 require('./workflow-final-integration.test.js');
 require('./dispatch-journal-v2.test.js');

@@ -89,6 +89,16 @@
     document.head.appendChild(h);
   }
 
+  function loadResidentialWireTakeoff() {
+    if (window.BrunoResidentialWireTakeoff || document.querySelector('script[data-be-res-wire-takeoff]')) return;
+    var w=document.createElement('script');
+    w.src='./electric-residential-wire-takeoff.js';
+    w.defer=true;
+    w.dataset.beResWireTakeoff='1';
+    w.onerror=function(){};
+    document.head.appendChild(w);
+  }
+
   function loadResidentialWorkspaceModule() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoResidentialLiveWorkspace || document.querySelector('script[data-be-res-live-workspace]')) return;
@@ -146,6 +156,7 @@
     loadCompactHeader();
     loadDispatchJournal();
     loadResidentialWorkspaceBridge();
+    loadResidentialWireTakeoff();
     if (window.BrunoElectricAppNavigation) { loadWorkspaceEnhancement(); return; }
     if (document.querySelector('script[data-be-app-nav]')) return;
     var n=document.createElement('script');

@@ -1,6 +1,28 @@
 (function () {
   'use strict';
 
+  function loadDispatchJournal() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoDispatchJournalV2 || document.querySelector('script[data-be-dispatch-v2]')) return;
+    var d=document.createElement('script');
+    d.src='./electric-dispatch-journal-v2.js';
+    d.defer=true;
+    d.dataset.beDispatchV2='1';
+    d.onerror=function(){};
+    document.head.appendChild(d);
+  }
+
+  function loadProjectMode() {
+    if (!/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoProjectMode || document.querySelector('script[data-be-project-mode]')) return;
+    var p=document.createElement('script');
+    p.src='./electric-project-mode.js';
+    p.defer=true;
+    p.dataset.beProjectMode='1';
+    p.onerror=function(){};
+    document.head.appendChild(p);
+  }
+
   function loadCompactHeader() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoCompactHeader || document.querySelector('script[data-be-compact-header]')) return;
@@ -62,6 +84,8 @@
 
   function loadAppNavigation() {
     loadCompactHeader();
+    loadDispatchJournal();
+    loadProjectMode();
     loadResidentialWorkspaceBridge();
     if (window.BrunoElectricAppNavigation) { loadWorkspaceEnhancement(); return; }
     if (document.querySelector('script[data-be-app-nav]')) return;

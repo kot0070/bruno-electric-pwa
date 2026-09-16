@@ -1,7 +1,7 @@
 {
   "master": "dev-plans/ELECTRICAL_TASKS_AUTONOMOUS_MASTER.md",
   "master_status": "IN_PROGRESS",
-  "current_stage": "STAGE_6_SAVED_ELECTRICAL_TASKS_ARCHIVE_APPLY_TO_JOB",
+  "current_stage": "STAGE_7A_BRANCH_CIRCUIT",
   "strict_sequential": true,
   "implementation_branch": "main",
   "stage_0": {"status":"DONE_ACCEPTED","audited_head_sha":"1dcedbc9934633a924c807e995ac92e25c0254de","ci_run":348,"verdict":"A_ACCEPT","p0":0,"p1":0},
@@ -10,6 +10,7 @@
   "stage_3": {"status":"DONE_ACCEPTED","audited_head_sha":"3ceac78e05f193ecc7f3f39441a7ce658b25d156","ci_run":381,"test_count":668,"audit_branch":"audit/electrical-tasks-stage3-3ceac78","audit_report":"audits/reports/ELECTRICAL_TASKS_STAGE3_3ceac78.md","verdict":"A_ACCEPT","p0":0,"p1":0,"p2":["Stage 3 raceway result remains provisional until Stage 4 adds neutral and EGC semantics."]},
   "stage_4": {"status":"DONE_ACCEPTED","audited_head_sha":"c0a3acf6308200447c22d53317d025ebc6439b77","ci_run":406,"test_count":685,"audit_branch":"audit/electrical-tasks-stage4-c0a3acf","audit_report":"audits/reports/ELECTRICAL_TASKS_STAGE4_c0a3acf.md","verdict":"A_ACCEPT","p0":0,"p1":0,"p2":["Upsized EGC review candidate intentionally remains REVIEW REQUIRED, not final.","Reduced-neutral engineering is not implemented; supported modes are full-size or none."]},
   "stage_5": {"status":"DONE_ACCEPTED","audited_head_sha":"c1d43c345f1943f3fe730bfe3b6a22c6b535d4e5","ci_run":426,"ci_run_id":35134541643,"test_count":700,"audit_branch":"audit/electrical-tasks-stage5-c1d43c3","audit_report":"audits/reports/ELECTRICAL_TASKS_STAGE5_c1d43c3.md","verdict":"A_ACCEPT","p0":0,"p1":0,"p2":["Dormant prototype files electric-electrical-task-takeoff.js and electric-electrical-task-materials.js remain repository-only and must not be activated alongside the authoritative v3 path."]},
-  "stage_6": {"status":"ACTIVE","gate":"IMPLEMENT_TEST_CI_AUDIT_CORRECT_REAUDIT_ACCEPT"},
+  "stage_6": {"status":"DONE_ACCEPTED","audited_head_sha":"63b9204dff7344eafc44a5b7087d75f0893eb295","ci_run":435,"ci_run_id":35135254278,"test_count":707,"audit_branch":"audit/electrical-tasks-stage6-63b9204","audit_report":"audits/reports/ELECTRICAL_TASKS_STAGE6_63b9204.md","verdict":"A_ACCEPT","p0":0,"p1":0,"p3":["Stage 6 status UI uses a low-frequency refresh interval; non-mutating and non-blocking."]},
+  "stage_7": {"status":"ACTIVE","current_substage":"7A_BRANCH_CIRCUIT","substage_gate":"IMPLEMENT_TEST_CI_AUDIT_CORRECT_REAUDIT_ACCEPT"},
   "do_not_advance_without_accept": true
 }

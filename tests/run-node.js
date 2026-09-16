@@ -37,6 +37,7 @@ require('./electrical-raceway-engine.test.js');
 require('./electrical-grounding-engine.test.js');
 require('./electrical-task-advanced.test.js');
 require('./electrical-task-solver.test.js');
+require('./electrical-tasks-provenance.test.js');
 require('./electrical-task-material-takeoff.test.js');
 require('./electrical-task-archive.test.js');
 require('./electrical-tasks-ui.test.js');

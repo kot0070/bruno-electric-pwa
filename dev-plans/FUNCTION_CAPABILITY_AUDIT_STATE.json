@@ -1,0 +1,33 @@
+{
+  "master": "dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md",
+  "master_status": "READY",
+  "current_stage": "STAGE_0_BASELINE_AND_REQUIREMENTS_INDEX",
+  "strict_sequential": true,
+  "implementation_branch": "main",
+  "audit_branch_policy": "separate_exact_sha",
+  "capability_statuses": ["PASS", "PARTIAL", "FAIL", "UNTESTED", "NOT_APPLICABLE"],
+  "severity_levels": ["P0", "P1", "P2", "P3"],
+  "stages": {
+    "stage_0": {"status": "READY", "name": "Baseline + requirements index"},
+    "stage_1": {"status": "LOCKED", "name": "Runtime capability inventory"},
+    "stage_2": {"status": "LOCKED", "name": "Requirement-to-runtime gap audit"},
+    "stage_3": {"status": "LOCKED", "name": "Core workflow executable scenarios"},
+    "stage_4": {"status": "LOCKED", "name": "Function-level deterministic audit"},
+    "stage_5": {"status": "LOCKED", "name": "Negative / fault-injection audit"},
+    "stage_6": {"status": "LOCKED", "name": "UI action wiring audit"},
+    "stage_7": {"status": "LOCKED", "name": "Cross-module regression matrix"},
+    "stage_8": {"status": "LOCKED", "name": "Responsive / PWA executable audit"},
+    "stage_9": {"status": "LOCKED", "name": "Corrective master generation"},
+    "stage_10": {"status": "LOCKED", "name": "Independent re-audit"},
+    "stage_11": {"status": "LOCKED", "name": "Final capability certification"}
+  },
+  "completion_gate": {
+    "p0": 0,
+    "p1": 0,
+    "all_current_requirements_classified": true,
+    "critical_workflows_have_executable_evidence": true,
+    "exact_head_ci_green": true,
+    "final_independent_audit": "A_ACCEPT"
+  },
+  "do_not_advance_without_accept": true
+}

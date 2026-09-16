@@ -65,7 +65,26 @@
     ['label-panel','FASTENERS / CONSUMABLES','Panel/circuit labels allowance','EA'],
     ['staple-nm','FASTENERS / CONSUMABLES','NM cable staple allowance','EA']
   ].map(function (r) {
-    return {id:'ecat-'+r[0],category:r[1],item:r[2],units:r[3],unitCost:0,yourCost:'',vendor:'',part:'',notes:'Estimating placeholder — customer price and Your Cost require user input',priceStatus:'PLACEHOLDER',catalogVersion:'electric-v1'};
+    return {id:'ecat-'+r[0],category:r[1],item:r[2],units:r[3],unitCost:0,yourCost:'',vendor:'',part:'',notes:'Estimating placeholder — customer price and Your Cost require user input',priceStatus:'PLACEHOLDER',catalogVersion:'electric-v2'};
+  });
+
+  // Stage 5 Electrical Tasks catalog coverage. These are reusable definitions only;
+  // they do not imply a project requirement and they never supply Your Cost automatically.
+  const TASK_WIRE_SIZES = ['3','2','1','1/0','2/0','3/0','4/0','250','300','350','400','500','600','700','750','800','900','1000'];
+  ['Cu','Al'].forEach(function(material){
+    TASK_WIRE_SIZES.forEach(function(size){
+      const id='ecat-thhn-'+material.toLowerCase()+'-'+size.replace('/','-');
+      if(ITEMS.some(function(x){return x.id===id;}))return;
+      ITEMS.push({id:id,category:'CONDUCTORS',item:size+(Number(size)>=250?' kcmil':' AWG')+' '+material+' THHN/THWN-2',units:'FT',unitCost:0,yourCost:'',vendor:'',part:'',notes:'Electrical Tasks standard definition — enter Customer Price and Your Cost before pricing',priceStatus:'PLACEHOLDER',catalogVersion:'electric-v2'});
+    });
+  });
+  const TASK_RACEWAYS = [
+    ['emt-125','1-1/4 in EMT'],['emt-150','1-1/2 in EMT'],['emt-200','2 in EMT'],['emt-250','2-1/2 in EMT'],['emt-300','3 in EMT'],['emt-350','3-1/2 in EMT'],['emt-400','4 in EMT'],
+    ['pvc40-050','1/2 in PVC Schedule 40'],['pvc40-075','3/4 in PVC Schedule 40'],['pvc40-125','1-1/4 in PVC Schedule 40'],['pvc40-150','1-1/2 in PVC Schedule 40'],['pvc40-200','2 in PVC Schedule 40'],['pvc40-250','2-1/2 in PVC Schedule 40'],['pvc40-300','3 in PVC Schedule 40'],['pvc40-350','3-1/2 in PVC Schedule 40'],['pvc40-400','4 in PVC Schedule 40'],['pvc40-500','5 in PVC Schedule 40'],['pvc40-600','6 in PVC Schedule 40']
+  ];
+  TASK_RACEWAYS.forEach(function(r){
+    const id='ecat-'+r[0];if(ITEMS.some(function(x){return x.id===id;}))return;
+    ITEMS.push({id:id,category:'RACEWAY',item:r[1],units:'FT',unitCost:0,yourCost:'',vendor:'',part:'',notes:'Electrical Tasks standard definition — enter Customer Price and Your Cost before pricing',priceStatus:'PLACEHOLDER',catalogVersion:'electric-v2'});
   });
 
   function norm(s) { return String(s || '').trim().toLowerCase().replace(/\s+/g,' '); }
@@ -80,5 +99,5 @@
     return out;
   }
 
-  root.BrunoElectricalCatalogV1 = Object.freeze({items:ITEMS, mergeMissing:mergeMissing, version:'electric-v1', pricePolicy:'Customer-price placeholders may be zero; blank/missing Your Cost is unresolved. User-edited prices/costs persist and are never overwritten by catalog completion.'});
+  root.BrunoElectricalCatalogV1 = Object.freeze({items:ITEMS,mergeMissing:mergeMissing,version:'electric-v2',pricePolicy:'Customer-price placeholders may be zero; blank/missing Your Cost is unresolved. User-edited prices/costs persist and are never overwritten by catalog completion.'});
 })(window);

@@ -1,6 +1,6 @@
 /* Bruno Electric — electrical reference/rule data. Phase 1+ feeder/raceway range.
  * Code values are isolated here so UI/calculation logic does not bury code constants.
- * Authority metadata: Texas TDLR adoption source and NFPA 70 (NEC) 2026 access.
+ * Authority metadata: Texas TDLR adoption source and NFPA 70 (NEC) 2026 document information.
  * Local AHJ amendments and edition applicability remain verification items.
  */
 (function (root) {
@@ -12,10 +12,12 @@
     codeFamily: 'NEC',
     edition: '2026',
     effectiveDate: '2026-09-01',
+    stateRule: '16 TAC §73.100',
     stateSource: 'https://www.tdlr.texas.gov/news/rulemaking/2026/09/01/commission-adopts-rules-12/',
-    codeSource: 'https://link.nfpa.org/free-access/publications/70/2026',
+    stateRegisterSource: 'https://www.sos.texas.gov/texreg/archive/August282026/Adopted%20Rules/16.ECONOMIC%20REGULATION.html',
+    codeSource: 'https://www.nfpa.org/70',
     ahjOverridePossible: true,
-    note: 'Texas adopted the 2026 NEC effective 2026-09-01 with a limited state exception to 210.8(F) for certain outdoor HVAC equipment outlets. Verify local AHJ amendments.'
+    note: 'Texas adopted NFPA 70, National Electrical Code, 2026 edition effective 2026-09-01. Texas §73.100 extends NEC 210.8(F) Exception No. 2 for listed HVAC equipment without the NFPA expiration date. Verify local AHJ amendments and project-specific applicability.'
   });
 
   const AMPACITY = Object.freeze({
@@ -48,7 +50,7 @@
     boxFill:{status:'Code Required',section:'314.16(B)',source:META.codeSource},
     voltageDrop:{status:'Recommended',section:'Informational Notes associated with 210.19 and 215.2; not a general mandatory branch-circuit percentage limit',source:META.codeSource},
     continuousLoad:{status:'Code Required',section:'210.20 / applicable equipment article; verify specific circuit rule',source:META.codeSource},
-    texasOutdoorHvacGfci:{status:'Code Required',section:'Texas amendment to NEC 210.8(F)',source:META.stateSource}
+    texasOutdoorHvacGfci:{status:'Code Required',section:'Texas 16 TAC §73.100 modification of NEC 210.8(F) Exception No. 2',source:META.stateRegisterSource}
   });
 
   root.BrunoElectricalRules = Object.freeze({META,AMPACITY,CCC_FACTORS,TEMP_FACTORS,THHN_AREA,RACEWAY_AREA,RACEWAY_TRADE_ORDER,RACEWAY_FILL,BOX_FILL,CMIL,REFERENCES});

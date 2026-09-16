@@ -1,0 +1,23 @@
+'use strict';
+(function(){
+var out=global.BRUNO_TEST_RESULTS||{total:0,pass:0,fail:0,results:[]};
+function test(name,fn){out.total++;try{fn();out.pass++;out.results.push({name:name,ok:true})}catch(e){out.fail++;out.results.push({name:name,ok:false,error:e.message})}}
+function is(a,b){if(a!==b)throw new Error('expected '+JSON.stringify(b)+', got '+JSON.stringify(a))}
+function near(a,b,t){if(Math.abs(a-b)>(t||0.01))throw new Error('expected '+b+' ± '+(t||0.01)+', got '+a)}
+function ok(v,m){if(!v)throw new Error(m||'assertion failed')}
+var E=global.BrunoRacewayEngine;
+function base(o){var x={loadAmps:'100',voltage:'120/240',phase:'1',distanceFt:'100',material:'Cu',installation:'EMT',conductorType:'THHN_THWN2',loadBasis:'NONCONTINUOUS',vdTargetPct:'3',ambientC:'30',ccc:'2',terminalRating:'75',parallelAllowed:false,maxConductorSize:'',racewayStrategy:'SEPARATE_SETS'};Object.keys(o||{}).forEach(function(k){x[k]=o[k]});return x}
+
+test('Chapter 9 fill percentages are 53/31/40 for 1/2/>2 conductors',function(){near(E._test.fillFraction(1),.53,.0001);near(E._test.fillFraction(2),.31,.0001);near(E._test.fillFraction(3),.40,.0001);near(E._test.fillFraction(8),.40,.0001)});
+test('100A 240V 1ph feeder phase conductors require 1 inch EMT provisional raceway',function(){var r=E.calculate(base());is(r.status,'PASS');is(r.feeder.result.size,'3');is(r.result.tradeSize,'1');is(r.result.racewayCount,1);is(r.result.phaseConductorsPerRaceway,2);near(r.raceways[0].actualFillPct,22.52,.05)});
+test('300A 480V 3ph 1500ft 700 Cu requires 3 inch EMT for phase conductors',function(){var r=E.calculate(base({loadAmps:'300',voltage:'480',phase:'3',distanceFt:'1500',ccc:'3',parallelAllowed:true}));is(r.feeder.result.size,'700');is(r.feeder.result.sets,1);is(r.result.tradeSize,'3');is(r.result.racewayCount,1);is(r.result.totalRacewayFt,1500);ok(r.raceways[0].occupiedArea<=r.raceways[0].allowedArea)});
+test('same 300A long run constrained to 500 kcmil resolves 2 separate 350 Cu in 2-1/2 EMT',function(){var r=E.calculate(base({loadAmps:'300',voltage:'480',phase:'3',distanceFt:'1500',ccc:'3',parallelAllowed:true,maxConductorSize:'500'}));is(r.feeder.result.size,'350');is(r.feeder.result.sets,2);is(r.result.tradeSize,'2-1/2');is(r.result.racewayCount,2);is(r.result.totalRacewayFt,3000);is(r.raceways.length,2)});
+test('700 kcmil phase-only long feeder requires 3-1/2 PVC40',function(){var r=E.calculate(base({loadAmps:'300',voltage:'480',phase:'3',distanceFt:'1500',ccc:'3',parallelAllowed:true,installation:'PVC40'}));is(r.result.tradeSize,'3-1/2')});
+test('700 kcmil phase-only long feeder requires 3-1/2 PVC80',function(){var r=E.calculate(base({loadAmps:'300',voltage:'480',phase:'3',distanceFt:'1500',ccc:'3',parallelAllowed:true,installation:'PVC80'}));is(r.result.tradeSize,'3-1/2')});
+test('unsupported XHHW2 occupied-area data fails closed instead of borrowing THHN area',function(){var r=E.calculate(base({conductorType:'XHHW2'}));is(r.status,'NO SUPPORTED CONFIGURATION');is(r.result,null);ok(r.warnings[0].indexOf('no authoritative occupied-area table')>=0)});
+test('unsupported OTHER raceway fails closed',function(){var r=E.calculate(base({installation:'OTHER'}));is(r.status,'NO SUPPORTED CONFIGURATION');is(r.result,null)});
+test('parallel shared-raceway strategy remains unsupported in Stage 3',function(){var r=E.calculate(base({loadAmps:'300',voltage:'480',phase:'3',distanceFt:'1500',ccc:'3',parallelAllowed:true,maxConductorSize:'500',racewayStrategy:'SHARED_REVIEW'}));is(r.status,'NO SUPPORTED CONFIGURATION');ok(r.warnings[0].indexOf('SEPARATE_SETS')>=0)});
+test('raceway output explicitly excludes neutral and EGC until Stage 4',function(){var r=E.calculate(base());ok(r.result.scope==='PHASE_CONDUCTORS_ONLY_STAGE_3');ok(r.unresolved.join(' ').indexOf('Neutral')>=0);ok(r.unresolved.join(' ').indexOf('EGC')>=0);ok(r.warnings.join(' ').indexOf('final raceway size may increase')>=0)});
+test('raceway fill is explicitly not presented as pulling feasibility',function(){var r=E.calculate(base({distanceFt:'600'}));ok(r.warnings.join(' ').indexOf('not pulling feasibility')>=0);ok(r.warnings.join(' ').indexOf('pull-box')>=0)});
+global.BRUNO_TEST_RESULTS=out;
+})();

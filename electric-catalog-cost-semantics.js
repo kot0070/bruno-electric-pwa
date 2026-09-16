@@ -55,11 +55,12 @@ function syncBlankInputs(scope){
   for(var i=0;i<inputs.length;i++){var t=inputs[i],id=rowId(t);if(id&&persistedBlank(id)){t.value='';t.dataset.costState='unresolved';t.placeholder='Unresolved'}}
 }
 function install(){
+  if(typeof document==='undefined'||typeof document.addEventListener!=='function')return;
   document.addEventListener('input',protect,true);
   document.addEventListener('change',protect,true);
   syncBlankInputs(document);
-  if(root.MutationObserver){var mo=new MutationObserver(function(ms){ms.forEach(function(m){for(var i=0;i<m.addedNodes.length;i++){var n=m.addedNodes[i];if(n&&n.nodeType===1)syncBlankInputs(n)}})});mo.observe(document.documentElement,{childList:true,subtree:true})}
+  if(root.MutationObserver&&document.documentElement){var mo=new MutationObserver(function(ms){ms.forEach(function(m){for(var i=0;i<m.addedNodes.length;i++){var n=m.addedNodes[i];if(n&&n.nodeType===1)syncBlankInputs(n)}})});mo.observe(document.documentElement,{childList:true,subtree:true})}
 }
-if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install()}
-root.BrunoCatalogCostSemantics=Object.freeze({parse:parse,persistBlank:persistBlank,persistedBlank:persistedBlank,_rowId:rowId});
+if(typeof document!=='undefined'&&typeof document.addEventListener==='function'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install()}
+root.BrunoCatalogCostSemantics=Object.freeze({parse:parse,persistBlank:persistBlank,persistedBlank:persistedBlank,_rowId:rowId,_protect:protect});
 })(window);

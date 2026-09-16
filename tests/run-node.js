@@ -26,6 +26,7 @@ require('../electric-custom-materials.js');
 require('./electrical-calculators.test.js');
 require('./data-integrity.test.js');
 require('./navigation-shell.test.js');
+require('./navigation-deeplink.test.js');
 require('./residential-estimator.test.js');
 require('./residential-pricing.test.js');
 require('./residential-takeoff.test.js');

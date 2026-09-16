@@ -2,19 +2,33 @@
   "master": "dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md",
   "historical_browser_rationale": "dev-plans/FUNCTION_CAPABILITY_BROWSER_E2E_AMENDMENT.md",
   "master_status": "ACTIVE",
-  "current_stage": "STAGE_0_BASELINE_AND_REQUIREMENTS_INDEX",
+  "current_stage": "STAGE_1_RUNTIME_CAPABILITY_INVENTORY",
   "strict_sequential": true,
   "implementation_branch": "main",
   "audit_branch_policy": "separate_exact_sha",
   "capability_statuses": ["PASS", "PARTIAL", "FAIL", "UNTESTED", "NOT_APPLICABLE"],
   "severity_levels": ["P0", "P1", "P2", "P3"],
   "stage_0": {
-    "status": "ACTIVE",
+    "status": "DONE_ACCEPTED",
     "pre_stage_exact_sha": "41ba3758fd358ad159645e46b42c472d9fcb4157",
     "pre_stage_ci_run": 525,
     "pre_stage_ci_run_id": 35156821715,
     "pre_stage_test_count": 767,
     "pre_stage_ci_conclusion": "success",
+    "initial_audit_sha": "31a303dd28b752f5823be78512ee975902295d44",
+    "initial_audit_branch": "audit/function-capability-stage0-31a303d",
+    "initial_audit_report": "audits/reports/FUNCTION_CAPABILITY_STAGE0_AUDIT_31a303d.md",
+    "initial_audit_verdict": "A_REJECT_CORRECTIVE_REQUIRED",
+    "corrective_finding": "FCA-S0-P1-001",
+    "corrective_sha": "846e8cd55aaa7a1fbeb28536dab008f21c8cc6b4",
+    "corrective_ci_run": 532,
+    "corrective_ci_run_id": 35159627641,
+    "corrective_ci_conclusion": "success",
+    "reaudit_branch": "audit/function-capability-stage0-reaudit-846e8cd",
+    "reaudit_report": "audits/reports/FUNCTION_CAPABILITY_STAGE0_REAUDIT_846e8cd.md",
+    "reaudit_verdict": "A_ACCEPT",
+    "p0_open": 0,
+    "p1_open": 0,
     "requirements_index": "audits/function-capability/REQUIREMENTS_INDEX.md",
     "capability_registry": "audits/function-capability/capabilities.json",
     "browser_e2e_baseline": "ABSENT",
@@ -24,10 +38,18 @@
       "only existing explicit workflow at inspection was .github/workflows/electrical-calculators.yml"
     ],
     "governance_findings": [
-      "FUNCTION_CAPABILITY_AUDIT_MASTER previously described Browser E2E as recommended while the amendment made it mandatory; corrected in main before Stage 0 acceptance",
-      "AUTONOMOUS_AI_HANDOFF_PROTOCOL machine-readable control block is stale and classified LEGACY for current execution"
+      "FUNCTION_CAPABILITY_AUDIT_MASTER previously described Browser E2E as recommended while the amendment made it mandatory; corrected before Stage 0 acceptance",
+      "AUTONOMOUS_AI_HANDOFF_PROTOCOL machine-readable control block is stale and classified LEGACY for current execution",
+      "FCA-S0-P1-001 per-capability requirement traceability gap corrected and VERIFIED_CLOSED"
     ],
-    "gate": "FRESH_EXACT_HEAD_CI_THEN_INDEPENDENT_AUDIT_THEN_ACCEPT"
+    "gate": "ACCEPTED"
+  },
+  "stage_1": {
+    "status": "ACTIVE",
+    "name": "Runtime capability inventory",
+    "deliverable": "audits/function-capability/RUNTIME_CAPABILITY_MAP.md",
+    "entry_sha": "846e8cd55aaa7a1fbeb28536dab008f21c8cc6b4",
+    "gate": "MAP_UI_TO_HANDLER_RUNTIME_STORAGE_THEN_EXACT_HEAD_CI_AND_INDEPENDENT_AUDIT"
   },
   "browser_e2e": {
     "required": true,
@@ -40,8 +62,8 @@
     "mandatory_journeys": ["E2E-01","E2E-02","E2E-03","E2E-04","E2E-05","E2E-06","E2E-07","E2E-08","E2E-09","E2E-10","E2E-11","E2E-12"]
   },
   "stages": {
-    "stage_0": {"status": "ACTIVE", "name": "Baseline + requirements index + browser baseline"},
-    "stage_1": {"status": "LOCKED", "name": "Runtime capability inventory"},
+    "stage_0": {"status": "DONE_ACCEPTED", "name": "Baseline + requirements index + browser baseline"},
+    "stage_1": {"status": "ACTIVE", "name": "Runtime capability inventory"},
     "stage_2": {"status": "LOCKED", "name": "Requirement-to-runtime gap audit"},
     "stage_3": {"status": "LOCKED", "name": "Executable core workflows + Playwright foundation"},
     "stage_4": {"status": "LOCKED", "name": "Function-level deterministic audit"},

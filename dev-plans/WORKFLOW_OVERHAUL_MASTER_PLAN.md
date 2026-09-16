@@ -3,11 +3,10 @@
 **Branch:** `dev/custom-special-order-materials`  
 **Execution mode:** STRICT SEQUENTIAL  
 **Audit mode:** ONE INDEPENDENT FULL AUDIT AFTER ALL STAGES  
-**Current stage:** `STAGE_3_SAVE_ARCHIVE_UX`  
+**Current stage:** `STAGE_4_APPLY_TO_JOB`  
 **Overall state:** `IN_PROGRESS`
 
 ## NON-NEGOTIABLE EXECUTION RULES
-
 1. Work on exactly one `CURRENT_STAGE` at a time.
 2. DO NOT start the next stage until every acceptance criterion and required regression for the current stage is GREEN.
 3. After finishing each stage, RE-READ THIS FILE from the repository before changing any code for the next stage.
@@ -20,125 +19,109 @@
 10. Any navigation, storage, import/export, archive, quote, or invoice change must be tested for phone/tablet/desktop and reload persistence where applicable.
 
 ---
-
 ## STAGE 1 — NAVIGATION / DEEP-LINK CORRECTNESS
 **Status:** `DONE`
-
-Implemented canonical explicit-tab routes, hash parser/default resolution, immediate exact-tab restore and hashchange/back-forward support.
-
-**Evidence:** SHAs `3f9071e36498b6472506f0b541bda9651434cdbb`, `63f084389b3f79a7db0c02cfe7bb6ea3133a4f69`, `17c3ca827976646779b83efc3b5d6a8ab4e66f4d`, `871b12c54d7014852ad67e47a9408b03090a6fd4`; CI run `#249` SUCCESS.
+Implemented explicit-tab routes, canonical hash parser/default resolution, immediate exact-tab restore, preserved hash and hashchange/back-forward support.
+**Evidence:** SHAs `3f9071e36498b6472506f0b541bda9651434cdbb`, `63f084389b3f79a7db0c02cfe7bb6ea3133a4f69`, `17c3ca827976646779b83efc3b5d6a8ab4e66f4d`, `871b12c54d7014852ad67e47a9408b03090a6fd4`; CI #249 SUCCESS.
 
 ---
-
 ## STAGE 2 — RESIDENTIAL WIRE / CABLE TAKEOFF
+**Status:** `DONE`
+Implemented visible detailed routing takeoff, 12/2 vs 14/2 totals, selectable waste, optional quick ft² budget mode explicitly NOT NEC, validation, archive metadata persistence/restore.
+**Evidence:** SHAs `3c7efe11bc0054da3ed10fcf0a08844b4e1d5867`, `2a089aac1f37049a8cd260c302170363b81d06dc`, `53891291b7a749afccec42d96d88e72d5bb2ec9f`, `e8f18a383917f70e15b910dea5fbce5884aa4f6d`; CI #254 SUCCESS.
+**Reserved rule for Stage 4:** Quick ft² mode is budget reference only and must never silently replace exact cable-type Job Material rows.
+
+---
+## STAGE 3 — SAVE CALCULATION / ARCHIVE UX
 **Status:** `DONE`
 
 ### Implemented
-- Added dedicated `electric-residential-wire-takeoff.js` strict estimating module.
-- Visible `Wire / Cable Takeoff` UI injected into Residential Live before the main result block.
-- Detailed routing estimate exposes scope rows and grouped cable totals (`12/2`, `14/2` when applicable).
-- Editable waste/routing allowance with strict 0–100 validation.
-- Optional `Quick budget by ft²` mode with editable ft cable / ft² coefficient.
-- Quick mode is explicitly labeled estimating/budget only and `NOT an NEC minimum`.
-- Detailed and Quick modes are independent; quick calculation never mutates the Residential Live result.
-- Selected wire model/settings/results are attached to active/archive calculation metadata after Save and restored on archive load.
-- Added runtime loader through `sw-register.js` (final offline core-shell cache update remains reserved for Stage 8).
+- Added prominent sticky `Residential Calculation` workflow card with `Save Calculation` action.
+- Explicit live states: `LIVE · NOT SAVED`, `LIVE CHANGES · NOT SAVED`, `SAVED CALCULATION`.
+- Ordinary input changes mark dirty but never autosave/archive.
+- Save remains user-intent boundary and failed saves do not mark calculation saved.
+- Archive overview now shows calculation name, saved timestamp, area, circuits, wire estimate, LIVE Customer materials and LIVE Your Cost.
+- Existing Duplicate/Load/Delete semantics retained through bridge to existing archive controls.
+- History engine now performs idempotent save identity: repeated unchanged save/confirm reuses current active archive ID rather than creating duplicate rows.
+- Changed core calculation creates a new archive identity and leaves the old archived snapshot immutable.
+- Delete isolation and existing transaction rollback retained.
+- `sw-register.js` loads the new save/archive UX module; final PWA offline shell update remains Stage 8.
 
 ### Acceptance criteria
-- [x] Total cable footage visible without reading BOM rows.
-- [x] Cable type split visible.
-- [x] Quick estimate clearly labeled as estimating/budget only.
-- [x] Detailed and quick modes remain separate.
-- [x] No square-footage-derived NEC minimum claim.
-- [x] Invalid/negative waste/coefficient fails closed.
-- [x] Archive metadata persistence path exists for selected wire model.
+- [x] Save action is prominent at top of Residential workflow.
+- [x] Reload-persisted archive engine retained.
+- [x] Live edits do not mutate archived rows automatically.
+- [x] Explicit Duplicate creates separate editable identity.
+- [x] Delete affects only selected archive row.
+- [x] Repeated unchanged Save does not generate archive duplicates.
+- [x] Saved/dirty/unsaved states are visible.
 
 ### Required regressions
-- [x] detailed routing math;
-- [x] waste allowance math;
-- [x] 12/2 vs 14/2 type split;
-- [x] quick ft² estimate math;
-- [x] mode non-mutation;
-- [x] invalid settings fail-closed;
-- [x] archive metadata persistence hooks.
+- [x] save/reload existing persistence path;
+- [x] idempotent repeated save;
+- [x] changed calculation versioning + archive immutability;
+- [x] duplicate identity;
+- [x] delete isolation;
+- [x] atomic rollback retained;
+- [x] no autosave in dirty handler;
+- [x] archive summary fields and workflow state UI.
 
 ### Completion evidence
-- Implementation SHAs: `3c7efe11bc0054da3ed10fcf0a08844b4e1d5867`, `2a089aac1f37049a8cd260c302170363b81d06dc`, `53891291b7a749afccec42d96d88e72d5bb2ec9f`, `e8f18a383917f70e15b910dea5fbce5884aa4f6d`
-- CI: GitHub Actions run `#254` — SUCCESS on exact PR head `e8f18a383917f70e15b910dea5fbce5884aa4f6d`; exact-head checkout/provenance and deterministic suite steps passed.
-- Follow-up risk reserved for Stage 4: selected wire purchase model is archived now; Apply-to-Job must decide explicitly whether to use archived purchase takeoff vs legacy BOM footage and must not silently mix them.
+- Implementation/test SHAs: `489d009847e37edf0ae0c52d4213dfbb1af73438`, `9167976ff975c21f46fe00d8d3396faefbb7233c`, `7a249467e95dcc4c606fd0ae10751c9ba4bd304f`, `67c38822d3535c3b2444eb2b93fa3790bba89108`, `ac795a5280482c9599f4383523c09b06efe67dd2`, `3146d69d166b459d7ffb0d43ad449eb53cd90b7b`, `dcfe721158c77daba27686da7653766ffbf03b1e`.
+- Initial run #261 found one stale formatting-sensitive bootstrap assertion; production ordering was correct. Test was hardened to validate semantic ordering independent of whitespace.
+- Exact-head CI run `#262` — SUCCESS on `dcfe721158c77daba27686da7653766ffbf03b1e`.
 
 ---
-
-## STAGE 3 — SAVE CALCULATION / ARCHIVE UX
+## STAGE 4 — APPLY CALCULATION TO JOB / PROVENANCE
 **Status:** `IN_PROGRESS`
 
-### Problem
-Archive engine exists, but Save/Archive behavior is not obvious enough and users can reach the bottom of the calculator believing calculations cannot be saved.
-
 ### Required implementation
-- Make `Save Calculation` a prominent explicit action in Residential Live.
-- Distinguish live unsaved calculation, saved calculation/archive record, and calculation applied to Job.
-- Archive list must show name, saved timestamp, area, principal takeoff totals and live-pricing status.
-- Preserve Load/Duplicate/Delete semantics.
-- Add visible saved/unsaved state indicator.
-- Save action must be idempotent/intentional: no accidental duplicate archive rows from ordinary input changes.
-
-### Acceptance criteria
-- A first-time user can find Save without scrolling through ambiguous output.
-- Reload retains archived calculations.
-- Editing live inputs does not mutate an archived calculation.
-- Duplicate creates a new editable calculation identity.
-- Delete affects only intended archive item.
+- Separate Save Calculation from Apply to Job; saving alone must not mutate Job Materials.
+- Add explicit `Apply to Job` / `Update Job from calculation` transaction for a saved active calculation.
+- Persist provenance: calculation/archive ID, name, applied timestamp, source type/version.
+- Apply generated BOM through strict BOM cost semantics.
+- Preserve manual and non-Residential generated Job Materials.
+- Re-apply replaces only Residential applied-calculation rows, not manual/other-source rows.
+- blank Your Cost -> unresolved store; explicit 0 -> resolved zero; positive -> resolved cost.
+- Calculator edits after Apply must not mutate Job until explicit Save + Apply/Update.
+- Quick ft² wire mode is budget reference only and must not silently drive exact Job Material cable rows; Apply uses the saved calculation BOM/detailed material structure unless an explicit exact cable-type model exists.
+- Job/Calculator UI must show which calculation is currently applied and whether live changes are newer than applied state.
 
 ### Required regressions
-- save/reload;
-- duplicate identity;
-- delete isolation;
-- archive immutability;
-- active calculation restore;
-- no autosave duplication.
+- Save-only leaves Job Materials unchanged;
+- Apply saved calculation;
+- same-source re-apply;
+- manual/other-source preservation;
+- unresolved/zero/positive Your Cost;
+- provenance persistence/reload;
+- calculator edit after Apply does not auto-mutate Job;
+- quick wire budget does not replace exact cable-type BOM rows.
 
 ### Completion evidence
 - Implementation SHA: `PENDING`
 - CI/test evidence: `PENDING`
 
 ---
-
-## STAGE 4 — APPLY CALCULATION TO JOB / PROVENANCE
-**Status:** `PENDING`
-
-Required: explicit Apply to Job transaction; persisted calculation provenance; strict BOM replacement; manual/other-source preservation; same-source re-apply; no silent calculator→Job mutation; unresolved/zero/positive semantics.
-
----
-
 ## STAGE 5 — JOB TOTALS / QUOTE PRICE CLARITY
 **Status:** `PENDING`
-
-Required: clarify cost vs customer price vs approved quote; unresolved disclosure; applied calculation reference; eliminate ambiguous `Sales (Exact)`/`Quote Total`; header/summary parity.
+Required: cost vs customer price vs approved quote clarity, unresolved disclosure, applied-calculation reference, remove ambiguous Sales/Quote labels, header/summary parity.
 
 ---
-
 ## STAGE 6 — QUOTE APPROVAL / MANUAL CUSTOMER-PRICE OVERRIDE / INVOICE BOUNDARY
 **Status:** `PENDING`
-
 Required flow: `Estimated Job Cost → Recommended Customer Price → Manual Quote Adjustment (optional) → Approved Quote → Invoice`, persisted approval/override provenance and no silent post-approval calculator mutation.
 
 ---
-
 ## STAGE 7 — CATALOG / JOB MATERIALS UX CLARITY + CUSTOM MATERIAL COMPLETION
 **Status:** `PENDING`
-
-Required: explicit `Used N · Catalog M`; used-on-job meaning; Catalog vs Job Materials separation; discoverable Custom Material UI; strict Custom Add path; job/import isolation; blank/zero/positive cost and Qty semantics.
+Required: explicit Used/Catalog badges, used-on-job meaning, Catalog vs Job Materials separation, discoverable Custom Material UI, strict Custom Add path, job/import isolation, blank/zero/positive cost and Qty semantics.
 
 ---
-
 ## STAGE 8 — FINAL INTEGRATION GATE / PWA / EXPORT-IMPORT / EXACT-HEAD CI
 **Status:** `PENDING`
-
-Required: complete end-to-end deterministic regression, job/archive isolation, Commercial/Residential and Journal regressions, responsive verification, final PWA cache/core shell update, exact-head CI, frozen candidate, developer report, then independent full audit only.
+Required: full end-to-end tests, isolation/regressions, responsive verification, final PWA cache/core shell update, exact-head CI, frozen candidate, developer report, then one full independent audit.
 
 ---
-
 # FINAL AUDIT SCOPE
 1. Calculator navigation/deep links.
 2. Residential wire/cable takeoff and quick estimate labeling/math.

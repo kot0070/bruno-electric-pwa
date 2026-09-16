@@ -2,11 +2,11 @@
 (function(){
 'use strict';
 var groups=[
-  {key:'JOB',label:'Job',icon:'▣',defaultTab:'quote',items:[['quote','Quote'],['summary','Summary'],['cos','Change Orders']]},
-  {key:'ESTIMATE',label:'Estimate',icon:'≡',defaultTab:'materials',items:[['materials','Job Materials'],['catalog','Catalog'],['labor','Labor & Equipment'],['margins','Margins']]},
-  {key:'ELECTRICAL',label:'Electrical',icon:'⚡',defaultTab:'__tools',items:[['__tools','Electrical Tools']]},
-  {key:'BILLING',label:'Billing',icon:'$',defaultTab:'tm',items:[['tm','T&M Invoice'],['pnl','Profit & Loss']]},
-  {key:'MORE',label:'More',icon:'•••',defaultTab:'dispatch',items:[['dispatch','Dispatch'],['personnel','Workers'],['profiles','Company'],['reference','Reference'],['help','Help']]}
+  {key:'JOB',label:'Journal',icon:'◷',defaultTab:'dispatch',items:[['dispatch','Call Journal']]},
+  {key:'ELECTRICAL',label:'Calculator',icon:'⚡',defaultTab:'__tools',items:[['__tools','Project Calculator']]},
+  {key:'BILLING',label:'Job',icon:'▣',defaultTab:'quote',items:[['quote','Customer Price / Quote'],['tm','Invoice'],['summary','Summary'],['cos','Change Orders']]},
+  {key:'ESTIMATE',label:'Catalog',icon:'≡',defaultTab:'catalog',items:[['catalog','Materials Catalog'],['materials','Job Materials'],['margins','Pricing & Margins']]},
+  {key:'MORE',label:'More',icon:'•••',defaultTab:'labor',items:[['labor','Labor & Equipment'],['pnl','Profit & Loss'],['personnel','Workers'],['profiles','Company'],['reference','Reference'],['help','Help']]}
 ];
 function group(key){for(var i=0;i<groups.length;i++)if(groups[i].key===key)return groups[i];return groups[0]}
 function groupForTab(tab){for(var i=0;i<groups.length;i++)for(var j=0;j<groups[i].items.length;j++)if(groups[i].items[j][0]===tab)return groups[i];return groups[0]}

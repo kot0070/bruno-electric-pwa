@@ -1,6 +1,5 @@
 name: Electrical Calculator Tests
-# Audit gate: PR runs must test the exact pull-request head SHA, never the synthetic merge ref.
-# Final candidate trigger: this workflow commit is intentionally the last dev-branch change before audit.
+# Function Capability gate: deterministic Node tests and real-browser Playwright tests run on the same exact checkout SHA.
 
 on:
   push:
@@ -12,43 +11,23 @@ on:
       - feature/electrical-tools-phase-3
   pull_request:
     paths:
-      - 'electric-reference-data.js'
-      - 'electric-calculators.js'
-      - 'electric-catalog-v1.js'
-      - 'electric-bom.js'
-      - 'electric-residential-rules.js'
-      - 'electric-residential.js'
-      - 'electric-residential-pricing.js'
-      - 'electric-residential-takeoff.js'
-      - 'electric-residential-live.js'
-      - 'electric-residential-live-levels.js'
-      - 'electric-residential-live-history.js'
-      - 'electric-residential-live-workspace.js'
-      - 'electrical-residential-ui.js'
-      - 'electrical-residential-pricing-ui.js'
-      - 'electrical-residential-takeoff-ui.js'
-      - 'electrical-residential-live-ui.js'
-      - 'electrical-residential-live-levels-ui.js'
-      - 'electric-workspace.js'
-      - 'electric-compact-header.js'
-      - 'electric-custom-materials.js'
-      - 'sw-register.js'
-      - 'electric-phase3-rules.js'
-      - 'electric-phase3.js'
-      - 'electrical-phase3-ui.js'
-      - 'electrical-tools-shell.js'
-      - 'electrical-tools.html'
-      - 'sw.js'
+      - '*.html'
+      - '*.js'
+      - 'manifest.webmanifest'
+      - 'package.json'
+      - 'playwright.config.js'
       - 'tests/**'
+      - 'dev-plans/FUNCTION_CAPABILITY_AUDIT_*.md'
+      - 'audits/function-capability/**'
       - '.github/workflows/electrical-calculators.yml'
 
 permissions:
   contents: read
 
 jobs:
-  calculator-tests:
+  capability-gates:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Checkout exact PR head
         if: github.event_name == 'pull_request'
@@ -73,5 +52,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: package.json
+      - name: Install browser audit dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
       - name: Run deterministic calculator and integrity tests
-        run: node tests/run-node.js
+        run: npm run test:deterministic
+      - name: Run Function Capability Playwright journeys
+        env:
+          BRUNO_TESTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: npm run test:e2e:chromium
+      - name: Upload Playwright failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failure-${{ github.run_id }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

@@ -56,6 +56,17 @@
     document.head.appendChild(j);
   }
 
+  function loadCustomMaterials() {
+    if (/electrical-tools\.html$/i.test(location.pathname)) return;
+    if (window.BrunoCustomMaterials || document.querySelector('script[data-be-custom-materials]')) return;
+    var c=document.createElement('script');
+    c.src='./electric-custom-materials.js';
+    c.defer=true;
+    c.dataset.beCustomMaterials='1';
+    c.onerror=function(){};
+    document.head.appendChild(c);
+  }
+
   function loadDispatchJournal() {
     if (/electrical-tools\.html$/i.test(location.pathname)) return;
     if (window.BrunoDispatchJournalV2 || document.querySelector('script[data-be-dispatch-v2]')) return;
@@ -131,6 +142,7 @@
     loadCatalogCostSemantics();
     loadPricingMarginsSemantics();
     loadJobMaterialCostSemantics();
+    loadCustomMaterials();
     loadCompactHeader();
     loadDispatchJournal();
     loadResidentialWorkspaceBridge();

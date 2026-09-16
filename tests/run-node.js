@@ -22,6 +22,7 @@ require('../electric-residential-live-levels.js');
 require('../electric-residential-live-history.js');
 require('../electric-phase3-rules.js');
 require('../electric-phase3.js');
+require('../electric-custom-materials.js');
 require('./electrical-calculators.test.js');
 require('./data-integrity.test.js');
 require('./navigation-shell.test.js');
@@ -39,6 +40,7 @@ require('./service-worker.test.js');
 require('./residential-catalog-bridge.test.js');
 require('./catalog-cost-semantics.test.js');
 require('./pricing-margins-semantics.test.js');
+require('./custom-materials.test.js');
 
 Promise.all(global.BRUNO_ASYNC_TESTS).then(function(){
   var r = global.BRUNO_TEST_RESULTS;

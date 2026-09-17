@@ -3,6 +3,10 @@ const fs = require('fs');
 
 const JOB_KEY='bruno-electric-v1';
 const runtimeErrors=new WeakMap();
+// Binding Browser E2E Amendment permits an explicit allowlist with a documented reason.
+// Chromium emits this diagnostic because frame-ancestors is ineffective when delivered by meta CSP;
+// it is a browser policy warning, not an application runtime failure. Every other console error stays fatal.
+const ALLOWED_CONSOLE_ERRORS=new Set(["The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."]);
 function baseJob(name='Contract Audit Job'){
   return {
     id:'e2e-contract-'+String(name).toLowerCase().replace(/[^a-z0-9]+/g,'-'),
@@ -15,7 +19,7 @@ function baseJob(name='Contract Audit Job'){
 function errorsFor(page){
   let rows=runtimeErrors.get(page);if(rows)return rows;rows=[];runtimeErrors.set(page,rows);
   page.on('pageerror',e=>rows.push('pageerror: '+e.message));
-  page.on('console',m=>{if(m.type()==='error')rows.push('console.error: '+m.text());});
+  page.on('console',m=>{if(m.type()==='error'){const text=m.text();if(!ALLOWED_CONSOLE_ERRORS.has(text))rows.push('console.error: '+text);}});
   page.on('response',r=>{if(['script','serviceworker'].includes(r.request().resourceType())&&r.status()>=400)rows.push(`required ${r.request().resourceType()} ${r.status()}: ${r.url()}`);});
   page.on('requestfailed',r=>{if(['script','serviceworker'].includes(r.resourceType()))rows.push(`required ${r.resourceType()} failed: ${r.url()} · ${(r.failure()||{}).errorText||''}`);});
   return rows;

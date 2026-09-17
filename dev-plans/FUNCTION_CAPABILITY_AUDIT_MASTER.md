@@ -1,7 +1,7 @@
 # Bruno Electric — Function / Capability Audit Master
 
 MASTER_STATUS: ACTIVE
-CURRENT_STAGE: STAGE_4_FUNCTION_LEVEL_DETERMINISTIC_AUDIT
+CURRENT_STAGE: STAGE_5_NEGATIVE_FAULT_INJECTION_AUDIT
 EXECUTION_MODE: STRICT_SEQUENTIAL
 IMPLEMENTATION_BRANCH: main
 AUDIT_BRANCH_POLICY: separate exact-SHA audit branches
@@ -213,16 +213,35 @@ Gate: ACCEPTED.
 ---
 
 # STAGE 4 — Function-Level Deterministic Audit
-STATUS: ACTIVE
+STATUS: DONE_ACCEPTED
 Inventory exported/public high-value functions: directly tested, integration-tested, trivial plumbing, dead/unreachable, untested high-risk. Add targeted branch/boundary/invalid/rollback/stale-ID/blank-zero/unsupported tests. Coverage metrics may locate gaps but never prove correctness.
 
-Gate: exact-head deterministic CI, independent exact-SHA Stage 4 audit, correction of every P0/P1, re-audit, then ACCEPT.
+Accepted Stage 4 evidence:
+- coverage map: `audits/function-capability/FUNCTION_COVERAGE_MAP.md`;
+- implementation/test evidence SHA: `efb02bf1f867787e5bf7251d9045be2931eeb6d3`;
+- implementation exact-head CI: Electrical Calculator Tests run #606 / id `35243084444`, SUCCESS;
+- deterministic suite: `800/800 passed`;
+- Playwright: `87 scheduled / 35 passed / 52 explicit viewport-contract skips / 0 failed`;
+- final pre-audit authoritative SHA: `ad468ae53e32cd0d9515c02a3ea1b912ebe65a6f`;
+- exact-head CI at audited SHA: Electrical Calculator Tests run #608 / id `35243527176`, SUCCESS;
+- exact SHA provenance verified: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == ad468ae53e32cd0d9515c02a3ea1b912ebe65a6f`;
+- deterministic suite at audited SHA: `800/800 passed`;
+- Playwright at audited SHA: `87 scheduled / 35 passed / 52 explicit viewport-contract skips / 0 failed`;
+- independent audit branch: `audit/function-capability-stage4-ad468ae`;
+- independent audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE4_AUDIT_ad468ae.md`;
+- independent audit verdict: `A_ACCEPT`, P0=0, P1=0;
+- targeted closure includes BOM source isolation, calculator blank-vs-zero boundaries, Conduit/Box Fill rendered validation, Project Calculator residential/commercial routing, and full-app real-UI export/import/reload restoration;
+- no known `UNTESTED_HIGH_RISK` exported business/state API remains in the Stage 4 map.
+
+Gate: ACCEPTED.
 
 ---
 
 # STAGE 5 — Negative / Fault Injection
-STATUS: LOCKED
+STATUS: ACTIVE
 Test malformed JSON/partial records, stale/missing IDs, unsupported calculations, impossible raceway/configurations, failed Apply/Update rollback, incomplete imports, repeated actions, optional asset failures, stale caches and browser-reproducible negative flows. Expected fail-closed/preserve/no-op behavior must be explicit.
+
+Gate: Stage 5 may proceed only from the Stage 4 administrative acceptance SHA after that SHA receives exact-head deterministic + Playwright green evidence consistent with the changed-production-SHA invariant.
 
 ---
 
@@ -279,18 +298,17 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 handoff:
   role_completed: ORCHESTRATOR
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
-  verdict_or_gate: STAGE_4_ACTIVE
+  verdict_or_gate: STAGE_4_DONE_ACCEPTED_STAGE_5_ACTIVE_PENDING_ACCEPTANCE_SHA_CI
   blockers: []
   files_to_read_next:
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_STATE.json
-    - audits/function-capability/REQUIREMENT_RUNTIME_GAP_MATRIX.md
-    - audits/function-capability/RUNTIME_CAPABILITY_MAP.md
-    - audits/function-capability/capabilities.json
+    - audits/function-capability/FUNCTION_COVERAGE_MAP.md
+    - audits/reports/FUNCTION_CAPABILITY_STAGE4_AUDIT_ad468ae.md
     - tests/run-node.js
     - .github/workflows/electrical-calculators.yml
   next_role: IMPLEMENTER
-  next_action: Inventory exported/public high-value functions and classify each as directly tested, integration-tested, trivial plumbing, dead/unreachable or untested high-risk. Add targeted deterministic branch/boundary/invalid/rollback/stale-ID/blank-zero/unsupported tests without using coverage as proof, run exact-head CI, then create a separate exact-SHA Stage 4 audit branch and correct every P0/P1 before acceptance.
+  next_action: First verify exact-head deterministic + Playwright CI on the Stage 4 administrative acceptance SHA. Then begin Stage 5 Negative / Fault Injection from that exact green SHA: malformed/partial imports and records, stale/missing IDs, unsupported/impossible calculations, failed mutation rollback, repeated actions, optional asset failures, stale caches, and browser-reproducible negative flows. Preserve explicit fail-closed/preserve/no-op contracts and create a separate exact-SHA Stage 5 audit branch before acceptance.
   prohibited_actions:
     - mark_capability_pass_without_evidence
     - silently_change_requirement_to_match_runtime

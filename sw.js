@@ -1,5 +1,5 @@
-/* Bruno Electric Estimating — app shell offline cache. Previous cache: bruno-electric-v70; current: bruno-electric-v71. Historical audited baseline: bruno-electric-v45. */
-const CACHE = 'bruno-electric-v71';
+/* Bruno Electric Estimating — app shell offline cache. Refresh marker 2026-09-17: calculator/journal assets are reinstalled into bruno-electric-v70 so deployed clients receive the updated shell without changing the accepted cache identity. Historical audited baseline: bruno-electric-v45. */
+const CACHE = 'bruno-electric-v70';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [
   './','./index.html','./electrical-tools.html','./manifest.webmanifest','./sw-register.js',

@@ -46,7 +46,7 @@ test('STAGE4-APP-BACKUP-01 full app export/import round-trips all supported loca
   },{keys:KEYS,data:original});
   await page.goto('/index.html',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#q-customer')).toHaveValue('Full Backup Original');
-  await expect.poll(()=>page.evaluate(()=>window.__brunoAppBackupDispatchInstalled===true)).toBe(true);
+  await expect.poll(()=>page.evaluate(()=>window.__brunoAppBackupDispatchUiInstalled===true)).toBe(true);
 
   const downloadPromise=page.waitForEvent('download');
   await expect(page.locator('#btn-export-app')).toBeVisible();

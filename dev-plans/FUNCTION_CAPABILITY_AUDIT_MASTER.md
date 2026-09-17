@@ -1,7 +1,7 @@
 # Bruno Electric — Function / Capability Audit Master
 
 MASTER_STATUS: ACTIVE
-CURRENT_STAGE: STAGE_6_UI_ACTION_WIRING_AUDIT
+CURRENT_STAGE: STAGE_7_CROSS_MODULE_REGRESSION_MATRIX
 EXECUTION_MODE: STRICT_SEQUENTIAL
 IMPLEMENTATION_BRANCH: main
 AUDIT_BRANCH_POLICY: separate exact-SHA audit branches
@@ -267,20 +267,35 @@ Gate: ACCEPTED.
 ---
 
 # STAGE 6 — UI Action Wiring Audit
-STATUS: ACTIVE
+STATUS: DONE_ACCEPTED
 For every actionable control verify reachability, correct handler, correct domain action, disabled/hidden states, no handler override, truthful feedback, keyboard/touch where applicable, no mobile navigation obstruction. Real Browser E2E evidence is required for materially user-facing actions.
 
-Stage 6 entry basis: Stage 5 `A_ACCEPT` at exact synchronized SHA `2f0e7083353008a6bee4d0e294b404f71106331a`, P0=0, P1=0.
+Accepted Stage 6 evidence:
+- entry basis: Stage 5 `A_ACCEPT` at exact synchronized SHA `2f0e7083353008a6bee4d0e294b404f71106331a`, P0=0, P1=0;
+- action matrix: `audits/function-capability/STAGE6_UI_ACTION_WIRING_MATRIX.md`;
+- accepted production SHA: `485b3efd448f6757bdc3283f8ad3a34923c9bf10`;
+- exact-head CI: Electrical Calculator Tests #714 / run id `35284021486`, SUCCESS;
+- exact provenance: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == 485b3efd448f6757bdc3283f8ad3a34923c9bf10`;
+- deterministic: `822/822 passed`;
+- Playwright: `168 scheduled / 88 passed / 80 explicit viewport-contract skips / 0 failed`;
+- independent audit branch: `audit/function-capability-stage6-485b3ef`;
+- independent audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE6_AUDIT_485b3ef.md`;
+- independent verdict: `A_ACCEPT`, P0=0, P1=0;
+- deterministic wiring inventory found no duplicate/orphan base actionable ID; rendered-browser evidence remained authoritative for materially user-facing actions.
 
-Required deliverable: `audits/function-capability/STAGE6_UI_ACTION_WIRING_MATRIX.md` plus executable browser evidence for any material action group not already proven by accepted journeys.
-
-Gate: ACTIVE — discover and classify all actionable UI groups before independent audit.
+Gate: ACCEPTED.
 
 ---
 
 # STAGE 7 — Cross-Module Regression Matrix
-STATUS: LOCKED
+STATUS: ACTIVE
 Required pairs include Catalog<->Job Materials, Job Materials<->Quote, Quote<->Approved Quote, Approved Quote<->Invoice, Electrical Tasks<->Job Materials, Residential<->Job Materials, Custom Materials<->pricing, Job switching<->all scoped archives, Import/Export<->history/provenance, PWA update<->stored Job data. Record PASS/PARTIAL/FAIL/UNTESTED with evidence.
+
+Stage 7 entry basis: Stage 6 `A_ACCEPT` at exact SHA `485b3efd448f6757bdc3283f8ad3a34923c9bf10`, P0=0, P1=0.
+
+Required deliverable: `audits/function-capability/STAGE7_CROSS_MODULE_REGRESSION_MATRIX.md`. Existing tests may be reused only where they prove the interaction boundary; missing cross-module edges require new deterministic or Playwright evidence. Production corrections are made on `main`, followed by exact-head CI and a separate exact-SHA independent audit branch.
+
+Gate: ACTIVE — discover pairwise interaction gaps, add executable evidence, then exact-head CI.
 
 ---
 
@@ -323,10 +338,10 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 ## Handoff
 ```yaml
 handoff:
-  role_completed: STAGE_5_INDEPENDENT_AUDITOR
+  role_completed: STAGE_6_INDEPENDENT_AUDITOR
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
   next_role: IMPLEMENTER
-  next_stage: STAGE_6_UI_ACTION_WIRING_AUDIT
+  next_stage: STAGE_7_CROSS_MODULE_REGRESSION_MATRIX
   branch_policy: separate_exact_sha_audit_branch_after_green
   do_not_advance_without_accept: true
 ```

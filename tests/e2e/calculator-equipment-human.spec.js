@@ -92,10 +92,12 @@ test('HUMAN-CALC-05 electrician operates every equipment and distribution calcul
   await expect(page.locator('#gr-out')).toContainText('GEC result');
   await page.locator('#gr-et').selectOption('rod-pipe-plate');
   await page.locator('#gr-gec').click();
-  await expect(page.locator('#gr-out')).toContainText('Field review');
+  await expect(page.locator('#gr-out')).toContainText('GEC result · REVIEW');
+  await expect(page.locator('#gr-out')).toContainText('Electrode-specific 250.66 cap not asserted');
   await page.locator('#gr-sole').check();
   await page.locator('#gr-gec').click();
   await expect(page.locator('#gr-out')).toContainText('rod-pipe-plate');
+  await expect(page.locator('#gr-out')).not.toContainText('Electrode-specific 250.66 cap not asserted');
   await expect(page.locator('#gr-out')).not.toContainText('Input / scope error');
 
   // Feeder planning helper: verify actual arithmetic, edit both load classes, and recalculate.

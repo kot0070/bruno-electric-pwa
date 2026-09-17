@@ -22,8 +22,8 @@ test('UI-STABILITY-01 reload never presents the legacy wide header as a visible 
 });
 
 test('UI-STABILITY-02 letterhead and disabled native controls stay dark and readable',async({page})=>{
-  await page.goto('/index.html',{waitUntil:'load'});
-  const quote=page.locator('#nav-tabs .nav-tab[data-tab="quote"]');if(await quote.count())await quote.click();
+  await page.goto('/index.html#be=BILLING&tab=quote',{waitUntil:'load'});
+  await expect(page.locator('#panel-quote')).toBeVisible();
   const select=page.locator('.letterhead-strip select').first();await expect(select).toBeVisible();
   const style=await select.evaluate(el=>{const s=getComputedStyle(el);return{bg:s.backgroundColor,fg:s.color,disabled:el.disabled}});expect(luminance(style.bg),`letterhead background ${style.bg}`).toBeLessThan(0.35);expect(luminance(style.fg),`letterhead foreground ${style.fg}`).toBeGreaterThan(0.45);
   const offenders=await page.evaluate(()=>[...document.querySelectorAll('select:disabled,input:disabled,textarea:disabled,input[readonly],textarea[readonly]')].filter(el=>{const r=el.getBoundingClientRect();if(!r.width||!r.height)return false;const m=(getComputedStyle(el).backgroundColor.match(/[\d.]+/g)||[]).slice(0,3).map(Number);if(m.length<3)return false;const lum=m.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0);return lum>.7;}).map(el=>({id:el.id,cls:el.className,tag:el.tagName,bg:getComputedStyle(el).backgroundColor})));

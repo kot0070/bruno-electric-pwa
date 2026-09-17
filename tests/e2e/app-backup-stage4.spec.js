@@ -20,6 +20,16 @@ function errorsFor(page){
   return rows;
 }
 function job(customer){return{id:'stage4-app-backup',quote:{customer,jobNumber:'APP-1',proposalNumber:'APP-P1',date:'2026-09-17'},company:{name:'Bruno Electric Services LLC'},catalog:[],materialsUsed:[{item:'Backup material',qty:2,units:'EA',unitCost:12,costState:'RESOLVED'}],materialsUnresolved:[],personnel:{employees:[],burden:[]},electricalTasks:[],electricalTaskActiveId:null,changeOrders:[],summary:{},residentialHistory:[],necEdition:'2026 NEC',jurisdiction:'Texas'};}
+async function revealThroughDetails(locator){
+  if(await locator.isVisible())return;
+  const details=locator.locator('xpath=ancestor::details[1]');
+  if(await details.count()){
+    const summary=details.locator('summary').first();
+    await expect(summary).toBeVisible();
+    await summary.click();
+  }
+  await expect(locator).toBeVisible();
+}
 
 test.beforeEach(async({page})=>{errorsFor(page);});
 test.afterEach(async({page},testInfo)=>{const rows=errorsFor(page);if(rows.length)await testInfo.attach('runtime-errors.txt',{body:Buffer.from(rows.join('\n')),contentType:'text/plain'});expect(rows,rows.join('\n')).toEqual([]);});
@@ -48,9 +58,10 @@ test('STAGE4-APP-BACKUP-01 full app export/import round-trips all supported loca
   await expect(page.locator('#q-customer')).toHaveValue('Full Backup Original');
   await expect.poll(()=>page.evaluate(()=>window.__brunoAppBackupDispatchUiInstalled===true)).toBe(true);
 
+  const exportButton=page.locator('#btn-export-app');
+  await revealThroughDetails(exportButton);
   const downloadPromise=page.waitForEvent('download');
-  await expect(page.locator('#btn-export-app')).toBeVisible();
-  await page.locator('#btn-export-app').click();
+  await exportButton.click();
   const download=await downloadPromise;
   const p=await download.path();expect(p).toBeTruthy();
   const buffer=await fs.promises.readFile(p);

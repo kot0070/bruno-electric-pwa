@@ -22,7 +22,10 @@ var sw=root('sw.js');
 test('Stage 7 required material and pricing interaction evidence remains executable',function(){
   ok(data.indexOf('BOM recalculation promotes formerly unresolved row when Your Cost becomes known')>=0,'Catalog -> Job Materials promotion evidence missing');
   ok(data.indexOf('BOM replacement preserves manual and other-source rows')>=0,'generated BOM isolation evidence missing');
-  ok(custom.indexOf('historical')>=0||custom.indexOf('snapshot')>=0,'Custom Material historical-boundary evidence missing');
+  ok(custom.indexOf('edit preserves stable id createdAt and Job Material history')>=0,'Custom edit -> Job Material history preservation evidence missing');
+  ok(custom.indexOf('delete affects Catalog only and preserves Job history')>=0,'Custom delete -> Job Material history preservation evidence missing');
+  ok(custom.indexOf('strict Custom blank Your Cost routes unresolved and never Customer Price')>=0,'Custom pricing unresolved-cost evidence missing');
+  ok(custom.indexOf('strict Custom explicit zero routes resolved zero')>=0,'Custom pricing explicit-zero evidence missing');
 });
 
 test('Stage 7 Quote approval and fixed Invoice interaction chain remains executable',function(){

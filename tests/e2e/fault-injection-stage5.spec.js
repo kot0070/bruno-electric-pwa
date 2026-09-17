@@ -79,7 +79,8 @@ test('STAGE5-FAULT-04 cancelled valid app restore is a no-op',async({page},testI
 
 test('STAGE5-FAULT-05 oversized app backup is rejected before file parsing or mutation',async({page},testInfo)=>{
   desktopOnly(testInfo);await seed(page);const before=await snapshot(page);
-  const dialogPromise=page.waitForEvent('dialog');
+  let seen=null;
+  const dialogHandled=new Promise(resolve=>page.once('dialog',async d=>{seen={type:d.type(),message:d.message()};await d.accept();resolve();}));
   await page.evaluate(()=>{
     const input=document.querySelector('#btn-import-app');
     const transfer=new DataTransfer();
@@ -87,7 +88,8 @@ test('STAGE5-FAULT-05 oversized app backup is rejected before file parsing or mu
     input.files=transfer.files;
     input.dispatchEvent(new Event('change',{bubbles:true}));
   });
-  const dialog=await dialogPromise;expect(dialog.type()).toBe('alert');expect(dialog.message()).toContain('too large');await dialog.accept();
+  await dialogHandled;
+  expect(seen.type).toBe('alert');expect(seen.message).toContain('too large');
   expect(await snapshot(page)).toEqual(before);
   await expect(page.locator('#q-customer')).toHaveValue('Stage 5 Current State');
 });

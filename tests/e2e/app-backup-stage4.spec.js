@@ -20,13 +20,23 @@ function errorsFor(page){
   return rows;
 }
 function job(customer){return{id:'stage4-app-backup',quote:{customer,jobNumber:'APP-1',proposalNumber:'APP-P1',date:'2026-09-17'},company:{name:'Bruno Electric Services LLC'},catalog:[],materialsUsed:[{item:'Backup material',qty:2,units:'EA',unitCost:12,costState:'RESOLVED'}],materialsUnresolved:[],personnel:{employees:[],burden:[]},electricalTasks:[],electricalTaskActiveId:null,changeOrders:[],summary:{},residentialHistory:[],necEdition:'2026 NEC',jurisdiction:'Texas'};}
-async function revealThroughDetails(locator){
+async function revealThroughRealUi(page,locator){
   if(await locator.isVisible())return;
-  const details=locator.locator('xpath=ancestor::details[1]');
-  if(await details.count()){
-    const summary=details.locator('summary').first();
-    await expect(summary).toBeVisible();
-    await summary.click();
+  const compactMenu=locator.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " be-header-more ")][1]');
+  if(await compactMenu.count()){
+    const more=page.locator('#btn-compact-more');
+    await expect(more).toBeVisible();
+    if(await compactMenu.getAttribute('hidden')!==null)await more.click();
+  }
+  const details=locator.locator('xpath=ancestor::details');
+  const count=await details.count();
+  for(let i=count-1;i>=0;i--){
+    const d=details.nth(i);
+    if(await d.getAttribute('open')===null){
+      const summary=d.locator(':scope > summary').first();
+      await expect(summary).toBeVisible();
+      await summary.click();
+    }
   }
   await expect(locator).toBeVisible();
 }
@@ -59,7 +69,7 @@ test('STAGE4-APP-BACKUP-01 full app export/import round-trips all supported loca
   await expect.poll(()=>page.evaluate(()=>window.__brunoAppBackupDispatchUiInstalled===true)).toBe(true);
 
   const exportButton=page.locator('#btn-export-app');
-  await revealThroughDetails(exportButton);
+  await revealThroughRealUi(page,exportButton);
   const downloadPromise=page.waitForEvent('download');
   await exportButton.click();
   const download=await downloadPromise;

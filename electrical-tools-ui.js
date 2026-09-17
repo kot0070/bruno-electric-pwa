@@ -9,7 +9,7 @@ function writeState(s){localStorage.setItem(STORAGE,JSON.stringify(s))}
 function money(v){return '$'+(Number(v)||0).toFixed(2)}
 function f(id){return document.getElementById(id)}
 function val(id){return f(id).value}
-function num(id){return Number(val(id))}
+function num(id){var x=val(id);return x===''?'':Number(x)}
 function selectOpts(arr,sel){return arr.map(function(x){return '<option'+(String(x)===String(sel)?' selected':'')+'>'+esc(x)+'</option>'}).join('')}
 function jobStatus(){var s=readState(),el=f('job-status');if(!s){el.innerHTML='<b>No saved Bruno Electric job found.</b> Calculators still work; BOM cannot be added until a job exists.';return}var q=s.quote||{};el.innerHTML='<b>Current job:</b> '+esc(q.customer||'Unnamed job')+' · '+esc(q.jobNumber||q.proposal||'no job #')+' · <b>'+((s.materialsUsed||[]).length)+'</b> material rows';}
 
@@ -45,7 +45,7 @@ function renderResult(outId,r){var o=f(outId);var h='<h3>Calculation path · <sp
 function safe(outId,fn){try{renderResult(outId,fn())}catch(e){f(outId).innerHTML='<h3 class="fail">Input error</h3><div class="warn">'+esc(e.message)+'</div>'}}
 f('run-amp').onclick=function(){safe('out-amp',function(){return C.ampacity({material:val('a-mat'),size:val('a-size'),insulationRating:num('a-ins'),terminalRating:num('a-term'),ccc:num('a-ccc'),ambientC:num('a-amb'),loadAmps:num('a-load'),continuous:val('a-cont')==='1'})})};
 f('run-vd').onclick=function(){safe('out-vd',function(){return C.voltageDrop({voltage:num('v-v'),phase:val('v-ph'),material:val('v-m'),size:val('v-s'),distanceFt:num('v-d'),current:num('v-i'),powerFactor:num('v-pf'),targetPct:num('v-t')})})};
-f('run-cf').onclick=function(){safe('out-cf',function(){var rows=[].slice.call(document.querySelectorAll('.c-row')).map(function(r){return{size:r.querySelector('.c-size').value,qty:Number(r.querySelector('.c-qty').value)}});return C.conduitFill({racewayType:val('c-r'),tradeSize:val('c-ts'),conductors:rows})})};
+f('run-cf').onclick=function(){safe('out-cf',function(){var rows=[].slice.call(document.querySelectorAll('.c-row')).map(function(r){return{size:r.querySelector('.c-size').value,qty:r.querySelector('.c-qty').value}});return C.conduitFill({racewayType:val('c-r'),tradeSize:val('c-ts'),conductors:rows})})};
 f('run-bf').onclick=function(){safe('out-bf',function(){return C.boxFill({size:val('b-s'),insulatedCount:num('b-i'),groundCount:num('b-g'),yokeCount:num('b-y'),internalClamp:val('b-c')==='1',boxVolume:num('b-v')})})};
 
 function renderCatalog(){var cats={};CAT.items.forEach(function(x){(cats[x.category]||(cats[x.category]=[])).push(x)});f('cat-grid').innerHTML=Object.keys(cats).map(function(k){return '<div class="cat-item"><b>'+esc(k)+'</b><small>'+cats[k].length+' starter items</small>'+cats[k].slice(0,5).map(function(x){return '<small>• '+esc(x.item)+'</small>'}).join('')+(cats[k].length>5?'<small>…</small>':'')+'</div>'}).join('')}

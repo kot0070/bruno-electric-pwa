@@ -106,3 +106,12 @@ test('Stage 5 invalid optional full-app block fails before any storage mutation'
   assert.throws(function(){api.restoreFullAppPayload({job:{id:'foreign-job'},dispatchJournalV3:[]},st);},/Dispatch Journal block must be an object/);
   assert.strictEqual(st.dump()['bruno-electric-v1'],original);
 });
+
+test('Stage 5 repeated valid full-app restore is idempotent',function(){
+  var st=storage({'bruno-electric-v1':JSON.stringify({id:'old'})});
+  var payload={job:{id:'stable-job'},companies:{activeId:'stable-profile'},uiPrefs:{theme:'light',zoom:100},catalogOpen:{WIRE:true},dispatchJournalV3:{data:{calls:[{id:'stable-call'}]},settings:{ownerTaxPct:12}}};
+  api.restoreFullAppPayload(payload,st);
+  var once=JSON.parse(JSON.stringify(st.dump()));
+  api.restoreFullAppPayload(payload,st);
+  assert.deepStrictEqual(st.dump(),once);
+});

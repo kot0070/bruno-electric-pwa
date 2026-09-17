@@ -29,7 +29,6 @@ test('STAGE7-XMOD-01 PWA cache and service-worker lifecycle preserves stored Job
     electricalTaskActiveId:'task-stage7',
     electricalTaskMaterialHistory:[{taskId:'task-stage7',sourceTaskRevision:2,archivedAt:'2026-09-17T12:00:00.000Z'}],
     residentialAppliedCalculation:{calculationId:'res-stage7',name:'Stage 7 residence',sourceVersion:'residential-apply-v1'},
-    quoteLifecycle:{version:1,approved:{approvalId:'approval-stage7',revision:1,customerAmount:2450,source:'APPROVED_QUOTE_SNAPSHOT'},history:[]},
     changeOrders:[],summary:{},residentialHistory:[],necEdition:'2026 NEC',jurisdiction:'Texas'
   };
   await page.addInitScript(([key,value])=>{
@@ -38,10 +37,21 @@ test('STAGE7-XMOD-01 PWA cache and service-worker lifecycle preserves stored Job
     sessionStorage.setItem('__stage7_pwa_seeded','1');
   },[JOB_KEY,job]);
 
-  await page.goto('/index.html',{waitUntil:'load'});
+  // Build the approval through the actual Quote UI instead of fabricating a partial
+  // lifecycle object. This both keeps the fixture schema-valid and proves that the
+  // state crossing the PWA lifecycle is state a real user can create.
+  await page.goto('/index.html#be=BILLING&tab=quote',{waitUntil:'load'});
   await expect(page.locator('#q-customer')).toHaveValue('Stage 7 PWA Customer');
+  await expect(page.locator('#quote-lifecycle-card')).toBeVisible();
+  await page.locator('#qa-manual').fill('2450');
+  const approvalReload=page.waitForEvent('load');
+  await page.locator('#qa-approve').click();
+  await approvalReload;
+  await expect(page.locator('#qa-status')).toContainText('APPROVED SNAPSHOT');
   await expect.poll(()=>page.evaluate(async()=>!!(navigator.serviceWorker&&await navigator.serviceWorker.ready))).toBe(true);
 
+  // Capture the fully normalized, live-runtime representation. The lifecycle test
+  // below is about cache/SW replacement preserving that exact persisted Job.
   const before=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),JOB_KEY);
   expect(before.electricalTasks[0].revision).toBe(3);
   expect(before.materialsUsed[0].sourceTaskRevision).toBe(3);
@@ -67,7 +77,7 @@ test('STAGE7-XMOD-01 PWA cache and service-worker lifecycle preserves stored Job
   expect(after).toEqual(before);
   expect(after.electricalTaskMaterialHistory[0].sourceTaskRevision).toBe(2);
   expect(after.materialsUsed[0].generatedBy.source).toBe('electrical-task-material-takeoff');
-  expect(after.quoteLifecycle.approved.approvalId).toBe('approval-stage7');
+  expect(after.quoteLifecycle.approved.customerAmount).toBe(2450);
   expect(after.residentialAppliedCalculation.sourceVersion).toBe('residential-apply-v1');
 
   const cachesAfter=await page.evaluate(()=>caches.keys());

@@ -1,11 +1,11 @@
 # Bruno Electric — Stage 4 Function Coverage Map
 
-STATUS: PRE_AUDIT_COMPLETE
+STATUS: PRE_AUDIT_READY
 STAGE: 4 — Function-Level Deterministic Audit
-INVENTORY_SOURCE_SHA: `d3ab36e2597ab45826d616235e78ee83463a3390`
-EXACT_HEAD_CI: Electrical Calculator Tests #590 / run id `35231443826` / SUCCESS
-DETERMINISTIC: `795/795 passed`
-BROWSER_REGRESSION_GATE: `66 scheduled / 28 passed / 38 viewport-contract skips / 0 failed`
+INVENTORY_SOURCE_SHA: `efb02bf1f867787e5bf7251d9045be2931eeb6d3`
+EXACT_HEAD_CI: Electrical Calculator Tests #606 / run id `35243084444` / SUCCESS
+DETERMINISTIC: `800/800 passed`
+BROWSER_REGRESSION_GATE: `87 scheduled / 35 passed / 52 explicit viewport-contract skips / 0 failed`
 
 ## Purpose and boundary
 
@@ -24,7 +24,7 @@ Stage 4 policy: coverage metrics may locate gaps but do not prove correctness. `
 
 | Runtime / public API | High-value functions | Classification | Deterministic evidence / notes |
 |---|---|---|---|
-| `BrunoElectricalCalc` (`electric-calculators.js`) | `ampacity`, `voltageDrop`, `conduitFill`, `boxFill`, `transformerCurrent` | DIRECTLY_TESTED | `tests/electrical-calculators.test.js`, `tests/math-corrective-boundaries.test.js`: table/boundary, blank/zero, invalid phase/PF/counts, unsupported range, continuous-load and fail/review thresholds. |
+| `BrunoElectricalCalc` (`electric-calculators.js`) | `ampacity`, `voltageDrop`, `conduitFill`, `boxFill`, `transformerCurrent` | DIRECTLY_TESTED | `tests/electrical-calculators.test.js`, `tests/math-corrective-boundaries.test.js`, `tests/stage4-calculator-boundary.test.js`: table/boundary, blank/zero, invalid phase/PF/counts, unsupported range, continuous-load and fail/review thresholds. Stage 4 browser tests additionally drive Ampacity, Voltage Drop, Conduit Fill and Box Fill through rendered UI, including explicit blank-vs-zero contracts. |
 | `BrunoElectricalCatalogV1` | `mergeMissing` | DIRECTLY_TESTED | `tests/data-integrity.test.js`: preserve user values/metadata, explicit zero, normalized-name collision, ID collision, idempotency. |
 | `BrunoElectricBOM` | `prepareReplacement`, `replaceGenerated` | DIRECTLY_TESTED | Existing `tests/data-integrity.test.js` plus Stage 4 `tests/electric-bom.test.js`: same-source replacement across resolved/unresolved stores, preservation of manual/other sources, blank vs zero, invalid/missing cost, normalized matching, persisted rerun. |
 | `BrunoElectricBOM` | `readJob`, `_match`, `_knownCost` | TRIVIAL_PLUMBING | Read/helper behavior is exercised by BOM direct tests; no separate high-risk mutation boundary. |
@@ -47,16 +47,16 @@ Stage 4 policy: coverage metrics may locate gaps but do not prove correctness. `
 | `BrunoQuoteLifecycle` | `materialDisclosure`, `normalizeOverride`, `syncWorkspaceState` | INTEGRATION_TESTED | Explicitly exercised as parts of candidate/approval flow; reload synchronization assertion included. |
 | `BrunoFixedPriceInvoice` | `buildInvoiceModel`, `invoiceHtml` | DIRECTLY_TESTED | `tests/fixed-price-invoice.test.js`: immutable approved snapshot source, amount/provenance, fail before approval. |
 | `BrunoFixedPriceInvoice` | `printFixed`, `relabelTM` | INTEGRATION_TESTED | Document/source and Stage 3 browser workflow prove fixed-vs-T&M separation; print/DOM wiring is intentionally a later Stage 6/8 UI/PWA concern. |
-| `BrunoAppBackupDispatch` | `augmentPayload`, `restorePayload`, `install` | DIRECTLY_TESTED | `tests/app-backup-dispatch.test.js`: full-app inclusion, restore, legacy non-destructive behavior; Stage 4 adds install idempotency, app-only export wrapping, return preservation and change-event emission. |
+| `BrunoAppBackupDispatch` | `augmentPayload`, `restorePayload`, `install`, full-app build/restore bridge | DIRECTLY_TESTED / INTEGRATION_TESTED | `tests/app-backup-dispatch.test.js` covers Dispatch payload inclusion/restore, legacy preservation, install idempotency, app-only wrapping, return preservation and event emission. `STAGE4-APP-BACKUP-01` drives the real compact-header `More -> Export app`, replaces all supported local state with foreign values, imports the downloaded app backup, follows the production reload lifecycle and proves Job/company prefs/catalog/Dispatch restoration. |
 | Dispatch Journal runtime | journal state/settings operations | DIRECTLY_TESTED | `tests/dispatch-journal-v2.test.js`; standalone backup compatibility separately covered above. Dual legacy/current persistence remains carried P2 architecture classification, not a Stage 4 P0/P1. |
 | `BrunoElectricAppNavigation` | `workspaceHref`, `parseWorkspaceHash` | DIRECTLY_TESTED | `tests/navigation-deeplink.test.js`: defaults, exact tabs, invalid tabs/groups; E2E-01 adds browser navigation/back-forward evidence. |
 | `BrunoElectricAppNavigation` | `group`, `groupForTab`, static `groups` | TRIVIAL_PLUMBING | Canonical IA lookup consumed by deterministic shell tests and E2E-01. |
 | `BrunoEvseProfessional` | professional EVSE calculation/BOM workflow | DIRECTLY_TESTED | `tests/evse-professional.test.js` plus E2E-EVSE-01 on desktop/phone/tablet. |
 | Custom materials runtime | create/edit/add-to-Job cost/state functions | DIRECTLY_TESTED | `tests/custom-materials.test.js`, catalog/cost semantics suites, E2E-03. |
 | Pricing domain guard / margins / Job summary | validation and derived pricing semantics | DIRECTLY_TESTED | `pricing-domain-guard.test.js`, `pricing-margins-semantics.test.js`, `job-summary-semantics.test.js`, Quote tests. |
-| Project Calculator | mode/result calculation | DIRECTLY_TESTED | `tests/project-calculator.test.js`; commercial unsupported boundary is fail-closed. |
+| Project Calculator | mode/result calculation and residential/commercial routing | DIRECTLY_TESTED / INTEGRATION_TESTED | `tests/project-calculator.test.js` plus Stage 4 browser journeys. Blank required project values fail validation; residential values hand off to Live Residential; commercial mode persists, suppresses residential-only tools, keeps generic calculators reachable and leaves unsupported commercial estimation fail-closed. |
 | Service worker/PWA core | install/cache/update/offline helpers | INTEGRATION_TESTED | `tests/service-worker.test.js`, deterministic source contracts, E2E-12 offline/cache browser assertions. Detailed responsive/PWA audit remains Stage 8. |
-| Bootstrap/UI loaders and control handlers | script ordering, DOM mounting, event delegation | INTEGRATION_TESTED / TRIVIAL_PLUMBING | Deterministic shell/static integration tests plus Stage 3 E2E. Full action-by-action UI wiring is deliberately Stage 6, not falsely promoted to direct function coverage here. |
+| Bootstrap/UI loaders and control handlers | script ordering, DOM mounting, event delegation | INTEGRATION_TESTED / TRIVIAL_PLUMBING | Deterministic shell/static integration tests plus Stage 3/4 E2E. Full action-by-action UI wiring is deliberately Stage 6, not falsely promoted to direct function coverage here. |
 
 ## Targeted Stage 4 additions
 
@@ -69,10 +69,10 @@ Prior to Stage 4, `tests/data-integrity.test.js` already directly covered substa
 - normalized catalog matching;
 - repeated persisted replacement does not duplicate the source.
 
-Evidence commits: `50cdf090468f0772dc078ccb936a27473dfc9141`, suite integration `7cea5eda0425798a06bb2adb62025c7d683c1ecc`; exact-head CI #589 SUCCESS with `793/793` deterministic and browser regression green.
+Evidence commits: `50cdf090468f0772dc078ccb936a27473dfc9141`, suite integration `7cea5eda0425798a06bb2adb62025c7d683c1ecc`.
 
-### App backup wrapper closure
-Stage 4 added direct deterministic evidence for the exported `BrunoAppBackupDispatch.install()` wrapper, which is the runtime bridge around actual full-app export/import:
+### App backup wrapper and real-browser closure
+Stage 4 first added direct deterministic evidence for the exported `BrunoAppBackupDispatch.install()` wrapper:
 - install is idempotent;
 - only `type='app'` export receives current Dispatch Journal payload;
 - non-app export remains untouched;
@@ -80,22 +80,52 @@ Stage 4 added direct deterministic evidence for the exported `BrunoAppBackupDisp
 - current standalone Dispatch keys are restored;
 - one `bruno:dispatch-changed` event is emitted after successful restore.
 
-Evidence SHA: `d3ab36e2597ab45826d616235e78ee83463a3390`; exact-head CI #590 SUCCESS, `795/795` deterministic, Playwright `28 passed / 38 expected viewport skips / 0 failed`.
+The later Stage 4 browser regression closes the actual user-facing full-app path instead of relying on wrapper-only proof:
+- opens the real compact-header `More` menu to reach `Export app`;
+- verifies the downloaded envelope contains Job, Company profiles, UI preferences, catalog-open state, Dispatch Journal data and Dispatch settings;
+- deliberately replaces those local stores with foreign values;
+- imports through the real file input and confirmation path;
+- follows the production reload lifecycle;
+- verifies the original state is restored and foreign Dispatch state is removed.
+
+### Calculator blank/zero and rendered-result closure
+Stage 4 corrective work closed the discovered `blank -> 0` defect class without changing calculation formulas:
+- `electrical-tools-ui.js` preserves explicit blank required numeric values instead of coercing them with `Number('')`;
+- Conduit Fill passes the raw quantity value into the domain validator;
+- `electric-calculators.js` Box Fill distinguishes explicit blank from explicit zero while retaining the documented legacy omitted-field zero default;
+- `tests/stage4-calculator-boundary.test.js` directly proves blank insulated/ground/yoke counts fail, omitted legacy counts remain zero-compatible, and explicit zero remains valid;
+- rendered browser journeys prove Ampacity blank load, Voltage Drop blank current/distance, Conduit Fill blank quantity, Box Fill blank count/volume and explicit-zero behavior through the real UI;
+- valid reference results are asserted through rendered output, not only module calls.
+
+### Project Calculator routing closure
+Stage 4 browser evidence now proves both supported routing modes:
+- residential square footage and room counts transfer into the Live Residential workspace and persist residential project mode;
+- commercial mode persists, hides/disables residential-only tools and retains access to generic calculators;
+- unsupported commercial estimation remains explicitly fail-closed rather than silently using residential logic.
+
+### Exact-head evidence
+Final implementation/test evidence before documentation refresh:
+- production/test SHA: `efb02bf1f867787e5bf7251d9045be2931eeb6d3`;
+- Electrical Calculator Tests #606 / run id `35243084444`: `SUCCESS`;
+- provenance: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == efb02bf1f867787e5bf7251d9045be2931eeb6d3`;
+- deterministic: `800/800 passed`;
+- Playwright: `87 scheduled / 35 passed / 52 explicit viewport-contract skips / 0 failed`.
 
 ## Targeted-risk category coverage
 
 | Required category | Representative executable evidence |
 |---|---|
-| BOUNDARY | ampacity/CCC/temp boundaries; OCPD/fuse-only; feeder/EVSE/HVAC/Motor; allowance 0–20%; box/conduit counts. |
-| INVALID | blank/missing/non-numeric/unsupported phase, voltage, material, device, cost, task revision/configuration. |
+| BOUNDARY | ampacity/CCC/temp boundaries; OCPD/fuse-only; feeder/EVSE/HVAC/Motor; allowance 0–20%; box/conduit counts; Project Calculator required-value boundaries. |
+| INVALID | blank/missing/non-numeric/unsupported phase, voltage, material, device, cost, task revision/configuration; rendered calculator blank-input failure paths. |
 | ROLLBACK | Electrical Task `update()` failed-apply rollback preserves active materials/history. |
 | STALE_ID | missing/stale task revisions, active-Job task load, stale identifier browser journey E2E-10. |
-| BLANK_ZERO | core calculator required fields, Catalog/BOM Your Cost, task takeoff, Residential Apply, Quote manual adjustment. |
-| UNSUPPORTED | Phase 3 module/config rejection, commercial Project Calculator boundary, task/raceway fail-closed paths, unsupported electrical configurations. |
+| BLANK_ZERO | core calculator required fields including Box Fill/Conduit browser paths, Catalog/BOM Your Cost, task takeoff, Residential Apply, Quote manual adjustment. |
+| UNSUPPORTED | Phase 3 module/config rejection, commercial Project Calculator fail-closed boundary, task/raceway fail-closed paths, unsupported electrical configurations. |
 
 ## Current Stage 4 pre-audit conclusion
 
 - No new `DEAD_UNREACHABLE` high-value registered runtime was identified in this pass; Stage 1/2 already accepted the runtime reachability inventory.
-- After the targeted BOM and backup-wrapper additions, no **known** `UNTESTED_HIGH_RISK` exported business/state API remains in this map.
+- After the BOM, backup, calculator and Project Calculator additions, no **known** `UNTESTED_HIGH_RISK` exported business/state API remains in this map.
+- The implementation/test SHA `efb02bf1f867787e5bf7251d9045be2931eeb6d3` has matching deterministic and Chromium evidence. This documentation refresh itself still requires exact-head CI before it becomes the production SHA handed to the independent audit.
 - This is a **pre-audit classification**, not Stage 4 acceptance. The independent exact-SHA Stage 4 audit must verify completeness and may still raise P0/P1 findings.
 - Stage 5 remains locked until the Stage 4 independent audit/corrective/re-audit loop returns `A_ACCEPT` with P0=0/P1=0.

@@ -1,4 +1,4 @@
-/* Bruno Electric Estimating — app shell offline cache. Refresh marker 2026-09-17: calculator/journal/customer-document assets are reinstalled into bruno-electric-v70 so deployed clients receive the updated shell without changing the accepted cache identity. Historical audited baseline: bruno-electric-v45. */
+/* Bruno Electric Estimating — app shell offline cache. Refresh marker 2026-09-17 document-preview-master: preview-first documents, no-flash compact shell and dark native controls are reinstalled into bruno-electric-v70 so deployed clients receive the updated shell without changing the accepted cache identity. Historical audited baseline: bruno-electric-v45. */
 const CACHE = 'bruno-electric-v70';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [

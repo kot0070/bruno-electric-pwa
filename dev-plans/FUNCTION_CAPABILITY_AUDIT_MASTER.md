@@ -248,20 +248,25 @@ Test malformed JSON/partial records, stale/missing IDs, unsupported calculations
 Current Stage 5 evidence:
 - entry baseline: Stage 4 administrative acceptance SHA `eaf0f4d096d0b207cc27f17675e384e6d6a4099b`, exact-head CI #611 SUCCESS and independent acceptance validation complete;
 - fault matrix: `audits/function-capability/STAGE5_FAULT_INJECTION_MATRIX.md`;
-- a real full-app restore integrity gap was discovered: an app-typed payload could omit the saved Job and local-storage writes were not transactional under a mid-restore storage failure;
-- corrective production commit: `bed87c9134c0341e72f9bbe0c7b5f4c7693ff10f` requires a valid Job/state object, validates optional backup blocks before mutation, and rolls back prior writes if storage fails;
-- deterministic regressions cover incomplete backup preservation, invalid sub-block rejection, injected mid-transaction storage rollback and repeated restore idempotency;
+- a real full-app restore integrity gap was discovered and corrected: app restore now requires a valid saved Job, validates optional blocks before mutation and rolls back prior local-storage writes on a mid-restore failure;
+- corrective production commit: `bed87c9134c0341e72f9bbe0c7b5f4c7693ff10f`;
+- a locale-formatted Call Journal helper metric amplification defect was discovered and corrected so localized currency display is never reparsed as authoritative numeric state;
+- locale corrective production commit: `15eea1302984c0b37d93485ced85796bf2bf5593`;
+- customer-facing document flows were hardened to preview before output: calculator PDF, Call Journal invoice PDF and fixed-price invoice print all require the rendered preview boundary before the external output side effect;
+- missing required company identity is visible in the Journal invoice preview and blocks final customer PDF;
+- current-shell bootstrap was hardened against visible legacy-header flash, and dark disabled/readonly native-control regressions are covered at desktop, phone and tablet;
+- deterministic regressions cover incomplete backup preservation, invalid sub-block rejection, injected mid-transaction storage rollback, repeated restore idempotency and document model/print contracts;
 - real-browser Stage 5 fault journeys cover malformed full-app JSON, wrong backup type, incomplete app backup, cancelled restore no-op, oversized >8 MB app backup rejection, and malformed single-Job JSON preservation;
 - service-worker fault injection proves optional asset failure does not abort core-shell installation, while a core-shell cache failure rejects installation and does not advance the incomplete shell;
 - accepted earlier executable evidence is retained for failed task Update rollback, stale/missing task IDs, impossible/unsupported raceway, unsupported calculation inputs, stale-cache ownership, repeated BOM replacement, repeated task apply and cross-Job/stale-revision rejection;
-- implementation evidence SHA: `7c009e6c049b751f9c71bfd356ed3a7984895a8b`;
-- implementation exact-head CI: Electrical Calculator Tests #621 / id `35255969691`, SUCCESS;
-- exact SHA provenance verified for `7c009e6c049b751f9c71bfd356ed3a7984895a8b`;
-- deterministic suite: `806/806 passed`;
-- Playwright: `105 scheduled / 41 passed / 64 explicit viewport-contract skips / 0 failed`;
-- intermediate red runs #619/#620 were harness-only failures around creation/handling of the >8 MB synthetic file; the size-rejection expectation was never weakened and #621 is green with browser-side file creation plus pre-registered dialog handling.
+- implementation evidence SHA: `f1b5ab8b69a3a509037520d077a28e2dee038528`;
+- implementation exact-head CI: Electrical Calculator Tests #703 / run id `35282365016`, SUCCESS;
+- exact SHA provenance verified: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == f1b5ab8b69a3a509037520d077a28e2dee038528`;
+- deterministic suite: `818/818 passed`;
+- Playwright: `168 scheduled / 88 passed / 80 explicit viewport-contract skips / 0 failed`;
+- current human browser evidence includes calculator fail/recover, every enabled workspace traversal, core/equipment/project/residential flows, Electrical Tasks save/apply/update chain, calculation preview/download, Call Service preview/edit/reload/PDF, fixed/hourly pricing, commercial tax, comma-decimal helper consistency, fixed-price invoice preview/print, no-flash reload and dark-control stability.
 
-Gate: synchronize authoritative documentation, run exact-head deterministic + Playwright CI on that documentation SHA, then create a separate exact-SHA Stage 5 independent audit branch. Every P0/P1 must be corrected and independently re-audited before Stage 6 unlock.
+Gate: this synchronized documentation SHA must pass exact-head deterministic + full Playwright CI. Then create a separate exact-SHA Stage 5 independent audit branch. Every P0/P1 must be corrected and independently re-audited before Stage 6 unlock.
 
 ---
 
@@ -318,23 +323,8 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 handoff:
   role_completed: IMPLEMENTER
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
-  verdict_or_gate: STAGE_5_IMPLEMENTATION_GREEN_DOCUMENTATION_SHA_CI_REQUIRED
-  blockers: []
-  files_to_read_next:
-    - dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
-    - dev-plans/FUNCTION_CAPABILITY_AUDIT_STATE.json
-    - audits/function-capability/STAGE5_FAULT_INJECTION_MATRIX.md
-    - electric-app-backup-dispatch.js
-    - tests/app-backup-dispatch.test.js
-    - tests/service-worker.test.js
-    - tests/e2e/fault-injection-stage5.spec.js
-    - .github/workflows/electrical-calculators.yml
-  next_role: ORCHESTRATOR_THEN_INDEPENDENT_AUDITOR
-  next_action: Run exact-head deterministic + Playwright CI on the fully synchronized Stage 5 documentation SHA. If green, freeze that exact SHA on a separate Stage 5 audit branch and independently verify every matrix fault contract, exact-SHA provenance, the transactional full-app restore corrective, browser harness integrity and zero open P0/P1. Do not unlock Stage 6 before independent A_ACCEPT and any required corrective/re-audit cycle.
-  prohibited_actions:
-    - mark_capability_pass_without_evidence
-    - silently_change_requirement_to_match_runtime
-    - treat_green_harness_as_proof_without_contract_review
-    - weaken_fault_expectation_to_match_runtime
-    - skip_p0_p1_corrective_cycle
+  next_role: INDEPENDENT_AUDITOR_AFTER_EXACT_HEAD_GREEN
+  next_stage: STAGE_5_NEGATIVE_FAULT_INJECTION_AUDIT
+  branch_policy: separate_exact_sha_audit_branch
+  do_not_advance_without_accept: true
 ```

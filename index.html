@@ -18,6 +18,11 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
   <style>
+/* Bruno Electric prepaint shell guard — keep legacy header and native disabled fields dark before deferred JS loads. */
+html{color-scheme:dark}
+.header-actions:not([data-be-compact="1"]){visibility:hidden}
+select:disabled,input:disabled,textarea:disabled,input[readonly],textarea[readonly]{background-color:var(--bg-input,#0d1218)!important;color:var(--text,#e8eef6)!important;border-color:var(--border,#2e3a4a)!important;opacity:1!important;-webkit-text-fill-color:var(--text,#e8eef6)!important}
+.letterhead-strip select,.letterhead-strip select:disabled,.letterhead-strip select[aria-disabled="true"]{background-color:var(--bg-input,#0d1218)!important;color:var(--text,#e8eef6)!important;border-color:var(--border,#2e3a4a)!important;opacity:1!important;-webkit-text-fill-color:var(--text,#e8eef6)!important;color-scheme:dark}
 /* Bruno Electric Estimating — © 2026 Bruno Electric Services LLC. All rights reserved. */
 :root {
   --bg: #0f1419;

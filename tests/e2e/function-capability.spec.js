@@ -1,6 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 const JOB_KEY = 'bruno-electric-v1';
+const criticalErrorRegistry = new WeakMap();
 function baseJob(name='Browser Audit Job') {
   return {
     id:'e2e-'+String(name).toLowerCase().replace(/[^a-z0-9]+/g,'-'),
@@ -18,11 +19,19 @@ async function seedJob(page, job=baseJob()) {
   }, [JOB_KEY, job]);
 }
 function criticalErrors(page) {
-  const errors=[];
+  let errors=criticalErrorRegistry.get(page);
+  if(errors)return errors;
+  errors=[];
+  criticalErrorRegistry.set(page,errors);
   page.on('pageerror',e=>errors.push('pageerror: '+e.message));
   page.on('response',r=>{ if(r.request().resourceType()==='script' && r.status()>=400) errors.push(`script ${r.status()}: ${r.url()}`); });
   return errors;
 }
+test.beforeEach(async ({page})=>{ criticalErrors(page); });
+test.afterEach(async ({page})=>{
+  const errors=criticalErrors(page);
+  expect(errors, errors.join('\n')).toEqual([]);
+});
 async function openStable(page, path) {
   const errors=criticalErrors(page);
   await page.goto(path, {waitUntil:'domcontentloaded'});
@@ -217,7 +226,7 @@ test('E2E-05 Electrical Tasks Feeder calculate save reload apply edit update his
   const appliedRevision=await page.evaluate(k=>{const j=JSON.parse(localStorage.getItem(k));const a=(j.electricalTaskMaterialApplications||[]).slice(-1)[0];return a&&a.sourceTaskRevision;},JOB_KEY);
   expect(Number(appliedRevision)).toBeGreaterThan(0);
 
-  await page.locator('#et-distance').fill('60');
+  await page.locator('#et-distance').fill('40');
   await page.locator('#et-save').click();
   await expect(page.locator('#et-status')).toContainText('saved');
   await expect(page.locator('#et-stage6-status')).toContainText('CHANGED SINCE APPLY',{timeout:5000});

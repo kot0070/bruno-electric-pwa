@@ -1,7 +1,7 @@
 # Bruno Electric — Function / Capability Audit Master
 
 MASTER_STATUS: ACTIVE
-CURRENT_STAGE: STAGE_3_EXECUTABLE_CORE_WORKFLOWS_PLAYWRIGHT_FOUNDATION
+CURRENT_STAGE: STAGE_4_FUNCTION_LEVEL_DETERMINISTIC_AUDIT
 EXECUTION_MODE: STRICT_SEQUENTIAL
 IMPLEMENTATION_BRANCH: main
 AUDIT_BRANCH_POLICY: separate exact-SHA audit branches
@@ -171,7 +171,7 @@ Gate: ACCEPTED.
 ---
 
 # STAGE 3 — Executable Core Workflows + Playwright Foundation
-STATUS: ACTIVE
+STATUS: DONE_ACCEPTED
 Implement Playwright infrastructure and mandatory journeys. Retain deterministic integration tests. Minimum journeys include Job/materials isolation, Residential, Electrical Tasks, advanced templates, Task Solver, Quote/Approved Quote/Invoice, Import/Export and reload resilience. Binding browser policy requires the full mandatory set `E2E-01` through `E2E-12` to be represented. CI must require deterministic suite GREEN AND Playwright GREEN against the same exact SHA.
 
 Stage 3 implementation requirements:
@@ -186,13 +186,37 @@ Stage 3 implementation requirements:
 - existing deterministic Node suite remains a required same-SHA gate;
 - browser tests must drive the real rendered UI for user-facing actions, not replace UI proof with direct module calls.
 
-Gate: exact-head deterministic + Playwright CI, independent exact-SHA Stage 3 audit, correction of every P0/P1, re-audit, then ACCEPT.
+Accepted Stage 3 evidence:
+- implemented/traceability exact SHA: `a86f38937d82399b1d37cfe9ca49405b0633d1be`;
+- exact-head CI: Electrical Calculator Tests run #585 / id `35225679044`, SUCCESS;
+- deterministic suite at implementation SHA: 787/787 passed;
+- Playwright at implementation SHA: 66 scheduled project/test entries, 28 passed, 38 explicit viewport-contract skips, 0 failed;
+- configured Chromium viewport widths: desktop 1440 px, phone 390 px, tablet 820 px;
+- mandatory `E2E-01` through `E2E-12` represented through rendered UI journeys;
+- additional `E2E-EVSE-01` professional EVSE/Tesla sizing/formulas/charge-time/BOM journey passed on desktop, phone and tablet;
+- initial independent audit branch: `audit/function-capability-stage3-a86f389`;
+- initial audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE3_AUDIT_a86f389.md`;
+- initial verdict: `A_REJECT_CORRECTIVE_REQUIRED`, P0=0, P1=1;
+- `FCA-S3-P1-001`: authoritative audit state still claimed browser infrastructure was to be implemented;
+- corrective production SHA: `2778550057a785802b869e4b0d411215c689d239`;
+- corrective exact-head CI: run #586 / id `35226418000`, SUCCESS;
+- corrective deterministic suite: 787/787 passed;
+- corrective Playwright: 66 scheduled project/test entries, 28 passed, 38 explicit viewport-contract skips, 0 failed;
+- independent re-audit branch: `audit/function-capability-stage3-reaudit-2778550`;
+- re-audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE3_REAUDIT_2778550.md`;
+- re-audit verdict: `A_ACCEPT`, P0=0, P1=0;
+- `FCA-S3-P1-001`: `VERIFIED_CLOSED`;
+- Stage 3 acceptance certifies the Playwright foundation and mandatory core-journey representation; it does not bypass later function-level, negative, UI-wiring, cross-module, responsive/PWA, corrective or final-certification stages.
+
+Gate: ACCEPTED.
 
 ---
 
 # STAGE 4 — Function-Level Deterministic Audit
-STATUS: LOCKED
+STATUS: ACTIVE
 Inventory exported/public high-value functions: directly tested, integration-tested, trivial plumbing, dead/unreachable, untested high-risk. Add targeted branch/boundary/invalid/rollback/stale-ID/blank-zero/unsupported tests. Coverage metrics may locate gaps but never prove correctness.
+
+Gate: exact-head deterministic CI, independent exact-SHA Stage 4 audit, correction of every P0/P1, re-audit, then ACCEPT.
 
 ---
 
@@ -255,7 +279,7 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 handoff:
   role_completed: ORCHESTRATOR
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
-  verdict_or_gate: STAGE_3_ACTIVE
+  verdict_or_gate: STAGE_4_ACTIVE
   blockers: []
   files_to_read_next:
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
@@ -263,12 +287,13 @@ handoff:
     - audits/function-capability/REQUIREMENT_RUNTIME_GAP_MATRIX.md
     - audits/function-capability/RUNTIME_CAPABILITY_MAP.md
     - audits/function-capability/capabilities.json
+    - tests/run-node.js
     - .github/workflows/electrical-calculators.yml
   next_role: IMPLEMENTER
-  next_action: Implement the Playwright foundation and mandatory E2E-01..E2E-12 journeys against the real UI, require deterministic Node tests and Chromium browser tests on the same exact SHA in CI, then create a separate exact-SHA Stage 3 audit branch. Correct every P0/P1 before Stage 3 acceptance.
+  next_action: Inventory exported/public high-value functions and classify each as directly tested, integration-tested, trivial plumbing, dead/unreachable or untested high-risk. Add targeted deterministic branch/boundary/invalid/rollback/stale-ID/blank-zero/unsupported tests without using coverage as proof, run exact-head CI, then create a separate exact-SHA Stage 4 audit branch and correct every P0/P1 before acceptance.
   prohibited_actions:
     - mark_capability_pass_without_evidence
     - silently_change_requirement_to_match_runtime
-    - substitute_direct_module_calls_for_required_real_browser_ui_proof
+    - treat_coverage_percentage_as_correctness_proof
     - skip_p0_p1_corrective_cycle
 ```

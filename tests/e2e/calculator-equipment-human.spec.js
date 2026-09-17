@@ -35,20 +35,26 @@ test('HUMAN-CALC-05 electrician operates every equipment and distribution calcul
   await page.goto('/electrical-tools.html',{waitUntil:'load'});
   await page.locator('#be-tool-select').waitFor({state:'attached'});
 
-  // EVSE: normal calculation, invalid-input fail closed, recovery, then BOM replacement from the visible button.
+  // Professional EVSE: validate the shipped Tesla preset, then switch to Generic so the field tech can enter a custom unit, fail closed on blank current, recover, and replace BOM.
   await openTool(page,'ev3');
-  await expect(page.locator('#ev-a')).toHaveValue('48');
-  await page.locator('#ev-run').click();
-  await expect(page.locator('#ev-out')).toContainText('EVSE result');
-  await expect(page.locator('#ev-out')).toContainText('60 A');
-  await page.locator('#ev-a').fill('');
-  await page.locator('#ev-run').click();
-  await expect(page.locator('#ev-out')).toContainText('Input / scope error');
-  await page.locator('#ev-a').fill('32');
-  await page.locator('#ev-run').click();
-  await expect(page.locator('#ev-out')).toContainText('40 A');
+  await expect(page.locator('#evp-profile')).toBeVisible();
+  await page.locator('#evp-run').click();
+  await expect(page.locator('#evp-out')).toContainText('EVSE result · PASS');
+  await expect(page.locator('#evp-out')).toContainText('60 A');
+  await expect(page.locator('#evp-out')).toContainText('48 A');
+  await page.locator('#evp-profile').selectOption('GENERIC');
+  await expect(page.locator('#evp-a')).toBeEnabled();
+  await page.locator('#evp-a').fill('');
+  await page.locator('#evp-run').click();
+  await expect(page.locator('#evp-out')).toContainText('Input / scope error');
+  await page.locator('#evp-a').fill('32');
+  await page.locator('#evp-v').selectOption('240');
+  await page.locator('#evp-distance').fill('75');
+  await page.locator('#evp-run').click();
+  await expect(page.locator('#evp-out')).toContainText('EVSE result · PASS');
+  await expect(page.locator('#evp-out')).toContainText('40 A');
   page.once('dialog',d=>d.accept());
-  await page.locator('#ev-bom').click();
+  await page.locator('#evp-bom').click();
   await expect.poll(()=>page.evaluate(k=>{const j=JSON.parse(localStorage.getItem(k)||'{}');return (j.materialsUsed||[]).length+(j.materialsUnresolved||[]).length;},JOB_KEY)).toBeGreaterThan(0);
 
   // HVAC: verify pass path, intentionally oversize the selected OCPD, see FAIL, then recover.

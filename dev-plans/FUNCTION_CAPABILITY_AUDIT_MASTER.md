@@ -230,6 +230,10 @@ Accepted Stage 4 evidence:
 - independent audit branch: `audit/function-capability-stage4-ad468ae`;
 - independent audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE4_AUDIT_ad468ae.md`;
 - independent audit verdict: `A_ACCEPT`, P0=0, P1=0;
+- final administrative acceptance SHA: `eaf0f4d096d0b207cc27f17675e384e6d6a4099b`;
+- final acceptance exact-head CI: Electrical Calculator Tests #611 / id `35244328100`, SUCCESS, `800/800` deterministic and `87 scheduled / 35 passed / 52 explicit skips / 0 failed` Playwright;
+- acceptance validation branch: `audit/function-capability-stage4-acceptance-eaf0f4d`;
+- acceptance validation report: `audits/reports/FUNCTION_CAPABILITY_STAGE4_ACCEPTANCE_VALIDATION_eaf0f4d.md`, result `VALIDATED`;
 - targeted closure includes BOM source isolation, calculator blank-vs-zero boundaries, Conduit/Box Fill rendered validation, Project Calculator residential/commercial routing, and full-app real-UI export/import/reload restoration;
 - no known `UNTESTED_HIGH_RISK` exported business/state API remains in the Stage 4 map.
 
@@ -241,7 +245,23 @@ Gate: ACCEPTED.
 STATUS: ACTIVE
 Test malformed JSON/partial records, stale/missing IDs, unsupported calculations, impossible raceway/configurations, failed Apply/Update rollback, incomplete imports, repeated actions, optional asset failures, stale caches and browser-reproducible negative flows. Expected fail-closed/preserve/no-op behavior must be explicit.
 
-Gate: Stage 5 may proceed only from the Stage 4 administrative acceptance SHA after that SHA receives exact-head deterministic + Playwright green evidence consistent with the changed-production-SHA invariant.
+Current Stage 5 evidence:
+- entry baseline: Stage 4 administrative acceptance SHA `eaf0f4d096d0b207cc27f17675e384e6d6a4099b`, exact-head CI #611 SUCCESS and independent acceptance validation complete;
+- fault matrix: `audits/function-capability/STAGE5_FAULT_INJECTION_MATRIX.md`;
+- a real full-app restore integrity gap was discovered: an app-typed payload could omit the saved Job and local-storage writes were not transactional under a mid-restore storage failure;
+- corrective production commit: `bed87c9134c0341e72f9bbe0c7b5f4c7693ff10f` requires a valid Job/state object, validates optional backup blocks before mutation, and rolls back prior writes if storage fails;
+- deterministic regressions cover incomplete backup preservation, invalid sub-block rejection, injected mid-transaction storage rollback and repeated restore idempotency;
+- real-browser Stage 5 fault journeys cover malformed full-app JSON, wrong backup type, incomplete app backup, cancelled restore no-op, oversized >8 MB app backup rejection, and malformed single-Job JSON preservation;
+- service-worker fault injection proves optional asset failure does not abort core-shell installation, while a core-shell cache failure rejects installation and does not advance the incomplete shell;
+- accepted earlier executable evidence is retained for failed task Update rollback, stale/missing task IDs, impossible/unsupported raceway, unsupported calculation inputs, stale-cache ownership, repeated BOM replacement, repeated task apply and cross-Job/stale-revision rejection;
+- implementation evidence SHA: `7c009e6c049b751f9c71bfd356ed3a7984895a8b`;
+- implementation exact-head CI: Electrical Calculator Tests #621 / id `35255969691`, SUCCESS;
+- exact SHA provenance verified for `7c009e6c049b751f9c71bfd356ed3a7984895a8b`;
+- deterministic suite: `806/806 passed`;
+- Playwright: `105 scheduled / 41 passed / 64 explicit viewport-contract skips / 0 failed`;
+- intermediate red runs #619/#620 were harness-only failures around creation/handling of the >8 MB synthetic file; the size-rejection expectation was never weakened and #621 is green with browser-side file creation plus pre-registered dialog handling.
+
+Gate: synchronize authoritative documentation, run exact-head deterministic + Playwright CI on that documentation SHA, then create a separate exact-SHA Stage 5 independent audit branch. Every P0/P1 must be corrected and independently re-audited before Stage 6 unlock.
 
 ---
 
@@ -296,22 +316,25 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 ## Handoff
 ```yaml
 handoff:
-  role_completed: ORCHESTRATOR
+  role_completed: IMPLEMENTER
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
-  verdict_or_gate: STAGE_4_DONE_ACCEPTED_STAGE_5_ACTIVE_PENDING_ACCEPTANCE_SHA_CI
+  verdict_or_gate: STAGE_5_IMPLEMENTATION_GREEN_DOCUMENTATION_SHA_CI_REQUIRED
   blockers: []
   files_to_read_next:
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
     - dev-plans/FUNCTION_CAPABILITY_AUDIT_STATE.json
-    - audits/function-capability/FUNCTION_COVERAGE_MAP.md
-    - audits/reports/FUNCTION_CAPABILITY_STAGE4_AUDIT_ad468ae.md
-    - tests/run-node.js
+    - audits/function-capability/STAGE5_FAULT_INJECTION_MATRIX.md
+    - electric-app-backup-dispatch.js
+    - tests/app-backup-dispatch.test.js
+    - tests/service-worker.test.js
+    - tests/e2e/fault-injection-stage5.spec.js
     - .github/workflows/electrical-calculators.yml
-  next_role: IMPLEMENTER
-  next_action: First verify exact-head deterministic + Playwright CI on the Stage 4 administrative acceptance SHA. Then begin Stage 5 Negative / Fault Injection from that exact green SHA: malformed/partial imports and records, stale/missing IDs, unsupported/impossible calculations, failed mutation rollback, repeated actions, optional asset failures, stale caches, and browser-reproducible negative flows. Preserve explicit fail-closed/preserve/no-op contracts and create a separate exact-SHA Stage 5 audit branch before acceptance.
+  next_role: ORCHESTRATOR_THEN_INDEPENDENT_AUDITOR
+  next_action: Run exact-head deterministic + Playwright CI on the fully synchronized Stage 5 documentation SHA. If green, freeze that exact SHA on a separate Stage 5 audit branch and independently verify every matrix fault contract, exact-SHA provenance, the transactional full-app restore corrective, browser harness integrity and zero open P0/P1. Do not unlock Stage 6 before independent A_ACCEPT and any required corrective/re-audit cycle.
   prohibited_actions:
     - mark_capability_pass_without_evidence
     - silently_change_requirement_to_match_runtime
-    - treat_coverage_percentage_as_correctness_proof
+    - treat_green_harness_as_proof_without_contract_review
+    - weaken_fault_expectation_to_match_runtime
     - skip_p0_p1_corrective_cycle
 ```

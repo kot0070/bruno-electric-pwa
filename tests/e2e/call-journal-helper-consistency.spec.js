@@ -1,5 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
+test.use({ locale:'uk-UA' });
+
 const DATA_KEY='bruno-electric-dispatch-journal-v2';
 const SETTINGS_KEY='bruno-electric-dispatch-settings-v2';
 const ALLOWED_CONSOLE_ERRORS=new Set(["The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."]);
@@ -12,6 +14,7 @@ function errorsFor(page){
   page.on('requestfailed',r=>{if(['script','serviceworker'].includes(r.resourceType()))rows.push(`required ${r.resourceType()} failed: ${r.url()} · ${(r.failure()||{}).errorText||''}`);});
   return rows;
 }
+function amount(re){return new RegExp(re.replace('.', '[,.]'))}
 
 test.beforeEach(async({page})=>{
   errorsFor(page);
@@ -38,10 +41,10 @@ function helperMetric(page){
   return page.locator('.dj-metric').filter({hasText:'Helpers gross'}).locator('.v');
 }
 
-test('JOURNAL-HELPER-HUMAN-01 helper row and summary stay numerically consistent through save edit and reload',async({page})=>{
+test('JOURNAL-HELPER-HUMAN-01 comma-decimal locale keeps helper row and summary numerically consistent through save edit and reload',async({page})=>{
   await openJournal(page);
 
-  // Reproduce the exact normal field setup visible in the mobile report: $20/hr x 8 h = $160/day.
+  // Reproduce the reported mobile setup in a comma-decimal locale: $20/hr x 8 h = $160/day.
   await page.locator('#dj-helper-add').click();
   await expect(page.locator('#djh-name')).toBeVisible();
   await page.locator('#djh-name').fill('Helper');
@@ -53,10 +56,15 @@ test('JOURNAL-HELPER-HUMAN-01 helper row and summary stay numerically consistent
   await page.locator('#djh-save').click();
 
   let row=page.locator('.dj-helper').filter({hasText:'Helper'}).first();
-  await expect(row).toContainText('$20.00/hr');
+  await expect(row).toContainText(amount('20.00'));
   await expect(row).toContainText('8 h');
-  await expect(row.locator('.dj-helper-cost strong')).toContainText('-$160.00');
-  await expect(helperMetric(page)).toHaveText('-$160.00');
+  await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('160.00'));
+  await expect(helperMetric(page)).toContainText(amount('160.00'));
+
+  // Give the MutationObserver several patch cycles; the old defect multiplied 160 by 100 each cycle.
+  await page.waitForTimeout(350);
+  await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('160.00'));
+  await expect(helperMetric(page)).toContainText(amount('160.00'));
 
   // Force another render through a normal edit/save without changing the economics.
   await row.locator('[data-hedit]').click();
@@ -64,16 +72,18 @@ test('JOURNAL-HELPER-HUMAN-01 helper row and summary stay numerically consistent
   await expect(page.locator('#djh-hours')).toHaveValue('8');
   await page.locator('#djh-save').click();
   row=page.locator('.dj-helper').filter({hasText:'Helper'}).first();
-  await expect(row.locator('.dj-helper-cost strong')).toContainText('-$160.00');
-  await expect(helperMetric(page)).toHaveText('-$160.00');
+  await page.waitForTimeout(250);
+  await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('160.00'));
+  await expect(helperMetric(page)).toContainText(amount('160.00'));
 
-  // A real refresh must preserve the same helper economics and must never flash/store an astronomical summary.
+  // A real refresh must preserve the same helper economics and never produce an astronomical summary.
   await page.reload({waitUntil:'load'});
   row=page.locator('.dj-helper').filter({hasText:'Helper'}).first();
-  await expect(row.locator('.dj-helper-cost strong')).toContainText('-$160.00');
-  await expect(helperMetric(page)).toHaveText('-$160.00');
+  await page.waitForTimeout(350);
+  await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('160.00'));
+  await expect(helperMetric(page)).toContainText(amount('160.00'));
   const visibleMetrics=await page.locator('.dj-metric .v').allTextContents();
-  expect(visibleMetrics.join(' ')).not.toMatch(/000 000 000 000|000,000,000,000|e\+\d+/i);
+  expect(visibleMetrics.join(' ')).not.toMatch(/000[\s\u00a0\u202f,.]*000[\s\u00a0\u202f,.]*000|e\+\d+/i);
 
   const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).helpers[0],DATA_KEY);
   const active=saved.revisions.find(r=>r.from<='2026-09-17'&&(!r.to||r.to>='2026-09-17'));

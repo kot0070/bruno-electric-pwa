@@ -1,7 +1,7 @@
 # Bruno Electric — Function / Capability Audit Master
 
 MASTER_STATUS: ACTIVE
-CURRENT_STAGE: STAGE_7_CROSS_MODULE_REGRESSION_MATRIX
+CURRENT_STAGE: STAGE_8_RESPONSIVE_PWA_BROWSER_AUDIT
 EXECUTION_MODE: STRICT_SEQUENTIAL
 IMPLEMENTATION_BRANCH: main
 AUDIT_BRANCH_POLICY: separate exact-SHA audit branches
@@ -100,7 +100,7 @@ Accepted evidence:
 - initial audit branch: `audit/function-capability-stage0-31a303d`;
 - finding `FCA-S0-P1-001`: per-capability governing source traceability missing;
 - corrective production SHA: `846e8cd55aaa7a1fbeb28536dab008f21c8cc6b4`;
-- exact-head deterministic CI: Electrical Calculator Tests run #532 / id `35159627641`, SUCCESS;
+- exact-head deterministic CI: Electrical Calculator Tests #532 / id `35159627641`, SUCCESS;
 - independent re-audit branch: `audit/function-capability-stage0-reaudit-846e8cd`;
 - re-audit verdict: `A_ACCEPT`, P0=0, P1=0;
 - Browser E2E baseline: `ABSENT`, intentionally to be implemented at Stage 3, never treated as capability PASS evidence.
@@ -115,19 +115,14 @@ Map current UI controls/routes -> handlers -> runtime -> storage/services; ident
 
 Accepted Stage 1 evidence:
 - runtime inventory/registry expansion exact SHA: `138b3de84f158d57ec0046d6dbed80049c1ba299`;
-- exact-head CI at inventory SHA: run #536 / id `35160109516`, SUCCESS;
-- initial audit branch: `audit/function-capability-stage1-138b3de`;
-- initial audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE1_AUDIT_138b3de.md`;
-- initial verdict: `A_REJECT_CORRECTIVE_REQUIRED`, P0=0, P1=1;
-- `FCA-S1-P1-001`: full app backup omitted current visible Dispatch Journal v3 standalone data/settings;
-- corrective code SHA: `7b39a8fb55be5a525cf157124fcb14e42903c758`;
-- corrective CI: run #543 / id `35163156620`, SUCCESS, 770/770 tests;
-- independent re-audit exact SHA: `c04a1c6807ab40e142eea25d8fe40405ff139b86`;
-- re-audit CI: run #545 / id `35163241400`, SUCCESS;
-- re-audit branch: `audit/function-capability-stage1-reaudit-c04a1c6`;
-- re-audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE1_REAUDIT_c04a1c6.md`;
-- re-audit verdict: `A_ACCEPT`, P0=0, P1=0;
-- `FCA-S1-P1-001`: `VERIFIED_CLOSED`;
+- exact-head CI at inventory SHA: #536 / id `35160109516`, SUCCESS;
+- initial audit branch/report: `audit/function-capability-stage1-138b3de` / `audits/reports/FUNCTION_CAPABILITY_STAGE1_AUDIT_138b3de.md`;
+- initial verdict `A_REJECT_CORRECTIVE_REQUIRED`, P0=0, P1=1;
+- `FCA-S1-P1-001`: full app backup omitted current visible Dispatch Journal standalone data/settings;
+- corrective SHA `7b39a8fb55be5a525cf157124fcb14e42903c758`, CI #543 / id `35163156620`, 770/770;
+- independent re-audit SHA `c04a1c6807ab40e142eea25d8fe40405ff139b86`, CI #545 / id `35163241400`;
+- re-audit branch/report: `audit/function-capability-stage1-reaudit-c04a1c6` / `audits/reports/FUNCTION_CAPABILITY_STAGE1_REAUDIT_c04a1c6.md`;
+- verdict `A_ACCEPT`, P0=0, P1=0; `FCA-S1-P1-001` VERIFIED_CLOSED;
 - `FCA-S1-P2-001`: dual Dispatch persistence models retained as a later architectural classification item, not a Stage 1 blocker.
 
 Capability status boundary: Stage 1 acceptance does not mark high-risk user-facing capabilities PASS; browser proof remains mandatory later.
@@ -141,30 +136,19 @@ STATUS: DONE_ACCEPTED
 For every capability compare `PLAN/SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT`. Classify exact/different-valid/partial/missing/unreachable/undocumented/obsolete. Auditor does not fix production. Freeze findings with exact SHA.
 
 Accepted Stage 2 evidence:
-- Stage 2 entry exact SHA: `16f725d56f034d55a6ae2e5e46acf67a08f95d05`;
-- entry exact-head CI: run #547 / id `35163361606`, SUCCESS;
-- initial audit branch: `audit/function-capability-stage2-16f725d`;
-- initial audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE2_AUDIT_16f725d.md`;
-- initial verdict: `A_REJECT_CORRECTIVE_REQUIRED`, P0=0, P1=1;
-- `FCA-S2-P1-001`: Stage 1 registry/runtime-map evidence was stale after the accepted Dispatch backup corrective;
-- corrective evidence SHA: `b246300e215dc1241434aef9c341e7a12397c29e`;
-- corrective exact-head CI: run #549 / id `35163662864`, SUCCESS;
-- corrective re-audit branch: `audit/function-capability-stage2-reaudit-b246300`;
-- corrective re-audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE2_CORRECTIVE_REAUDIT_b246300.md`;
-- corrective verdict: `A_ACCEPT_CORRECTIVE`; `FCA-S2-P1-001` -> `VERIFIED_CLOSED`;
-- full exact-SHA matrix branch: `audit/function-capability-stage2-matrix-b246300`;
-- full matrix: `audits/function-capability/REQUIREMENT_RUNTIME_GAP_MATRIX.md`;
-- final audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE2_AUDIT_b246300.md`;
-- final verdict: `A_ACCEPT`, P0=0, P1=0;
-- all registered Capability IDs classified across PLAN/SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT;
-- no MISSING registered current capability identified; no source/runtime-proven UNREACHABLE registered current capability identified;
-- no user-facing capability PASS was granted by Stage 2.
+- entry SHA `16f725d56f034d55a6ae2e5e46acf67a08f95d05`, CI #547 / id `35163361606`, SUCCESS;
+- initial audit `A_REJECT_CORRECTIVE_REQUIRED`, P0=0, P1=1; `FCA-S2-P1-001` was stale registry/runtime-map evidence after Dispatch backup corrective;
+- corrective SHA `b246300e215dc1241434aef9c341e7a12397c29e`, CI #549 / id `35163662864`, SUCCESS;
+- corrective re-audit branch/report: `audit/function-capability-stage2-reaudit-b246300` / `audits/reports/FUNCTION_CAPABILITY_STAGE2_CORRECTIVE_REAUDIT_b246300.md`, `A_ACCEPT_CORRECTIVE`;
+- full matrix branch `audit/function-capability-stage2-matrix-b246300`, matrix `audits/function-capability/REQUIREMENT_RUNTIME_GAP_MATRIX.md`;
+- final report `audits/reports/FUNCTION_CAPABILITY_STAGE2_AUDIT_b246300.md`, verdict `A_ACCEPT`, P0=0, P1=0;
+- all registered Capability IDs classified across PLAN/SPEC -> UI -> RUNTIME -> TEST -> STORAGE/SIDE EFFECT -> RESULT.
 
 Explicit non-blocking P2 carry:
-- `FCA-S2-P2-001`: visible Journal v3 standalone persistence coexists with legacy Job-scoped `state.dispatch`; long-term persistence/isolation/migration contract remains to be normalized;
-- `FCA-S2-P2-002`: `CAP-ET-016` registry metadata under-classifies an Electrical Tasks Stage 6 requirement already present in the accepted master;
+- `FCA-S2-P2-001`: visible Journal standalone persistence coexists with legacy Job-scoped `state.dispatch`;
+- `FCA-S2-P2-002`: `CAP-ET-016` registry metadata under-classifies an accepted Electrical Tasks requirement;
 - `FCA-S2-P2-003`: several reachable secondary product surfaces lack independent current PLAN/SPEC granularity;
-- `FCA-S2-P2-004`: Electrical Tasks Stage 11 v67 is historical accepted evidence; current Function Capability runtime is v68 after the later Dispatch backup corrective.
+- `FCA-S2-P2-004`: prior Electrical Tasks plan evidence is historical relative to later runtime changes.
 
 Gate: ACCEPTED.
 
@@ -172,41 +156,18 @@ Gate: ACCEPTED.
 
 # STAGE 3 — Executable Core Workflows + Playwright Foundation
 STATUS: DONE_ACCEPTED
-Implement Playwright infrastructure and mandatory journeys. Retain deterministic integration tests. Minimum journeys include Job/materials isolation, Residential, Electrical Tasks, advanced templates, Task Solver, Quote/Approved Quote/Invoice, Import/Export and reload resilience. Binding browser policy requires the full mandatory set `E2E-01` through `E2E-12` to be represented. CI must require deterministic suite GREEN AND Playwright GREEN against the same exact SHA.
-
-Stage 3 implementation requirements:
-- root Playwright project configuration;
-- deterministic local static server serving the repository application without external application credentials;
-- Chromium mandatory in CI;
-- page errors / uncaught browser errors / fatal required asset-load failures fail critical journeys;
-- isolated browser storage by default with explicit persistence/reload tests where required;
-- desktop, phone and tablet viewport projects/coverage as required by journey semantics;
-- trace, screenshots and report retained on failure where CI supports artifacts;
-- exact checkout SHA must equal the SHA reported/tested by the workflow;
-- existing deterministic Node suite remains a required same-SHA gate;
-- browser tests must drive the real rendered UI for user-facing actions, not replace UI proof with direct module calls.
+Implement Playwright infrastructure and mandatory journeys. Retain deterministic integration tests. CI requires deterministic GREEN and Playwright GREEN against the same exact SHA.
 
 Accepted Stage 3 evidence:
-- implemented/traceability exact SHA: `a86f38937d82399b1d37cfe9ca49405b0633d1be`;
-- exact-head CI: Electrical Calculator Tests run #585 / id `35225679044`, SUCCESS;
-- deterministic suite at implementation SHA: 787/787 passed;
-- Playwright at implementation SHA: 66 scheduled project/test entries, 28 passed, 38 explicit viewport-contract skips, 0 failed;
-- configured Chromium viewport widths: desktop 1440 px, phone 390 px, tablet 820 px;
-- mandatory `E2E-01` through `E2E-12` represented through rendered UI journeys;
-- additional `E2E-EVSE-01` professional EVSE/Tesla sizing/formulas/charge-time/BOM journey passed on desktop, phone and tablet;
-- initial independent audit branch: `audit/function-capability-stage3-a86f389`;
-- initial audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE3_AUDIT_a86f389.md`;
-- initial verdict: `A_REJECT_CORRECTIVE_REQUIRED`, P0=0, P1=1;
-- `FCA-S3-P1-001`: authoritative audit state still claimed browser infrastructure was to be implemented;
-- corrective production SHA: `2778550057a785802b869e4b0d411215c689d239`;
-- corrective exact-head CI: run #586 / id `35226418000`, SUCCESS;
-- corrective deterministic suite: 787/787 passed;
-- corrective Playwright: 66 scheduled project/test entries, 28 passed, 38 explicit viewport-contract skips, 0 failed;
-- independent re-audit branch: `audit/function-capability-stage3-reaudit-2778550`;
-- re-audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE3_REAUDIT_2778550.md`;
-- re-audit verdict: `A_ACCEPT`, P0=0, P1=0;
-- `FCA-S3-P1-001`: `VERIFIED_CLOSED`;
-- Stage 3 acceptance certifies the Playwright foundation and mandatory core-journey representation; it does not bypass later function-level, negative, UI-wiring, cross-module, responsive/PWA, corrective or final-certification stages.
+- implementation SHA `a86f38937d82399b1d37cfe9ca49405b0633d1be`;
+- exact-head CI #585 / id `35225679044`, SUCCESS;
+- deterministic `787/787`; Playwright `66 scheduled / 28 passed / 38 explicit skips / 0 failed`;
+- Chromium viewports desktop 1440, phone 390, tablet 820;
+- mandatory `E2E-01` through `E2E-12` represented through rendered UI;
+- initial audit found `FCA-S3-P1-001` authoritative state stale;
+- corrective SHA `2778550057a785802b869e4b0d411215c689d239`, CI #586 / id `35226418000`, SUCCESS;
+- re-audit branch/report: `audit/function-capability-stage3-reaudit-2778550` / `audits/reports/FUNCTION_CAPABILITY_STAGE3_REAUDIT_2778550.md`;
+- verdict `A_ACCEPT`, P0=0, P1=0; finding VERIFIED_CLOSED.
 
 Gate: ACCEPTED.
 
@@ -217,25 +178,13 @@ STATUS: DONE_ACCEPTED
 Inventory exported/public high-value functions: directly tested, integration-tested, trivial plumbing, dead/unreachable, untested high-risk. Add targeted branch/boundary/invalid/rollback/stale-ID/blank-zero/unsupported tests. Coverage metrics may locate gaps but never prove correctness.
 
 Accepted Stage 4 evidence:
-- coverage map: `audits/function-capability/FUNCTION_COVERAGE_MAP.md`;
-- implementation/test evidence SHA: `efb02bf1f867787e5bf7251d9045be2931eeb6d3`;
-- implementation exact-head CI: Electrical Calculator Tests run #606 / id `35243084444`, SUCCESS;
-- deterministic suite: `800/800 passed`;
-- Playwright: `87 scheduled / 35 passed / 52 explicit viewport-contract skips / 0 failed`;
-- final pre-audit authoritative SHA: `ad468ae53e32cd0d9515c02a3ea1b912ebe65a6f`;
-- exact-head CI at audited SHA: Electrical Calculator Tests run #608 / id `35243527176`, SUCCESS;
-- exact SHA provenance verified: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == ad468ae53e32cd0d9515c02a3ea1b912ebe65a6f`;
-- deterministic suite at audited SHA: `800/800 passed`;
-- Playwright at audited SHA: `87 scheduled / 35 passed / 52 explicit viewport-contract skips / 0 failed`;
-- independent audit branch: `audit/function-capability-stage4-ad468ae`;
-- independent audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE4_AUDIT_ad468ae.md`;
-- independent audit verdict: `A_ACCEPT`, P0=0, P1=0;
-- final administrative acceptance SHA: `eaf0f4d096d0b207cc27f17675e384e6d6a4099b`;
-- final acceptance exact-head CI: Electrical Calculator Tests #611 / id `35244328100`, SUCCESS, `800/800` deterministic and `87 scheduled / 35 passed / 52 explicit skips / 0 failed` Playwright;
-- acceptance validation branch: `audit/function-capability-stage4-acceptance-eaf0f4d`;
-- acceptance validation report: `audits/reports/FUNCTION_CAPABILITY_STAGE4_ACCEPTANCE_VALIDATION_eaf0f4d.md`, result `VALIDATED`;
-- targeted closure includes BOM source isolation, calculator blank-vs-zero boundaries, Conduit/Box Fill rendered validation, Project Calculator residential/commercial routing, and full-app real-UI export/import/reload restoration;
-- no known `UNTESTED_HIGH_RISK` exported business/state API remains in the Stage 4 map.
+- coverage map `audits/function-capability/FUNCTION_COVERAGE_MAP.md`;
+- implementation/test SHA `efb02bf1f867787e5bf7251d9045be2931eeb6d3`, CI #606 / id `35243084444`, SUCCESS, `800/800`, Playwright `87/35/52/0`;
+- audited SHA `ad468ae53e32cd0d9515c02a3ea1b912ebe65a6f`, CI #608 / id `35243527176`, exact provenance green;
+- independent branch/report `audit/function-capability-stage4-ad468ae` / `audits/reports/FUNCTION_CAPABILITY_STAGE4_AUDIT_ad468ae.md`, `A_ACCEPT`, P0=0, P1=0;
+- final administrative acceptance SHA `eaf0f4d096d0b207cc27f17675e384e6d6a4099b`, CI #611 / id `35244328100`, SUCCESS, `800/800`, Playwright `87/35/52/0`;
+- acceptance validation `audit/function-capability-stage4-acceptance-eaf0f4d` / `audits/reports/FUNCTION_CAPABILITY_STAGE4_ACCEPTANCE_VALIDATION_eaf0f4d.md`, `VALIDATED`;
+- no known `UNTESTED_HIGH_RISK` exported business/state API remains in Stage 4 map.
 
 Gate: ACCEPTED.
 
@@ -246,21 +195,17 @@ STATUS: DONE_ACCEPTED
 Test malformed JSON/partial records, stale/missing IDs, unsupported calculations, impossible raceway/configurations, failed Apply/Update rollback, incomplete imports, repeated actions, optional asset failures, stale caches and browser-reproducible negative flows. Expected fail-closed/preserve/no-op behavior must be explicit.
 
 Accepted Stage 5 evidence:
-- entry baseline: Stage 4 administrative acceptance SHA `eaf0f4d096d0b207cc27f17675e384e6d6a4099b`, exact-head CI #611 SUCCESS and independent acceptance validation complete;
-- fault matrix: `audits/function-capability/STAGE5_FAULT_INJECTION_MATRIX.md`;
+- entry basis Stage 4 acceptance SHA `eaf0f4d096d0b207cc27f17675e384e6d6a4099b`;
+- fault matrix `audits/function-capability/STAGE5_FAULT_INJECTION_MATRIX.md`;
 - full-app restore requires a valid saved Job, validates optional blocks before mutation and rolls back prior local-storage writes on mid-restore failure;
 - locale-formatted Call Journal helper metrics use numeric summary state and do not reparse localized currency;
 - customer-facing calculator, Call Journal and fixed-price invoice documents are preview-before-output;
 - missing required company identity is visible in Journal invoice preview and blocks final customer PDF;
 - current-shell bootstrap is protected against visible legacy-header flash; dark disabled/readonly controls are covered across supported viewports;
-- synchronized exact production SHA: `2f0e7083353008a6bee4d0e294b404f71106331a`;
-- exact-head CI: Electrical Calculator Tests #709 / run id `35283187090`, SUCCESS;
-- exact provenance: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == 2f0e7083353008a6bee4d0e294b404f71106331a`;
-- deterministic: `818/818 passed`;
-- Playwright: `168 scheduled / 88 passed / 80 explicit viewport-contract skips / 0 failed`;
-- independent audit branch: `audit/function-capability-stage5-2f0e708`;
-- independent report: `audits/reports/FUNCTION_CAPABILITY_STAGE5_AUDIT_2f0e708.md`;
-- verdict: `A_ACCEPT`, P0=0, P1=0.
+- synchronized exact production SHA `2f0e7083353008a6bee4d0e294b404f71106331a`;
+- exact-head CI #709 / id `35283187090`, SUCCESS, exact provenance green;
+- deterministic `818/818`; Playwright `168 scheduled / 88 passed / 80 explicit skips / 0 failed`;
+- independent audit `audit/function-capability-stage5-2f0e708` / `audits/reports/FUNCTION_CAPABILITY_STAGE5_AUDIT_2f0e708.md`, `A_ACCEPT`, P0=0, P1=0.
 
 Gate: ACCEPTED.
 
@@ -271,16 +216,12 @@ STATUS: DONE_ACCEPTED
 For every actionable control verify reachability, correct handler, correct domain action, disabled/hidden states, no handler override, truthful feedback, keyboard/touch where applicable, no mobile navigation obstruction. Real Browser E2E evidence is required for materially user-facing actions.
 
 Accepted Stage 6 evidence:
-- entry basis: Stage 5 `A_ACCEPT` at exact synchronized SHA `2f0e7083353008a6bee4d0e294b404f71106331a`, P0=0, P1=0;
-- action matrix: `audits/function-capability/STAGE6_UI_ACTION_WIRING_MATRIX.md`;
-- accepted production SHA: `485b3efd448f6757bdc3283f8ad3a34923c9bf10`;
-- exact-head CI: Electrical Calculator Tests #714 / run id `35284021486`, SUCCESS;
-- exact provenance: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == 485b3efd448f6757bdc3283f8ad3a34923c9bf10`;
-- deterministic: `822/822 passed`;
-- Playwright: `168 scheduled / 88 passed / 80 explicit viewport-contract skips / 0 failed`;
-- independent audit branch: `audit/function-capability-stage6-485b3ef`;
-- independent audit report: `audits/reports/FUNCTION_CAPABILITY_STAGE6_AUDIT_485b3ef.md`;
-- independent verdict: `A_ACCEPT`, P0=0, P1=0;
+- entry Stage 5 `A_ACCEPT` at `2f0e7083353008a6bee4d0e294b404f71106331a`;
+- action matrix `audits/function-capability/STAGE6_UI_ACTION_WIRING_MATRIX.md`;
+- accepted SHA `485b3efd448f6757bdc3283f8ad3a34923c9bf10`;
+- exact-head CI #714 / id `35284021486`, SUCCESS, exact provenance green;
+- deterministic `822/822`; Playwright `168 scheduled / 88 passed / 80 explicit skips / 0 failed`;
+- independent audit `audit/function-capability-stage6-485b3ef` / `audits/reports/FUNCTION_CAPABILITY_STAGE6_AUDIT_485b3ef.md`, `A_ACCEPT`, P0=0, P1=0;
 - deterministic wiring inventory found no duplicate/orphan base actionable ID; rendered-browser evidence remained authoritative for materially user-facing actions.
 
 Gate: ACCEPTED.
@@ -288,20 +229,48 @@ Gate: ACCEPTED.
 ---
 
 # STAGE 7 — Cross-Module Regression Matrix
-STATUS: ACTIVE
-Required pairs include Catalog<->Job Materials, Job Materials<->Quote, Quote<->Approved Quote, Approved Quote<->Invoice, Electrical Tasks<->Job Materials, Residential<->Job Materials, Custom Materials<->pricing, Job switching<->all scoped archives, Import/Export<->history/provenance, PWA update<->stored Job data. Record PASS/PARTIAL/FAIL/UNTESTED with evidence.
+STATUS: DONE_ACCEPTED
+Required pairs include Catalog<->Job Materials, Job Materials<->Quote, Quote<->Approved Quote, Approved Quote<->Invoice, Electrical Tasks<->Job Materials, Residential<->Job Materials, Custom Materials<->pricing, Job switching<->all scoped archives, Import/Export<->history/provenance, PWA update<->stored Job data. Existing tests may be reused only where they prove the interaction boundary; missing cross-module edges require new deterministic or Playwright evidence.
 
-Stage 7 entry basis: Stage 6 `A_ACCEPT` at exact SHA `485b3efd448f6757bdc3283f8ad3a34923c9bf10`, P0=0, P1=0.
+Accepted Stage 7 evidence:
+- entry basis Stage 6 `A_ACCEPT` at `485b3efd448f6757bdc3283f8ad3a34923c9bf10`, P0=0, P1=0;
+- matrix `audits/function-capability/STAGE7_CROSS_MODULE_REGRESSION_MATRIX.md`;
+- new PWA lifecycle browser journey `STAGE7-XMOD-01` creates a valid Approved Quote through the live Quote UI, captures the fully normalized persisted Job, deletes owned Bruno caches, unregisters service workers, reloads/re-registers, and proves the complete parsed Job plus Electrical Tasks/material/archive/Residential/Quote provenance survives unchanged;
+- implementation SHA `e7ac30404bf17698507ad6ea17b14f3a6fcafcf6`;
+- implementation exact-head CI #722 / id `35286879122`, SUCCESS, `826/826` deterministic, Playwright `171 scheduled / 89 passed / 82 explicit viewport-contract skips / 0 failed`;
+- independent audit branch/report `audit/function-capability-stage7-e7ac304` / `audits/function-capability/FUNCTION_CAPABILITY_STAGE7_AUDIT_e7ac304.md`, verdict `A_ACCEPT`, P0=0, P1=0;
+- evidence synchronization SHA `dbaeb3459b9e0da0fd7ff9b7ee5527abf7d63a88`;
+- synchronization exact-head CI #723 / id `35287548626`, SUCCESS;
+- exact provenance `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == dbaeb3459b9e0da0fd7ff9b7ee5527abf7d63a88`;
+- synchronization deterministic `826/826`; Playwright `171 scheduled / 89 passed / 82 explicit viewport-contract skips / 0 failed`;
+- acceptance validation branch/report `audit/function-capability-stage7-acceptance-dbaeb34` / `audits/function-capability/FUNCTION_CAPABILITY_STAGE7_ACCEPTANCE_VALIDATION_dbaeb34.md`, result `VALIDATED`;
+- no P0/P1 remains open.
 
-Required deliverable: `audits/function-capability/STAGE7_CROSS_MODULE_REGRESSION_MATRIX.md`. Existing tests may be reused only where they prove the interaction boundary; missing cross-module edges require new deterministic or Playwright evidence. Production corrections are made on `main`, followed by exact-head CI and a separate exact-SHA independent audit branch.
-
-Gate: ACTIVE — discover pairwise interaction gaps, add executable evidence, then exact-head CI.
+Gate: ACCEPTED.
 
 ---
 
 # STAGE 8 — Responsive / PWA Browser Audit
-STATUS: LOCKED
+STATUS: ACTIVE
+Entry basis: Stage 7 `A_ACCEPT`, exact-head synchronization CI #723 green, independent audit and acceptance validation complete, P0=0/P1=0.
+
 Run Playwright phone/tablet/desktop profiles. Verify critical actions reachable, no critical horizontal overflow, bottom navigation not covering required controls, long forms/tables usable. Run service-worker/offline/upgrade scenarios where deterministic. Browser limitations are recorded, not guessed away.
+
+Required Stage 8 contract:
+- viewports: phone 390 px, tablet 820 px, desktop 1440 px, while honoring master ranges 360–430 / 768–1024 / >=1200;
+- every critical workflow entry and required terminal action remains visible/reachable without hidden overlap;
+- no critical page/workspace produces document-level horizontal overflow that makes required controls/results unreachable;
+- fixed/sticky navigation must not cover the focused field, primary action, result, confirmation, modal action or final table rows;
+- long forms and wide tables must remain operable by intentional local scrolling/wrapping rather than accidental page clipping;
+- PWA offline shell must load deterministically after a successful install;
+- service-worker update/cache replacement may delete only owned stale Bruno caches and must preserve persisted user Job/application state;
+- required load failures/page errors/uncaught exceptions fail the journey;
+- viewport-specific skips require an explicit contract reason and may not hide a responsive defect;
+- high-risk responsive/PWA acceptance requires exact-head deterministic + Playwright CI and separate exact-SHA independent audit.
+
+Required deliverable: `audits/function-capability/STAGE8_RESPONSIVE_PWA_MATRIX.md`.
+
+Gate: ACTIVE — discover responsive/PWA gaps, define explicit invariants, add executable browser evidence, correct every P0/P1, then exact-head CI and independent audit.
 
 ---
 
@@ -338,10 +307,10 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 ## Handoff
 ```yaml
 handoff:
-  role_completed: STAGE_6_INDEPENDENT_AUDITOR
+  role_completed: STAGE_7_ACCEPTANCE_VALIDATOR
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
   next_role: IMPLEMENTER
-  next_stage: STAGE_7_CROSS_MODULE_REGRESSION_MATRIX
+  next_stage: STAGE_8_RESPONSIVE_PWA_BROWSER_AUDIT
   branch_policy: separate_exact_sha_audit_branch_after_green
   do_not_advance_without_accept: true
 ```

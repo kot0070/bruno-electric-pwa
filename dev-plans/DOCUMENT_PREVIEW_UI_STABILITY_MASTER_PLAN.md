@@ -1,6 +1,6 @@
 # Bruno Electric — Document Preview & UI Stability Master Plan
 
-STATUS: ACTIVE
+STATUS: IMPLEMENTATION_COMPLETE
 OWNER: Autonomous implementation on `main`
 DATE: 2026-09-17
 
@@ -112,7 +112,7 @@ Required journeys:
 - Independent Stage 5 audit remains required before Stage 6 unlock.
 
 ## Acceptance criteria
-Master plan is complete only when all are true:
+Master plan implementation is complete only when all are true:
 - Call card has one understandable invoice entry point: `Preview invoice`.
 - Customer invoice preview visually represents the outgoing document and exposes edit/settings/download/print.
 - No direct customer PDF download occurs before preview.
@@ -123,13 +123,19 @@ Master plan is complete only when all are true:
 - Human flows pass on desktop/phone/tablet where applicable.
 - Deterministic suite green.
 - Full exact-head Playwright suite green with 0 failures.
-- Final current-SHA evidence is recorded in this plan and Function/Capability audit documents.
+- Final implementation evidence is recorded here and then synchronized into Function/Capability audit documents.
 
 ## Completion evidence
-To be filled only after implementation and exact-head validation:
-- FINAL_SHA: PENDING
-- CI_RUN: PENDING
-- DETERMINISTIC: PENDING
-- PLAYWRIGHT: PENDING
-- OPEN_P0: PENDING
-- OPEN_P1: PENDING
+Implementation was validated on exact production SHA `f1b5ab8b69a3a509037520d077a28e2dee038528` before this documentation-only synchronization commit.
+- IMPLEMENTATION_SHA: `f1b5ab8b69a3a509037520d077a28e2dee038528`
+- CI_RUN: Electrical Calculator Tests #703 / run id `35282365016` / SUCCESS
+- EXACT_SHA_PROVENANCE: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == f1b5ab8b69a3a509037520d077a28e2dee038528`
+- DETERMINISTIC: `818/818 passed`
+- PLAYWRIGHT: `168 scheduled / 88 passed / 80 explicit viewport-contract skips / 0 failed`
+- VIEWPORTS: desktop 1440 / phone 390 / tablet 820
+- OPEN_P0: `0`
+- OPEN_P1: `0`
+- PREVIEW_EVIDENCE: `HUMAN-CALC-04`, `HUMAN-CALC-09`, `HUMAN-CALC-11`, `JOURNAL-PREVIEW-01`, `JOURNAL-HUMAN-01`, `E2E-08`
+- UI_STABILITY_EVIDENCE: `UI-STABILITY-01`, `UI-STABILITY-02`
+
+The next gate is documentation synchronization plus a new exact-head CI on the resulting documentation SHA. That administrative SHA is not treated as validated merely because the implementation SHA above was green.

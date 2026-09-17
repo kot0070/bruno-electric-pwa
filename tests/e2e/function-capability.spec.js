@@ -2,6 +2,9 @@ const { test, expect } = require('@playwright/test');
 
 const JOB_KEY = 'bruno-electric-v1';
 const criticalErrorRegistry = new WeakMap();
+// Chromium reports this exact diagnostic because frame-ancestors is ineffective in a meta CSP.
+// It is the only documented console-error exception; every other console error remains fatal.
+const ALLOWED_CONSOLE_ERRORS = new Set(["The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element."]);
 function baseJob(name='Browser Audit Job') {
   return {
     id:'e2e-'+String(name).toLowerCase().replace(/[^a-z0-9]+/g,'-'),
@@ -24,12 +27,15 @@ function criticalErrors(page) {
   errors=[];
   criticalErrorRegistry.set(page,errors);
   page.on('pageerror',e=>errors.push('pageerror: '+e.message));
-  page.on('response',r=>{ if(r.request().resourceType()==='script' && r.status()>=400) errors.push(`script ${r.status()}: ${r.url()}`); });
+  page.on('console',m=>{if(m.type()==='error'){const text=m.text();if(!ALLOWED_CONSOLE_ERRORS.has(text))errors.push('console.error: '+text);}});
+  page.on('response',r=>{if(['script','serviceworker'].includes(r.request().resourceType())&&r.status()>=400)errors.push(`required ${r.request().resourceType()} ${r.status()}: ${r.url()}`);});
+  page.on('requestfailed',r=>{if(['script','serviceworker'].includes(r.resourceType()))errors.push(`required ${r.resourceType()} failed: ${r.url()} · ${(r.failure()||{}).errorText||''}`);});
   return errors;
 }
 test.beforeEach(async ({page})=>{ criticalErrors(page); });
-test.afterEach(async ({page})=>{
+test.afterEach(async ({page},testInfo)=>{
   const errors=criticalErrors(page);
+  if(errors.length)await testInfo.attach('runtime-errors.txt',{body:Buffer.from(errors.join('\n')),contentType:'text/plain'});
   expect(errors, errors.join('\n')).toEqual([]);
 });
 async function openStable(page, path) {

@@ -52,7 +52,7 @@ test('HUMAN-CALC-07 core calculators fail, recover and recalculate through visib
   await page.locator('#run-amp').click();
   await expect(page.locator('#out-amp')).toContainText('PASS');
 
-  // Voltage drop is a design-review result rather than a code FAIL. Verify a poor run is flagged REVIEW with a high percentage, then improve the design and confirm the much smaller result.
+  // Voltage drop is a design-review result when above the target. Verify a poor run is REVIEW, then improve the design below target and recover to PASS.
   await openTool(page,'vd');
   await page.locator('#v-v').fill('120');
   await page.locator('#v-ph').selectOption('1');
@@ -69,7 +69,7 @@ test('HUMAN-CALC-07 core calculators fail, recover and recalculate through visib
   await page.locator('#v-d').fill('50');
   await page.locator('#v-i').fill('10');
   await page.locator('#run-vd').click();
-  await expect(page.locator('#out-vd')).toContainText('REVIEW');
+  await expect(page.locator('#out-vd')).toContainText('PASS');
   await expect(page.locator('#out-vd')).toContainText('0.41 %');
   await page.locator('#v-d').fill('');
   await page.locator('#run-vd').click();

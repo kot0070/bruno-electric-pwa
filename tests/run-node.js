@@ -77,4 +77,5 @@ require('./residential-catalog-bridge.test.js');
 require('./catalog-cost-semantics.test.js');
 require('./pricing-margins-semantics.test.js');
 require('./custom-materials.test.js');
+require('./ui-action-wiring.test.js');
 Promise.all(global.BRUNO_ASYNC_TESTS).then(function(){var r=global.BRUNO_TEST_RESULTS;if(!r){console.error('No test results produced');process.exit(2)}console.log('Bruno Electric deterministic tests: '+r.pass+'/'+r.total+' passed');if(r.fail){r.results.filter(function(x){return !x.ok}).forEach(function(x){console.error('FAIL — '+x.name+': '+x.error)});process.exit(1)}}).catch(function(err){console.error(err&&err.stack||err);process.exit(1)});

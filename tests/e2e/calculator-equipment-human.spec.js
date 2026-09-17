@@ -57,7 +57,7 @@ test('HUMAN-CALC-05 electrician operates every equipment and distribution calcul
   await page.locator('#evp-bom').click();
   await expect.poll(()=>page.evaluate(k=>{const j=JSON.parse(localStorage.getItem(k)||'{}');return (j.materialsUsed||[]).length+(j.materialsUnresolved||[]).length;},JOB_KEY)).toBeGreaterThan(0);
 
-  // HVAC: verify pass path, intentionally oversize the selected OCPD, see FAIL, then recover.
+  // HVAC: verify pass path, intentionally oversize the selected OCPD, require fail-closed input/scope rejection, then recover.
   await openTool(page,'hv3');
   await page.locator('#hv-run').click();
   await expect(page.locator('#hv-out')).toContainText('HVAC result');
@@ -65,10 +65,11 @@ test('HUMAN-CALC-05 electrician operates every equipment and distribution calcul
   await expect(page.locator('#hv-out')).toContainText('PASS');
   await page.locator('#hv-ocpd').fill('60');
   await page.locator('#hv-run').click();
-  await expect(page.locator('#hv-out')).toContainText('60 A / 50 A');
-  await expect(page.locator('#hv-out')).toContainText('FAIL');
+  await expect(page.locator('#hv-out')).toContainText('Input / scope error');
+  await expect(page.locator('#hv-out')).toContainText('Selected OCPD exceeds equipment MOCP');
   await page.locator('#hv-ocpd').fill('50');
   await page.locator('#hv-run').click();
+  await expect(page.locator('#hv-out')).toContainText('HVAC result');
   await expect(page.locator('#hv-out')).toContainText('PASS');
 
   // Motor: exercise device-type and overload-class changes, then confirm result remains coherent.

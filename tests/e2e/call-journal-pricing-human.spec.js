@@ -15,7 +15,11 @@ function errorsFor(page){
 
 test.beforeEach(async({page})=>{
   errorsFor(page);
-  await page.addInitScript(([d,s])=>{localStorage.removeItem(d);localStorage.removeItem(s);},[DATA_KEY,SETTINGS_KEY]);
+  await page.addInitScript(([d,s])=>{
+    const guard='__bruno_journal_pricing_test_reset__';
+    if(sessionStorage.getItem(guard)==='1')return;
+    localStorage.removeItem(d);localStorage.removeItem(s);sessionStorage.setItem(guard,'1');
+  },[DATA_KEY,SETTINGS_KEY]);
 });
 test.afterEach(async({page},testInfo)=>{
   const rows=errorsFor(page);

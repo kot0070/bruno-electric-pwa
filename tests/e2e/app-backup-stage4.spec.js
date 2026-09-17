@@ -97,7 +97,11 @@ test('STAGE4-APP-BACKUP-01 full app export/import round-trips all supported loca
   await expect(page.locator('#q-customer')).toHaveValue('Foreign Active State');
 
   page.on('dialog',d=>d.accept());
+  const reloadPromise=page.waitForEvent('framenavigated',frame=>frame===page.mainFrame());
   await page.locator('#btn-import-app').setInputFiles({name:download.suggestedFilename(),mimeType:'application/json',buffer});
+  await reloadPromise;
+  await page.waitForLoadState('domcontentloaded');
+  await expect(page.locator('#q-customer')).toHaveValue('Full Backup Original');
   await expect.poll(()=>page.evaluate(k=>JSON.parse(localStorage.getItem(k)).quote.customer,KEYS.job)).toBe('Full Backup Original');
   const restored=await page.evaluate(keys=>({
     job:JSON.parse(localStorage.getItem(keys.job)),profiles:JSON.parse(localStorage.getItem(keys.profiles)),prefs:JSON.parse(localStorage.getItem(keys.prefs)),catalogOpen:JSON.parse(localStorage.getItem(keys.catalogOpen)),dispatch:JSON.parse(localStorage.getItem(keys.dispatch)),dispatchSettings:JSON.parse(localStorage.getItem(keys.dispatchSettings))

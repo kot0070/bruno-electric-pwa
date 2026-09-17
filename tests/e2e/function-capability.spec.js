@@ -51,9 +51,12 @@ async function openStable(page,path) {
 }
 function desktopOnly(testInfo){return testInfo.project.name!=='chromium-desktop';}
 async function openTool(page,id){
-  const picker=page.locator('#be-tool-select');
-  if(await picker.isVisible())await picker.selectOption(id);
-  else {
+  const compact=await page.evaluate(()=>window.matchMedia('(max-width:1199.98px)').matches);
+  if(compact){
+    const picker=page.locator('#be-tool-select');
+    await expect(picker).toBeVisible();
+    await picker.selectOption(id);
+  }else{
     const button=page.locator(`#tool-nav [data-tool="${id}"]`);
     await expect(button).toBeVisible();
     await button.click();

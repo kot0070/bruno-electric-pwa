@@ -161,9 +161,9 @@
     const size = String(input.size || '12');
     const allowance = R.BOX_FILL[size];
     if (!allowance) throw new Error('Unsupported conductor gauge for box fill');
-    const insulated = integer(input.insulatedCount || 0, 'insulated conductor count', true);
-    const grounds = integer(input.groundCount || 0, 'ground count', true);
-    const yokes = integer(input.yokeCount || 0, 'device/yoke count', true);
+    const insulated = integer(input.insulatedCount == null ? 0 : input.insulatedCount, 'insulated conductor count', true);
+    const grounds = integer(input.groundCount == null ? 0 : input.groundCount, 'ground count', true);
+    const yokes = integer(input.yokeCount == null ? 0 : input.yokeCount, 'device/yoke count', true);
     if (grounds > 4) throw new Error('Phase 1 box fill supports up to 4 equipment grounding conductors. More than 4 requires a detailed NEC 314.16(B)(5) calculation.');
     const clamps = input.internalClamp ? 1 : 0;
     const conductorUnits = insulated;

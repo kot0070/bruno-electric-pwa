@@ -35,12 +35,14 @@ test('STAGE4-APP-BACKUP-01 full app export/import round-trips all supported loca
     dispatchSettings:{jurisdiction:'Austin, TX',ownerTaxPct:15}
   };
   await page.addInitScript(({keys,data})=>{
+    if(sessionStorage.getItem('__stage4_app_backup_seeded')==='1')return;
     localStorage.setItem(keys.job,JSON.stringify(data.job));
     localStorage.setItem(keys.profiles,JSON.stringify(data.profiles));
     localStorage.setItem(keys.prefs,JSON.stringify(data.prefs));
     localStorage.setItem(keys.catalogOpen,JSON.stringify(data.catalogOpen));
     localStorage.setItem(keys.dispatch,JSON.stringify(data.dispatch));
     localStorage.setItem(keys.dispatchSettings,JSON.stringify(data.dispatchSettings));
+    sessionStorage.setItem('__stage4_app_backup_seeded','1');
   },{keys:KEYS,data:original});
   await page.goto('/index.html',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#q-customer')).toHaveValue('Full Backup Original');

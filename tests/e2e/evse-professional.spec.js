@@ -6,7 +6,7 @@ async function seed(page){await page.addInitScript(([k,v])=>{localStorage.setIte
 function errors(page){const e=[];page.on('pageerror',x=>e.push('pageerror: '+x.message));page.on('console',m=>{if(m.type()==='error'&&!allowed.has(m.text()))e.push('console.error: '+m.text());});page.on('response',r=>{if(['script','serviceworker'].includes(r.request().resourceType())&&r.status()>=400)e.push(`required ${r.request().resourceType()} ${r.status()}: ${r.url()}`);});page.on('requestfailed',r=>{if(['script','serviceworker'].includes(r.resourceType()))e.push(`required ${r.resourceType()} failed: ${r.url()} · ${(r.failure()||{}).errorText||''}`);});return e;}
 async function openTool(page,id){const compact=await page.evaluate(()=>matchMedia('(max-width:1199.98px)').matches);if(compact){const p=page.locator('#be-tool-select');await expect(p).toBeVisible();await p.selectOption(id);}else{const b=page.locator(`#tool-nav [data-tool="${id}"]`);await expect(b).toBeVisible();await b.click();}await expect(page.locator(`#tool-${id}`)).toBeVisible();}
 
-test('CAP-ELC-007 professional EVSE Tesla sizing, formulas, charge-time and BOM',async({page},testInfo)=>{
+test('E2E-EVSE-01 · CAP-ELC-007 professional EVSE Tesla sizing, formulas, charge-time and BOM',async({page},testInfo)=>{
   const runtimeErrors=errors(page);await seed(page);page.on('dialog',d=>d.accept());
   await page.goto('/electrical-tools.html',{waitUntil:'load'});await openTool(page,'ev3');await expect(page.locator('#evp-profile')).toBeVisible();
   await page.locator('#evp-profile').selectOption('TESLA_48_60');await page.locator('#evp-terminal').selectOption('75');await page.locator('#evp-distance').fill('50');await page.locator('#evp-vehicle').selectOption('');await page.locator('#evp-run').click();

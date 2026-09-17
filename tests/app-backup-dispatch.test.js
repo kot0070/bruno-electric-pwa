@@ -3,7 +3,7 @@ var assert=require('assert');
 var api=require('../electric-app-backup-dispatch.js');
 var results=global.BRUNO_TEST_RESULTS||(global.BRUNO_TEST_RESULTS={pass:0,fail:0,total:0,results:[]});
 function test(name,fn){results.total++;try{fn();results.pass++;results.results.push({name:name,ok:true});}catch(e){results.fail++;results.results.push({name:name,ok:false,error:e&&e.message||String(e)});}}
-function storage(seed){var s=Object.assign({},seed||{});return{getItem:function(k){return Object.prototype.hasOwnProperty.call(s,k)?s[k]:null;},setItem:function(k,v){s[k]=String(v);},dump:function(){return s;}};}
+function storage(seed){var s=Object.assign({},seed||{});return{getItem:function(k){return Object.prototype.hasOwnProperty.call(s,k)?s[k]:null;},setItem:function(k,v){s[k]=String(v);},removeItem:function(k){delete s[k];},dump:function(){return s;}};}
 
 test('app backup includes current Dispatch Journal v3 data and settings',function(){
   var st=storage({
@@ -70,4 +70,39 @@ test('installed app payload wrapper restores Dispatch keys, preserves original r
   assert.deepStrictEqual(JSON.parse(st.dump()['bruno-electric-dispatch-journal-v2']).calls,[{id:'restored'}]);
   assert.strictEqual(JSON.parse(st.dump()['bruno-electric-dispatch-settings-v2']).jurisdiction,'Austin, TX');
   assert.deepStrictEqual(events,['bruno:dispatch-changed']);
+});
+
+test('Stage 5 incomplete full-app payload fails closed without changing current state',function(){
+  var originalJob=JSON.stringify({id:'current-job',quote:{customer:'Keep'}});
+  var originalProfiles=JSON.stringify({activeId:'keep-profile'});
+  var st=storage({'bruno-electric-v1':originalJob,'bruno-electric-profiles-v1':originalProfiles});
+  assert.throws(function(){api.restoreFullAppPayload({companies:{activeId:'foreign'}},st);},/saved Job is required/);
+  assert.strictEqual(st.dump()['bruno-electric-v1'],originalJob);
+  assert.strictEqual(st.dump()['bruno-electric-profiles-v1'],originalProfiles);
+});
+
+test('Stage 5 full-app restore rolls back all prior writes when storage fails mid-transaction',function(){
+  var seed={
+    'bruno-electric-v1':JSON.stringify({id:'current-job'}),
+    'bruno-electric-profiles-v1':JSON.stringify({activeId:'current-profile'}),
+    'bruno-electric-ui-prefs-v1':JSON.stringify({theme:'dark'}),
+    'bruno-electric-cat-open-v1':JSON.stringify({WIRE:true}),
+    'bruno-electric-dispatch-journal-v2':JSON.stringify({calls:[{id:'current-call'}]}),
+    'bruno-electric-dispatch-settings-v2':JSON.stringify({ownerTaxPct:10})
+  };
+  var base=storage(seed),failed=false;
+  var flaky={
+    getItem:base.getItem,
+    removeItem:base.removeItem,
+    setItem:function(k,v){if(k==='bruno-electric-ui-prefs-v1'&&!failed){failed=true;throw new Error('quota fault');}base.setItem(k,v);}
+  };
+  var payload={job:{id:'foreign-job'},companies:{activeId:'foreign-profile'},uiPrefs:{theme:'light'},catalogOpen:{WIRE:false},dispatchJournalV3:{data:{calls:[{id:'foreign-call'}]},settings:{ownerTaxPct:1}}};
+  assert.throws(function(){api.restoreFullAppPayload(payload,flaky);},/previous local state was preserved/);
+  assert.deepStrictEqual(base.dump(),seed);
+});
+
+test('Stage 5 invalid optional full-app block fails before any storage mutation',function(){
+  var original=JSON.stringify({id:'current-job'}),st=storage({'bruno-electric-v1':original});
+  assert.throws(function(){api.restoreFullAppPayload({job:{id:'foreign-job'},dispatchJournalV3:[]},st);},/Dispatch Journal block must be an object/);
+  assert.strictEqual(st.dump()['bruno-electric-v1'],original);
 });

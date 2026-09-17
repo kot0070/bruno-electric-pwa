@@ -95,7 +95,7 @@ test('JOURNAL-PRICING-HUMAN-01 user can switch a service call between hourly and
   await row.locator('[data-edit]').click();
   await expect(page.locator('#djc-pricing-mode')).toHaveValue('hourly');
   await expect(page.locator('#djc-hourly-rate')).toHaveValue('175');
-  await expect(page.locator('#djc-price')).toHaveValue('437.5');
+  await expect(page.locator('#djc-price')).toHaveValue('437.50');
 
   await page.locator('#djc-pricing-mode').selectOption('fixed');
   await expect(page.locator('#djc-hourly-rate-field')).toBeHidden();

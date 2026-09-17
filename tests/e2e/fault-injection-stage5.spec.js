@@ -17,8 +17,10 @@ async function seed(page){
   const currentJob=job('Stage 5 Current State');
   const profiles={version:1,activeId:'stage5-current',profiles:[{id:'stage5-current',name:'Current Company',legalName:'Current Company LLC'}]};
   await page.addInitScript(({jobKey,profilesKey,currentJob,profiles})=>{
+    if(sessionStorage.getItem('__stage5_fault_seeded')==='1')return;
     localStorage.setItem(jobKey,JSON.stringify(currentJob));
     localStorage.setItem(profilesKey,JSON.stringify(profiles));
+    sessionStorage.setItem('__stage5_fault_seeded','1');
   },{jobKey:JOB_KEY,profilesKey:PROFILES_KEY,currentJob,profiles});
   await page.goto('/index.html',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#q-customer')).toHaveValue('Stage 5 Current State');

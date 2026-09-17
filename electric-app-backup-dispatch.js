@@ -15,8 +15,9 @@
   function readJson(storage,key){
     try{var raw=storage&&storage.getItem?storage.getItem(key):null;return raw==null?null:JSON.parse(raw);}catch(e){return null;}
   }
+  function plainObject(value){return !!value&&typeof value==='object'&&!Array.isArray(value);}
   function cloneObject(value){
-    if(!value||typeof value!=='object'||Array.isArray(value))return {};
+    if(!plainObject(value))return {};
     var out={};Object.keys(value).forEach(function(k){out[k]=value[k];});return out;
   }
   function augmentPayload(payload,storage){
@@ -27,7 +28,7 @@
     return out;
   }
   function restorePayload(payload,storage){
-    if(!payload||typeof payload!=='object'||!payload.dispatchJournalV3||typeof payload.dispatchJournalV3!=='object')return false;
+    if(!plainObject(payload)||!plainObject(payload.dispatchJournalV3))return false;
     if(!storage||typeof storage.setItem!=='function')return false;
     var block=payload.dispatchJournalV3;
     if(Object.prototype.hasOwnProperty.call(block,'data')&&block.data!==null)storage.setItem(DATA_KEY,JSON.stringify(block.data));
@@ -60,7 +61,7 @@
   }
   function buildFullAppPayload(storage){
     var job=readJson(storage,JOB_KEY);
-    if(!job||typeof job!=='object'||Array.isArray(job))throw new Error('No saved Bruno Electric Job found');
+    if(!plainObject(job))throw new Error('No saved Bruno Electric Job found');
     return augmentPayload({
       job:job,
       companies:readJson(storage,PROFILES_KEY),
@@ -71,16 +72,46 @@
   function buildFullAppEnvelope(storage){
     return{brunoExportType:'app',brunoExportVersion:1,appVersion:'v1.9',exportedAt:new Date().toISOString(),payload:buildFullAppPayload(storage)};
   }
+  function validateOptionalObject(payload,key,label){
+    if(Object.prototype.hasOwnProperty.call(payload,key)&&payload[key]!==null&&!plainObject(payload[key]))throw new Error(label+' must be an object');
+  }
+  function atomicStorageWrite(storage,writes){
+    var before={};
+    writes.forEach(function(row){before[row.key]=storage.getItem&&storage.getItem(row.key);});
+    try{
+      writes.forEach(function(row){storage.setItem(row.key,row.value);});
+    }catch(err){
+      writes.forEach(function(row){
+        try{
+          if(before[row.key]==null&&typeof storage.removeItem==='function')storage.removeItem(row.key);
+          else if(before[row.key]!=null)storage.setItem(row.key,before[row.key]);
+        }catch(ignore){}
+      });
+      throw new Error('App backup restore failed; previous local state was preserved: '+(err&&err.message||String(err)));
+    }
+  }
   function restoreFullAppPayload(payload,storage){
-    if(!payload||typeof payload!=='object'||Array.isArray(payload))throw new Error('Expected app backup payload');
+    if(!plainObject(payload))throw new Error('Expected app backup payload');
     if(!storage||typeof storage.setItem!=='function')throw new Error('Local storage is unavailable');
     var job=payload.job||payload.state;
-    if(job&&typeof job==='object'&&!Array.isArray(job))storage.setItem(JOB_KEY,JSON.stringify(job));
-    if(payload.companies&&typeof payload.companies==='object'&&!Array.isArray(payload.companies))storage.setItem(PROFILES_KEY,JSON.stringify(payload.companies));
-    if(payload.uiPrefs&&typeof payload.uiPrefs==='object'&&!Array.isArray(payload.uiPrefs))storage.setItem(UI_PREFS_KEY,JSON.stringify(payload.uiPrefs));
-    if(payload.catalogOpen&&typeof payload.catalogOpen==='object'&&!Array.isArray(payload.catalogOpen))storage.setItem(CAT_OPEN_KEY,JSON.stringify(payload.catalogOpen));
-    var dispatchRestored=restorePayload(payload,storage);
-    return{jobRestored:!!job,companiesRestored:!!payload.companies,uiPrefsRestored:!!payload.uiPrefs,catalogOpenRestored:!!payload.catalogOpen,dispatchRestored:dispatchRestored};
+    if(!plainObject(job))throw new Error('App backup is incomplete: saved Job is required');
+    validateOptionalObject(payload,'companies','Company profiles');
+    validateOptionalObject(payload,'uiPrefs','UI preferences');
+    validateOptionalObject(payload,'catalogOpen','Catalog open state');
+    validateOptionalObject(payload,'dispatchJournalV3','Dispatch Journal block');
+    var block=payload.dispatchJournalV3;
+    if(block){
+      validateOptionalObject(block,'data','Dispatch Journal data');
+      validateOptionalObject(block,'settings','Dispatch settings');
+    }
+    var writes=[{key:JOB_KEY,value:JSON.stringify(job)}];
+    if(payload.companies)writes.push({key:PROFILES_KEY,value:JSON.stringify(payload.companies)});
+    if(payload.uiPrefs)writes.push({key:UI_PREFS_KEY,value:JSON.stringify(payload.uiPrefs)});
+    if(payload.catalogOpen)writes.push({key:CAT_OPEN_KEY,value:JSON.stringify(payload.catalogOpen)});
+    if(block&&Object.prototype.hasOwnProperty.call(block,'data')&&block.data!==null)writes.push({key:DATA_KEY,value:JSON.stringify(block.data)});
+    if(block&&Object.prototype.hasOwnProperty.call(block,'settings')&&block.settings!==null)writes.push({key:SETTINGS_KEY,value:JSON.stringify(block.settings)});
+    atomicStorageWrite(storage,writes);
+    return{jobRestored:true,companiesRestored:!!payload.companies,uiPrefsRestored:!!payload.uiPrefs,catalogOpenRestored:!!payload.catalogOpen,dispatchRestored:!!block};
   }
   function downloadFullApp(win){
     var env=buildFullAppEnvelope(win.localStorage);

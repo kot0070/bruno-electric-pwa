@@ -3,6 +3,7 @@ const { test, expect } = require('@playwright/test');
 const JOB_KEY = 'bruno-electric-v1';
 function baseJob(name='Browser Audit Job') {
   return {
+    id:'e2e-'+String(name).toLowerCase().replace(/[^a-z0-9]+/g,'-'),
     quote:{customer:name,jobNumber:'E2E-001',proposalNumber:'P-001',date:'2026-09-16'},
     company:{name:'Bruno Electric Services LLC'}, catalog:[], materialsUsed:[], materialsUnresolved:[],
     personnel:{employees:[],burden:[]}, electricalTasks:[], electricalTaskActiveId:null,
@@ -149,7 +150,7 @@ test('E2E-04 Residential calculate, save, reload, load, apply and history', asyn
   await seedJob(page);
   await openStable(page, '/electrical-tools.html');
   await openTool(page,'res-live');
-  const facts=page.locator('#tool-res-live details').first();
+  const facts=page.locator('#tool-res-live details').filter({has:page.locator('#rl-sqft')});
   await facts.locator('summary').click();
   await expect(page.locator('#rl-sqft')).toBeVisible();
   await page.locator('#rl-sqft').fill('1800');

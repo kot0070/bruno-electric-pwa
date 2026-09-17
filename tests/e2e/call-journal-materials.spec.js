@@ -84,3 +84,95 @@ test('JOURNAL-TAX-01 commercial repair defaults to editable 8.25 percent sales t
   await expect(inv).toContainText('Sales tax · 8.25%');await expect(inv).toContainText('$16.50');await expect(inv).toContainText('Amount due');await expect(inv).toContainText('$216.50');
   const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).calls[0],DATA_KEY);expect(saved.callType).toBe('commercial_repair');expect(saved.taxPctApplied).toBe(8.25);
 });
+
+test('JOURNAL-HUMAN-01 complete service-call workflow through visible UI, reload, edit, invoice and PDF',async({page})=>{
+  await openJournal(page);
+
+  const settingsBody=page.locator('#dj-settings-body');
+  const details=settingsBody.locator('xpath=ancestor::details[1]');
+  if(await details.count()){if(!(await details.getAttribute('open')))await details.locator('summary').click();}
+  await expect(page.locator('#djs-service-rate')).toBeVisible();
+  await page.locator('#djs-service-rate').fill('175');
+  await page.locator('#djs-commercial-tax').fill('8.25');
+  await page.locator('#djs-company').fill('Bruno Electric Services LLC');
+  await page.locator('#djs-address').fill('Dripping Springs, TX');
+  await page.locator('#djs-phone').fill('512-555-0100');
+  await page.locator('#djs-license').fill('TECL 28137');
+  await page.locator('#djs-email').fill('service@example.com');
+  page.once('dialog',d=>d.accept());
+  await page.locator('#djs-customer-save').click();
+
+  await page.locator('#dj-add').click();
+  await expect(page.locator('#djc-call-type')).toBeVisible();
+  await page.locator('#djc-customer').fill('Live Customer');
+  await page.locator('#djc-address').fill('175 Live Oak Rd');
+  await page.locator('#djc-hours').fill('2');
+  await page.locator('#djc-use-rate').click();
+  await expect(page.locator('#djc-price')).toHaveValue('350.00');
+  await page.locator('#djc-call-type').selectOption('residential');
+  await page.locator('#djc-material-mode').selectOption('quick');
+  await page.locator('#djc-material-total').fill('62.50');
+  await page.locator('#djc-tool-enabled').check();
+  await page.locator('#djc-tool-pct').fill('3');
+  await page.locator('#djc-status').selectOption('completed');
+  await page.locator('#djc-desc').fill('Diagnose failed circuit and replace damaged breaker.');
+  await page.locator('#djc-save').click();
+
+  let row=page.locator('.dj-call').filter({hasText:'175 Live Oak Rd'}).first();
+  await expect(row).toBeVisible();
+  await expect(row).toContainText('$360.50');
+  await row.locator('[data-invoice]').click();
+  let inv=row.locator('.dj-invoice');
+  await expect(inv).toContainText('Service / job price');
+  await expect(inv).toContainText('$350.00');
+  await expect(inv).toContainText('Included materials reference');
+  await expect(inv).toContainText('$62.50');
+  await expect(inv).toContainText('Tool / consumables');
+  await expect(inv).toContainText('$10.50');
+  await expect(inv).toContainText('Sales tax · 0.00%');
+  await expect(inv).toContainText('Amount due');
+  await expect(inv).toContainText('$360.50');
+
+  await page.reload({waitUntil:'load'});
+  row=page.locator('.dj-call').filter({hasText:'175 Live Oak Rd'}).first();
+  await expect(row).toBeVisible();
+  await expect(row).toContainText('$360.50');
+  await row.locator('[data-edit]').click();
+  await expect(page.locator('#djc-customer')).toHaveValue('Live Customer');
+  await expect(page.locator('#djc-material-total')).toHaveValue('62.5');
+  await page.locator('#djc-call-type').selectOption('commercial_repair');
+  await page.locator('#djc-material-mode').selectOption('itemized');
+  const first=page.locator('#djc-material-items .dj-material-row').first();
+  await first.locator('.djm-name').fill('2-pole breaker');
+  await first.locator('.djm-qty').fill('1');
+  await first.locator('.djm-unit').fill('42.50');
+  await page.locator('#djc-material-add').click();
+  const second=page.locator('#djc-material-items .dj-material-row').nth(1);
+  await second.locator('.djm-name').fill('THHN');
+  await second.locator('.djm-qty').fill('20');
+  await second.locator('.djm-unit').fill('1');
+  await page.locator('#djc-desc').fill('Commercial troubleshooting and breaker replacement.');
+  await page.locator('#djc-save').click();
+
+  row=page.locator('.dj-call').filter({hasText:'175 Live Oak Rd'}).first();
+  await row.locator('[data-invoice]').click();
+  inv=row.locator('.dj-invoice');
+  await expect(inv).toContainText('Included materials reference');
+  await expect(inv).toContainText('$62.50');
+  await expect(inv).toContainText('Sales tax · 8.25%');
+  await expect(inv).toContainText('$29.74');
+  await expect(inv).toContainText('Amount due');
+  await expect(inv).toContainText('$390.24');
+
+  const downloadPromise=page.waitForEvent('download');
+  await row.locator('[data-pdf]').click();
+  const download=await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^Bruno-Electric-SC-.*\.pdf$/);
+
+  const persisted=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).calls.find(c=>c.address==='175 Live Oak Rd'),DATA_KEY);
+  expect(persisted.customer).toBe('Live Customer');
+  expect(persisted.callType).toBe('commercial_repair');
+  expect(persisted.includedMaterialsMode).toBe('itemized');
+  expect(persisted.includedMaterialItems).toHaveLength(2);
+  expect(persisted.taxPctApplied).toBe(8.25);
+});

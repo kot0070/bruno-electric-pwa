@@ -76,3 +76,21 @@ test('STAGE5-FAULT-04 cancelled valid app restore is a no-op',async({page},testI
   expect(await snapshot(page)).toEqual(before);
   await expect(page.locator('#q-customer')).toHaveValue('Stage 5 Current State');
 });
+
+test('STAGE5-FAULT-05 oversized app backup is rejected before file parsing or mutation',async({page},testInfo)=>{
+  desktopOnly(testInfo);await seed(page);const before=await snapshot(page);
+  const dialogPromise=page.waitForEvent('dialog');
+  await page.locator('#btn-import-app').setInputFiles({name:'oversized-app.json',mimeType:'application/json',buffer:Buffer.alloc(8*1024*1024+1,32)});
+  const dialog=await dialogPromise;expect(dialog.type()).toBe('alert');expect(dialog.message()).toContain('too large');await dialog.accept();
+  expect(await snapshot(page)).toEqual(before);
+  await expect(page.locator('#q-customer')).toHaveValue('Stage 5 Current State');
+});
+
+test('STAGE5-FAULT-06 malformed single-Job JSON is rejected and current Job is preserved',async({page},testInfo)=>{
+  desktopOnly(testInfo);await seed(page);const before=await snapshot(page);
+  const dialogPromise=page.waitForEvent('dialog');
+  await page.locator('#btn-import').setInputFiles({name:'malformed-job.json',mimeType:'application/json',buffer:Buffer.from('{"brunoExportType":"job","payload":')});
+  const dialog=await dialogPromise;expect(dialog.type()).toBe('alert');expect(dialog.message()).toContain('Invalid JSON:');await dialog.accept();
+  expect(await snapshot(page)).toEqual(before);
+  await expect(page.locator('#q-customer')).toHaveValue('Stage 5 Current State');
+});

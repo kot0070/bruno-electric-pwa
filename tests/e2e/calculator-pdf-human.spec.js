@@ -42,7 +42,7 @@ test('HUMAN-CALC-09 downloaded calculation PDF contains the visible engineering 
   expect(ampPdf).toContain('Conductor / Ampacity');
   expect(ampPdf).toContain('PDF Customer PDF-101');
   expect(ampPdf).toContain('Code edition: 2026 NEC');
-  expect(ampPdf).toContain('Calculation path / result');
+  expect(ampPdf).toContain('CALCULATION PATH / RESULT');
   expect(ampPdf).toContain('PASS');
 
   await openTool(page,'ev3');

@@ -1,9 +1,13 @@
 # Bruno Electric — Stage 4 Function Coverage Map
 
-STATUS: PRE_AUDIT_READY
+STATUS: STAGE_4_ACCEPTED
 STAGE: 4 — Function-Level Deterministic Audit
 INVENTORY_SOURCE_SHA: `efb02bf1f867787e5bf7251d9045be2931eeb6d3`
-EXACT_HEAD_CI: Electrical Calculator Tests #606 / run id `35243084444` / SUCCESS
+IMPLEMENTATION_EXACT_HEAD_CI: Electrical Calculator Tests #606 / run id `35243084444` / SUCCESS
+AUDITED_PRODUCTION_SHA: `ad468ae53e32cd0d9515c02a3ea1b912ebe65a6f`
+AUDITED_EXACT_HEAD_CI: Electrical Calculator Tests #608 / run id `35243527176` / SUCCESS
+INDEPENDENT_AUDIT: `audit/function-capability-stage4-ad468ae` / `audits/reports/FUNCTION_CAPABILITY_STAGE4_AUDIT_ad468ae.md`
+VERDICT: `A_ACCEPT` / P0=0 / P1=0
 DETERMINISTIC: `800/800 passed`
 BROWSER_REGRESSION_GATE: `87 scheduled / 35 passed / 52 explicit viewport-contract skips / 0 failed`
 
@@ -104,12 +108,20 @@ Stage 4 browser evidence now proves both supported routing modes:
 - unsupported commercial estimation remains explicitly fail-closed rather than silently using residential logic.
 
 ### Exact-head evidence
-Final implementation/test evidence before documentation refresh:
+Implementation evidence:
 - production/test SHA: `efb02bf1f867787e5bf7251d9045be2931eeb6d3`;
 - Electrical Calculator Tests #606 / run id `35243084444`: `SUCCESS`;
 - provenance: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == efb02bf1f867787e5bf7251d9045be2931eeb6d3`;
 - deterministic: `800/800 passed`;
 - Playwright: `87 scheduled / 35 passed / 52 explicit viewport-contract skips / 0 failed`.
+
+Independent-audit input evidence:
+- audited production SHA: `ad468ae53e32cd0d9515c02a3ea1b912ebe65a6f`;
+- Electrical Calculator Tests #608 / run id `35243527176`: `SUCCESS`;
+- provenance: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == ad468ae53e32cd0d9515c02a3ea1b912ebe65a6f`;
+- deterministic: `800/800 passed`;
+- Playwright: `87 scheduled / 35 passed / 52 explicit viewport-contract skips / 0 failed`;
+- independent audit verdict: `A_ACCEPT`, P0=0, P1=0.
 
 ## Targeted-risk category coverage
 
@@ -122,10 +134,10 @@ Final implementation/test evidence before documentation refresh:
 | BLANK_ZERO | core calculator required fields including Box Fill/Conduit browser paths, Catalog/BOM Your Cost, task takeoff, Residential Apply, Quote manual adjustment. |
 | UNSUPPORTED | Phase 3 module/config rejection, commercial Project Calculator fail-closed boundary, task/raceway fail-closed paths, unsupported electrical configurations. |
 
-## Current Stage 4 pre-audit conclusion
+## Stage 4 accepted conclusion
 
 - No new `DEAD_UNREACHABLE` high-value registered runtime was identified in this pass; Stage 1/2 already accepted the runtime reachability inventory.
 - After the BOM, backup, calculator and Project Calculator additions, no **known** `UNTESTED_HIGH_RISK` exported business/state API remains in this map.
-- The implementation/test SHA `efb02bf1f867787e5bf7251d9045be2931eeb6d3` has matching deterministic and Chromium evidence. This documentation refresh itself still requires exact-head CI before it becomes the production SHA handed to the independent audit.
-- This is a **pre-audit classification**, not Stage 4 acceptance. The independent exact-SHA Stage 4 audit must verify completeness and may still raise P0/P1 findings.
-- Stage 5 remains locked until the Stage 4 independent audit/corrective/re-audit loop returns `A_ACCEPT` with P0=0/P1=0.
+- Exact-head deterministic and Chromium evidence is green both for the implementation SHA and the independent-audit input SHA.
+- The independent Stage 4 audit returned `A_ACCEPT` with P0=0 and P1=0.
+- Stage 4 is administratively accepted. Stage 5 activation is valid only after the final authoritative Stage 4 acceptance SHA itself passes exact-head deterministic + Playwright CI under the changed-production-SHA invariant.

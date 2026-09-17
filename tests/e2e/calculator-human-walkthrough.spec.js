@@ -60,18 +60,24 @@ test('HUMAN-CALC-04 full electrician workflow calculate, document, save, reload,
   await page.goto('/electrical-tools.html',{waitUntil:'load'});
   await page.locator('#be-tool-select').waitFor({state:'attached'});
 
-  // 1. Use a normal field calculator and export the visible result as a customer-facing PDF.
+  // 1. Use a normal field calculator, review the exact report, then explicitly download the customer-facing PDF.
   await openTool(page,'amp');
   await page.locator('#run-amp').click();
   await expect(page.locator('#out-amp')).toContainText('PASS');
   await expect(page.locator('#be-download-calc')).toBeVisible();
-  let pdfConfirm='';
-  page.once('dialog',async d=>{pdfConfirm=d.message();expect(d.type()).toBe('confirm');await d.accept();});
-  const calcPdf=page.waitForEvent('download');
+  let downloadSeen=false;page.once('download',()=>{downloadSeen=true;});
   await page.locator('#be-download-calc').click();
+  await expect(page.locator('#be-doc-preview')).toBeVisible();
+  await expect(page.locator('#be-doc-preview-heading')).toHaveText('Calculation report preview');
+  await expect(page.locator('#be-doc-preview-paper')).toContainText('CALCULATION REPORT');
+  await expect(page.locator('#be-doc-preview-paper')).toContainText('PASS');
+  await page.waitForTimeout(100);expect(downloadSeen).toBe(false);
+  const calcPdf=page.waitForEvent('download');
+  await page.locator('#be-preview-download').click();
   const calcDownload=await calcPdf;
-  expect(pdfConfirm).toContain('CURRENT calculator inputs and visible result');
-  expect(calcDownload.suggestedFilename()).toMatch(/^Bruno-Electric-Calculation-.*\.pdf$/);
+  expect(calcDownload.suggestedFilename()).toMatch(/^Bruno-Electric-Calculation-\d{4}-\d{2}-\d{2}\.pdf$/);
+  await page.locator('#be-preview-close-bottom').click();
+  await expect(page.locator('#be-doc-preview')).toBeHidden();
 
   // 2. Build a residential takeoff, save it without side effects, reload it, then explicitly apply it to the Job.
   await openTool(page,'res-live');

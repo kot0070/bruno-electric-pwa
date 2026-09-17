@@ -65,9 +65,12 @@ test('HUMAN-CALC-04 full electrician workflow calculate, document, save, reload,
   await page.locator('#run-amp').click();
   await expect(page.locator('#out-amp')).toContainText('PASS');
   await expect(page.locator('#be-download-calc')).toBeVisible();
+  let pdfConfirm='';
+  page.once('dialog',async d=>{pdfConfirm=d.message();expect(d.type()).toBe('confirm');await d.accept();});
   const calcPdf=page.waitForEvent('download');
   await page.locator('#be-download-calc').click();
   const calcDownload=await calcPdf;
+  expect(pdfConfirm).toContain('CURRENT calculator inputs and visible result');
   expect(calcDownload.suggestedFilename()).toMatch(/^Bruno-Electric-Calculation-.*\.pdf$/);
 
   // 2. Build a residential takeoff, save it without side effects, reload it, then explicitly apply it to the Job.

@@ -2,7 +2,7 @@
   "master": "dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md",
   "historical_browser_rationale": "dev-plans/FUNCTION_CAPABILITY_BROWSER_E2E_AMENDMENT.md",
   "master_status": "ACTIVE",
-  "current_stage": "STAGE_6_UI_ACTION_WIRING_AUDIT",
+  "current_stage": "STAGE_7_CROSS_MODULE_REGRESSION_MATRIX",
   "strict_sequential": true,
   "implementation_branch": "main",
   "audit_branch_policy": "separate_exact_sha",
@@ -196,11 +196,33 @@
     "gate": "ACCEPTED"
   },
   "stage_6": {
-    "status": "ACTIVE",
+    "status": "DONE_ACCEPTED",
     "name": "UI action wiring audit",
     "entry_basis": "Stage 5 A_ACCEPT at synchronized exact SHA 2f0e7083353008a6bee4d0e294b404f71106331a with P0=0/P1=0",
     "required_matrix": "audits/function-capability/STAGE6_UI_ACTION_WIRING_MATRIX.md",
-    "gate": "DISCOVER_AND_BUILD_ACTION_MATRIX"
+    "accepted_sha": "485b3efd448f6757bdc3283f8ad3a34923c9bf10",
+    "exact_head_ci_run": 714,
+    "exact_head_ci_run_id": 35284021486,
+    "exact_head_ci_conclusion": "success",
+    "deterministic_test_count": 822,
+    "playwright_scheduled_entries": 168,
+    "playwright_passed": 88,
+    "playwright_skipped_by_viewport_contract": 80,
+    "playwright_failed": 0,
+    "independent_audit_branch": "audit/function-capability-stage6-485b3ef",
+    "independent_audit_report": "audits/reports/FUNCTION_CAPABILITY_STAGE6_AUDIT_485b3ef.md",
+    "independent_audit_verdict": "A_ACCEPT",
+    "p0_open": 0,
+    "p1_open": 0,
+    "gate": "ACCEPTED"
+  },
+  "stage_7": {
+    "status": "ACTIVE",
+    "name": "Cross-module regression matrix",
+    "entry_basis": "Stage 6 A_ACCEPT at exact SHA 485b3efd448f6757bdc3283f8ad3a34923c9bf10 with P0=0/P1=0",
+    "required_matrix": "audits/function-capability/STAGE7_CROSS_MODULE_REGRESSION_MATRIX.md",
+    "required_pairs": ["CATALOG_JOB_MATERIALS", "JOB_MATERIALS_QUOTE", "QUOTE_APPROVED_QUOTE", "APPROVED_QUOTE_INVOICE", "ELECTRICAL_TASKS_JOB_MATERIALS", "RESIDENTIAL_JOB_MATERIALS", "CUSTOM_MATERIALS_PRICING", "JOB_SWITCHING_SCOPED_ARCHIVES", "IMPORT_EXPORT_HISTORY_PROVENANCE", "PWA_UPDATE_STORED_JOB_DATA"],
+    "gate": "DISCOVER_DEFINE_MATRIX_AND_EXECUTABLE_GAPS"
   },
   "browser_e2e": {
     "required": true,
@@ -213,9 +235,9 @@
     "configured_viewports": {"phone": 390, "tablet": 820, "desktop": 1440},
     "mandatory_journeys": ["E2E-01", "E2E-02", "E2E-03", "E2E-04", "E2E-05", "E2E-06", "E2E-07", "E2E-08", "E2E-09", "E2E-10", "E2E-11", "E2E-12"],
     "additional_browser_journeys": ["E2E-EVSE-01", "STAGE4-APP-BACKUP-01", "STAGE4-CALC-01", "STAGE4-CALC-02", "STAGE4-CALC-03", "STAGE4-CALC-04", "STAGE4-PROJECT-01", "STAGE4-PROJECT-02", "STAGE5-FAULT-01", "STAGE5-FAULT-02", "STAGE5-FAULT-03", "STAGE5-FAULT-04", "STAGE5-FAULT-05", "STAGE5-FAULT-06", "HUMAN-CALC-01", "HUMAN-CALC-02", "HUMAN-CALC-03", "HUMAN-CALC-04", "HUMAN-CALC-05", "HUMAN-CALC-06", "HUMAN-CALC-07", "HUMAN-CALC-08", "HUMAN-CALC-09", "HUMAN-CALC-10", "HUMAN-CALC-11", "JOURNAL-MATERIALS-01", "JOURNAL-MATERIALS-02", "JOURNAL-MATERIALS-03", "JOURNAL-TAX-01", "JOURNAL-PREVIEW-01", "JOURNAL-HUMAN-01", "JOURNAL-PRICING-HUMAN-01", "JOURNAL-HELPER-HUMAN-01", "UI-STABILITY-01", "UI-STABILITY-02"],
-    "latest_green_evidence_sha": "2f0e7083353008a6bee4d0e294b404f71106331a",
-    "latest_green_ci_run": 709,
-    "latest_green_ci_run_id": 35283187090
+    "latest_green_evidence_sha": "485b3efd448f6757bdc3283f8ad3a34923c9bf10",
+    "latest_green_ci_run": 714,
+    "latest_green_ci_run_id": 35284021486
   },
   "stages": {
     "stage_0": {"status": "DONE_ACCEPTED", "name": "Baseline + requirements index + browser baseline"},
@@ -224,8 +246,8 @@
     "stage_3": {"status": "DONE_ACCEPTED", "name": "Executable core workflows + Playwright foundation"},
     "stage_4": {"status": "DONE_ACCEPTED", "name": "Function-level deterministic audit"},
     "stage_5": {"status": "DONE_ACCEPTED", "name": "Negative / fault-injection audit"},
-    "stage_6": {"status": "ACTIVE", "name": "UI action wiring audit"},
-    "stage_7": {"status": "LOCKED", "name": "Cross-module regression matrix"},
+    "stage_6": {"status": "DONE_ACCEPTED", "name": "UI action wiring audit"},
+    "stage_7": {"status": "ACTIVE", "name": "Cross-module regression matrix"},
     "stage_8": {"status": "LOCKED", "name": "Responsive / PWA browser audit"},
     "stage_9": {"status": "LOCKED", "name": "Corrective master"},
     "stage_10": {"status": "LOCKED", "name": "Independent re-audit"},

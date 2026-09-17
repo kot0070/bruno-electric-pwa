@@ -240,6 +240,6 @@ test('E2E-11 critical actions remain reachable at desktop, phone and tablet',asy
 // E2E-12 — service worker registration/cache shell on localhost and reload under offline context.
 test('E2E-12 service-worker install and offline shell reload',async({page,context},testInfo)=>{
   test.skip(desktopOnly(testInfo),'Desktop service-worker journey.');await seedJob(page);await openStable(page,'/index.html');await expect.poll(()=>page.evaluate(async()=>!!(navigator.serviceWorker&&await navigator.serviceWorker.ready))).toBe(true);
-  const cacheNames=await page.evaluate(()=>caches.keys());expect(cacheNames).toContain('bruno-electric-v69');expect(cacheNames.filter(x=>/^bruno-electric-v\d+$/.test(x))).toEqual(['bruno-electric-v69']);
+  const cacheNames=await page.evaluate(()=>caches.keys());expect(cacheNames).toContain('bruno-electric-v70');expect(cacheNames.filter(x=>/^bruno-electric-v\d+$/.test(x))).toEqual(['bruno-electric-v70']);
   await context.setOffline(true);await page.reload({waitUntil:'domcontentloaded'});await expect(page.locator('body')).toBeVisible();await page.goto('/electrical-tools.html',{waitUntil:'domcontentloaded'});await expect(page.locator('#tool-host')).toBeVisible();await context.setOffline(false);
 });

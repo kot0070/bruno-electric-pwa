@@ -12,7 +12,14 @@ function errorsFor(page){
   page.on('requestfailed',r=>{if(['script','serviceworker'].includes(r.resourceType()))rows.push(`required ${r.resourceType()} failed: ${r.url()} · ${(r.failure()||{}).errorText||''}`);});
   return rows;
 }
-test.beforeEach(async({page})=>{errorsFor(page);await page.addInitScript(([d,s])=>{localStorage.removeItem(d);localStorage.removeItem(s);},[DATA_KEY,SETTINGS_KEY]);});
+test.beforeEach(async({page})=>{
+  errorsFor(page);
+  await page.addInitScript(([d,s])=>{
+    const guard='__bruno_journal_materials_test_reset__';
+    if(sessionStorage.getItem(guard)==='1')return;
+    localStorage.removeItem(d);localStorage.removeItem(s);sessionStorage.setItem(guard,'1');
+  },[DATA_KEY,SETTINGS_KEY]);
+});
 test.afterEach(async({page},testInfo)=>{const rows=errorsFor(page);if(rows.length)await testInfo.attach('runtime-errors.txt',{body:Buffer.from(rows.join('\n')),contentType:'text/plain'});expect(rows,rows.join('\n')).toEqual([]);});
 
 async function openJournal(page){
@@ -106,10 +113,12 @@ test('JOURNAL-HUMAN-01 complete service-call workflow through visible UI, reload
   await expect(page.locator('#djc-call-type')).toBeVisible();
   await page.locator('#djc-customer').fill('Live Customer');
   await page.locator('#djc-address').fill('175 Live Oak Rd');
-  await page.locator('#djc-hours').fill('2');
-  await page.locator('#djc-use-rate').click();
-  await expect(page.locator('#djc-price')).toHaveValue('350.00');
   await page.locator('#djc-call-type').selectOption('residential');
+  await page.locator('#djc-pricing-mode').selectOption('hourly');
+  await expect(page.locator('#djc-hourly-rate-field')).toBeVisible();
+  await page.locator('#djc-hourly-rate').fill('175');
+  await page.locator('#djc-hours').fill('2');
+  await expect(page.locator('#djc-price')).toHaveValue('350.00');
   await page.locator('#djc-material-mode').selectOption('quick');
   await page.locator('#djc-material-total').fill('62.50');
   await page.locator('#djc-tool-enabled').check();
@@ -123,6 +132,9 @@ test('JOURNAL-HUMAN-01 complete service-call workflow through visible UI, reload
   await expect(row).toContainText('$360.50');
   await row.locator('[data-invoice]').click();
   let inv=row.locator('.dj-invoice');
+  await expect(inv).toContainText('Hourly');
+  await expect(inv).toContainText('2.00 h');
+  await expect(inv).toContainText('$175.00/hr');
   await expect(inv).toContainText('Service / job price');
   await expect(inv).toContainText('$350.00');
   await expect(inv).toContainText('Included materials reference');
@@ -139,6 +151,8 @@ test('JOURNAL-HUMAN-01 complete service-call workflow through visible UI, reload
   await expect(row).toContainText('$360.50');
   await row.locator('[data-edit]').click();
   await expect(page.locator('#djc-customer')).toHaveValue('Live Customer');
+  await expect(page.locator('#djc-pricing-mode')).toHaveValue('hourly');
+  await expect(page.locator('#djc-hourly-rate')).toHaveValue('175');
   await expect(page.locator('#djc-material-total')).toHaveValue('62.5');
   await page.locator('#djc-call-type').selectOption('commercial_repair');
   await page.locator('#djc-material-mode').selectOption('itemized');
@@ -172,6 +186,8 @@ test('JOURNAL-HUMAN-01 complete service-call workflow through visible UI, reload
   const persisted=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).calls.find(c=>c.address==='175 Live Oak Rd'),DATA_KEY);
   expect(persisted.customer).toBe('Live Customer');
   expect(persisted.callType).toBe('commercial_repair');
+  expect(persisted.pricingMode).toBe('hourly');
+  expect(persisted.hourlyRateApplied).toBe(175);
   expect(persisted.includedMaterialsMode).toBe('itemized');
   expect(persisted.includedMaterialItems).toHaveLength(2);
   expect(persisted.taxPctApplied).toBe(8.25);

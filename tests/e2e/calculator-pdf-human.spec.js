@@ -57,7 +57,7 @@ test('HUMAN-CALC-09 downloaded calculation PDF contains the visible engineering 
   expect(evsePdf).toContain('60 A');
 });
 
-test('HUMAN-CALC-10 Calculation PDF action is readable and requires confirmation before download',async({page})=>{
+test('HUMAN-CALC-11 Calculation PDF action is readable and requires confirmation before download',async({page})=>{
   await page.goto('/electrical-tools.html',{waitUntil:'load'});
   await expect(page.locator('#be-tool-select')).toBeAttached();
   await openTool(page,'amp');

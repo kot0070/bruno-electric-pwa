@@ -10,7 +10,11 @@ function baseJob(name='Browser Audit Job') {
   };
 }
 async function seedJob(page, job=baseJob()) {
-  await page.addInitScript(([key,value]) => localStorage.setItem(key, JSON.stringify(value)), [JOB_KEY, job]);
+  await page.addInitScript(([key,value]) => {
+    if(sessionStorage.getItem('__bruno_e2e_seeded')==='1')return;
+    localStorage.setItem(key, JSON.stringify(value));
+    sessionStorage.setItem('__bruno_e2e_seeded','1');
+  }, [JOB_KEY, job]);
 }
 function criticalErrors(page) {
   const errors=[];
@@ -30,7 +34,7 @@ function desktopOnly(testInfo){ return testInfo.project.name !== 'chromium-deskt
 test('E2E-01 app shell navigation, deep-link and back-forward', async ({page}, testInfo) => {
   test.skip(desktopOnly(testInfo), 'Core journey runs once on desktop; E2E-11 owns viewport matrix.');
   await seedJob(page);
-  await openStable(page, '/index.html#be=JOB&tab=quote');
+  await openStable(page, '/index.html#be=BILLING&tab=quote');
   await expect(page.locator('#panel-quote')).toBeVisible();
   await page.goto('/index.html#be=ESTIMATE&tab=catalog');
   await expect(page.locator('#panel-catalog')).toBeVisible();
@@ -175,13 +179,17 @@ test('E2E-08 Quote approval immutability and fixed-price invoice basis', async (
   await expect(page.locator('#qa-invoice-basis')).toContainText('$1,234.56');
   const still=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).quoteLifecycle.approved.customerAmount,JOB_KEY);
   expect(still).toBe(1234.56);
-  await expect(page.locator('#btn-print-tm')).toBeVisible();
+  await page.locator('.be-nav-btn[data-tab="tm"]').click();
+  await expect(page.locator('#panel-tm')).toBeVisible();
+  await expect(page.locator('#btn-print-tm-2')).toBeVisible();
 });
 
-// E2E-09 — real export download + import file control.
+// E2E-09 — real export download + import file control through compact header overflow.
 test('E2E-09 representative Job export and import', async ({page}, testInfo) => {
   test.skip(desktopOnly(testInfo), 'Desktop core journey.');
   await seedJob(page, baseJob('Exported Customer')); await openStable(page, '/index.html');
+  await page.locator('#btn-compact-more').click();
+  await expect(page.locator('#btn-export')).toBeVisible();
   const downloadPromise=page.waitForEvent('download'); await page.locator('#btn-export').click();
   const download=await downloadPromise; expect(download.suggestedFilename()).toMatch(/bruno.*\.json/i);
   page.on('dialog',d=>d.accept());
@@ -206,12 +214,15 @@ test('E2E-10 reload and stale identifier resilience', async ({page}, testInfo) =
 // E2E-11 — actual responsive reachability in all configured Chromium viewport projects.
 test('E2E-11 critical actions remain reachable at desktop, phone and tablet', async ({page}, testInfo) => {
   await seedJob(page); await openStable(page, '/index.html');
-  await expect(page.locator('#btn-export')).toBeAttached();
-  await expect(page.locator('#btn-blank')).toBeAttached();
+  await expect(page.locator('#btn-compact-more')).toBeVisible();
+  await page.locator('#btn-compact-more').click();
+  await expect(page.locator('#btn-export')).toBeVisible();
+  await expect(page.locator('#btn-blank')).toBeVisible();
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(2);
   await page.goto('/electrical-tools.html'); await page.waitForTimeout(350);
   await expect(page.locator('#tool-host')).toBeVisible();
+  await expect(page.locator('[data-tool="tasks"]')).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
   expect(['chromium-desktop','chromium-phone','chromium-tablet']).toContain(testInfo.project.name);
 });

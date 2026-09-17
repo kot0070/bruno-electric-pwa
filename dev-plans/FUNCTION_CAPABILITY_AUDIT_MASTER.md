@@ -1,7 +1,7 @@
 # Bruno Electric — Function / Capability Audit Master
 
 MASTER_STATUS: ACTIVE
-CURRENT_STAGE: STAGE_5_NEGATIVE_FAULT_INJECTION_AUDIT
+CURRENT_STAGE: STAGE_6_UI_ACTION_WIRING_AUDIT
 EXECUTION_MODE: STRICT_SEQUENTIAL
 IMPLEMENTATION_BRANCH: main
 AUDIT_BRANCH_POLICY: separate exact-SHA audit branches
@@ -242,37 +242,39 @@ Gate: ACCEPTED.
 ---
 
 # STAGE 5 — Negative / Fault Injection
-STATUS: ACTIVE
+STATUS: DONE_ACCEPTED
 Test malformed JSON/partial records, stale/missing IDs, unsupported calculations, impossible raceway/configurations, failed Apply/Update rollback, incomplete imports, repeated actions, optional asset failures, stale caches and browser-reproducible negative flows. Expected fail-closed/preserve/no-op behavior must be explicit.
 
-Current Stage 5 evidence:
+Accepted Stage 5 evidence:
 - entry baseline: Stage 4 administrative acceptance SHA `eaf0f4d096d0b207cc27f17675e384e6d6a4099b`, exact-head CI #611 SUCCESS and independent acceptance validation complete;
 - fault matrix: `audits/function-capability/STAGE5_FAULT_INJECTION_MATRIX.md`;
-- a real full-app restore integrity gap was discovered and corrected: app restore now requires a valid saved Job, validates optional blocks before mutation and rolls back prior local-storage writes on a mid-restore failure;
-- corrective production commit: `bed87c9134c0341e72f9bbe0c7b5f4c7693ff10f`;
-- a locale-formatted Call Journal helper metric amplification defect was discovered and corrected so localized currency display is never reparsed as authoritative numeric state;
-- locale corrective production commit: `15eea1302984c0b37d93485ced85796bf2bf5593`;
-- customer-facing document flows were hardened to preview before output: calculator PDF, Call Journal invoice PDF and fixed-price invoice print all require the rendered preview boundary before the external output side effect;
-- missing required company identity is visible in the Journal invoice preview and blocks final customer PDF;
-- current-shell bootstrap was hardened against visible legacy-header flash, and dark disabled/readonly native-control regressions are covered at desktop, phone and tablet;
-- deterministic regressions cover incomplete backup preservation, invalid sub-block rejection, injected mid-transaction storage rollback, repeated restore idempotency and document model/print contracts;
-- real-browser Stage 5 fault journeys cover malformed full-app JSON, wrong backup type, incomplete app backup, cancelled restore no-op, oversized >8 MB app backup rejection, and malformed single-Job JSON preservation;
-- service-worker fault injection proves optional asset failure does not abort core-shell installation, while a core-shell cache failure rejects installation and does not advance the incomplete shell;
-- accepted earlier executable evidence is retained for failed task Update rollback, stale/missing task IDs, impossible/unsupported raceway, unsupported calculation inputs, stale-cache ownership, repeated BOM replacement, repeated task apply and cross-Job/stale-revision rejection;
-- implementation evidence SHA: `f1b5ab8b69a3a509037520d077a28e2dee038528`;
-- implementation exact-head CI: Electrical Calculator Tests #703 / run id `35282365016`, SUCCESS;
-- exact SHA provenance verified: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == f1b5ab8b69a3a509037520d077a28e2dee038528`;
-- deterministic suite: `818/818 passed`;
+- full-app restore requires a valid saved Job, validates optional blocks before mutation and rolls back prior local-storage writes on mid-restore failure;
+- locale-formatted Call Journal helper metrics use numeric summary state and do not reparse localized currency;
+- customer-facing calculator, Call Journal and fixed-price invoice documents are preview-before-output;
+- missing required company identity is visible in Journal invoice preview and blocks final customer PDF;
+- current-shell bootstrap is protected against visible legacy-header flash; dark disabled/readonly controls are covered across supported viewports;
+- synchronized exact production SHA: `2f0e7083353008a6bee4d0e294b404f71106331a`;
+- exact-head CI: Electrical Calculator Tests #709 / run id `35283187090`, SUCCESS;
+- exact provenance: `TESTED_HEAD_SHA == EXPECTED_HEAD_SHA == 2f0e7083353008a6bee4d0e294b404f71106331a`;
+- deterministic: `818/818 passed`;
 - Playwright: `168 scheduled / 88 passed / 80 explicit viewport-contract skips / 0 failed`;
-- current human browser evidence includes calculator fail/recover, every enabled workspace traversal, core/equipment/project/residential flows, Electrical Tasks save/apply/update chain, calculation preview/download, Call Service preview/edit/reload/PDF, fixed/hourly pricing, commercial tax, comma-decimal helper consistency, fixed-price invoice preview/print, no-flash reload and dark-control stability.
+- independent audit branch: `audit/function-capability-stage5-2f0e708`;
+- independent report: `audits/reports/FUNCTION_CAPABILITY_STAGE5_AUDIT_2f0e708.md`;
+- verdict: `A_ACCEPT`, P0=0, P1=0.
 
-Gate: this synchronized documentation SHA must pass exact-head deterministic + full Playwright CI. Then create a separate exact-SHA Stage 5 independent audit branch. Every P0/P1 must be corrected and independently re-audited before Stage 6 unlock.
+Gate: ACCEPTED.
 
 ---
 
 # STAGE 6 — UI Action Wiring Audit
-STATUS: LOCKED
+STATUS: ACTIVE
 For every actionable control verify reachability, correct handler, correct domain action, disabled/hidden states, no handler override, truthful feedback, keyboard/touch where applicable, no mobile navigation obstruction. Real Browser E2E evidence is required for materially user-facing actions.
+
+Stage 6 entry basis: Stage 5 `A_ACCEPT` at exact synchronized SHA `2f0e7083353008a6bee4d0e294b404f71106331a`, P0=0, P1=0.
+
+Required deliverable: `audits/function-capability/STAGE6_UI_ACTION_WIRING_MATRIX.md` plus executable browser evidence for any material action group not already proven by accepted journeys.
+
+Gate: ACTIVE — discover and classify all actionable UI groups before independent audit.
 
 ---
 
@@ -321,10 +323,10 @@ Playwright setup, dependencies, static server, test fixtures, selectors, CI, tra
 ## Handoff
 ```yaml
 handoff:
-  role_completed: IMPLEMENTER
+  role_completed: STAGE_5_INDEPENDENT_AUDITOR
   exact_head_sha: READ_CURRENT_MAIN_AT_EXECUTION
-  next_role: INDEPENDENT_AUDITOR_AFTER_EXACT_HEAD_GREEN
-  next_stage: STAGE_5_NEGATIVE_FAULT_INJECTION_AUDIT
-  branch_policy: separate_exact_sha_audit_branch
+  next_role: IMPLEMENTER
+  next_stage: STAGE_6_UI_ACTION_WIRING_AUDIT
+  branch_policy: separate_exact_sha_audit_branch_after_green
   do_not_advance_without_accept: true
 ```

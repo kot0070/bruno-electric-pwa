@@ -31,6 +31,7 @@ require('../electric-evse-professional.js');
 require('../electric-custom-materials.js');
 require('../electric-pricing-domain-guard.js');
 require('./electrical-calculators.test.js');
+require('./electric-bom.test.js');
 require('./math-corrective-boundaries.test.js');
 require('./electrical-tasks.test.js');
 require('./electrical-task-engine.test.js');

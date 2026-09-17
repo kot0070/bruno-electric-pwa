@@ -209,13 +209,24 @@ test('E2E-07 Professional Task Solver no guessing and no auto side effects',asyn
   const countBefore=await page.evaluate(k=>(JSON.parse(localStorage.getItem(k)).electricalTasks||[]).length,JOB_KEY);await page.locator('#et-solver-use').click();await expect(page.locator('#et-status')).toContainText('Nothing was calculated, saved, or applied');expect(await page.evaluate(k=>(JSON.parse(localStorage.getItem(k)).electricalTasks||[]).length,JOB_KEY)).toBe(countBefore);
 });
 
-// E2E-08 — approve snapshot through UI, prove fixed invoice uses immutable snapshot; T&M remains separate.
+// E2E-08 — approve snapshot through UI, preview immutable fixed invoice, then explicitly print; T&M remains separate.
 test('E2E-08 Quote approval immutability and fixed-price invoice basis',async({page},testInfo)=>{
   test.skip(desktopOnly(testInfo),'Desktop core journey.');await seedJob(page);await openStable(page,'/index.html#be=BILLING&tab=quote');await expect(page.locator('#quote-lifecycle-card')).toBeVisible();
   await page.locator('#qa-manual').fill('1234.56');const approvalReload=page.waitForEvent('load');await page.locator('#qa-approve').click();await approvalReload;await expect(page.locator('#qa-status')).toContainText('APPROVED SNAPSHOT');
   const approved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).quoteLifecycle.approved.customerAmount,JOB_KEY);expect(approved).toBe(1234.56);
   await page.locator('#qa-manual').fill('2222.22');await page.locator('#qa-use-approved').click();await expect(page.locator('#qa-invoice-basis')).toContainText('$1,234.56');expect(await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).quoteLifecycle.approved.customerAmount,JOB_KEY)).toBe(1234.56);
-  await page.evaluate(()=>{window.__e2ePrinted=false;window.print=()=>{window.__e2ePrinted=true;};});await page.locator('#qa-print-fixed').click();await expect.poll(()=>page.evaluate(()=>window.__e2ePrinted)).toBe(true);await expect(page.locator('#fixed-price-invoice-print-root')).toContainText('$1,234.56');await page.evaluate(()=>document.body.classList.remove('bruno-print-fixed'));
+  await page.evaluate(()=>{window.__e2ePrinted=false;window.print=()=>{window.__e2ePrinted=true;};});
+  await page.locator('#qa-print-fixed').click();
+  await expect(page.locator('#be-doc-preview')).toBeVisible();
+  await expect(page.locator('#be-doc-preview-heading')).toHaveText('Fixed-price invoice preview');
+  await expect(page.locator('#be-doc-preview-paper')).toContainText('$1,234.56');
+  expect(await page.evaluate(()=>window.__e2ePrinted)).toBe(false);
+  await page.locator('#be-preview-print-fixed').click();
+  await expect.poll(()=>page.evaluate(()=>window.__e2ePrinted)).toBe(true);
+  await expect(page.locator('#fixed-price-invoice-print-root')).toContainText('$1,234.56');
+  await page.evaluate(()=>document.body.classList.remove('bruno-print-fixed'));
+  await page.locator('#be-preview-close-bottom').click();
+  await expect(page.locator('#be-doc-preview')).toBeHidden();
   await page.locator('.be-nav-btn[data-tab="tm"]').click();await expect(page.locator('#panel-tm')).toBeVisible();await expect(page.locator('#btn-print-tm-2')).toBeVisible();await expect(page.locator('#btn-print-tm-2')).toContainText('T&M');
 });
 

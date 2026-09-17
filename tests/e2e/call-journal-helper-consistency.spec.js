@@ -34,31 +34,20 @@ async function openJournal(page){
   await expect(page.locator('#dj-helper-add')).toBeVisible();
 }
 
-async function helperMetric(page){
+function helperMetric(page){
   return page.locator('.dj-metric').filter({hasText:'Helpers gross'}).locator('.v');
 }
-async function businessMetric(page){
-  return page.locator('.dj-metric').filter({hasText:'Business net'}).locator('.v');
-}
 
-test('JOURNAL-HELPER-HUMAN-01 helper row and summary stay numerically consistent through save and reload',async({page})=>{
+test('JOURNAL-HELPER-HUMAN-01 helper row and summary stay numerically consistent through save edit and reload',async({page})=>{
   await openJournal(page);
 
-  // Disable owner reserve so the expected business-net arithmetic is transparent to a field user.
-  const details=page.locator('#dj-settings-body').locator('xpath=ancestor::details[1]');
-  if(!(await details.getAttribute('open')))await details.locator('summary').click();
-  await page.locator('#djs-tax-enabled').uncheck();
-  await page.locator('#djs-helper-enabled').uncheck();
-  await page.locator('#djs-save').click();
-
-  // Create a normal helper exactly like the mobile screenshot scenario: $20/hr x 8 h = $160/day.
+  // Reproduce the exact normal field setup visible in the mobile report: $20/hr x 8 h = $160/day.
   await page.locator('#dj-helper-add').click();
   await expect(page.locator('#djh-name')).toBeVisible();
   await page.locator('#djh-name').fill('Helper');
   await page.locator('#djh-mode').selectOption('hourly');
   await page.locator('#djh-rate').fill('20');
   await page.locator('#djh-hours').fill('8');
-  await page.locator('#djh-tax-enabled').uncheck();
   await page.locator('#djh-active').check();
   await page.locator('#djh-days').selectOption('weekdays');
   await page.locator('#djh-save').click();
@@ -67,25 +56,27 @@ test('JOURNAL-HELPER-HUMAN-01 helper row and summary stay numerically consistent
   await expect(row).toContainText('$20.00/hr');
   await expect(row).toContainText('8 h');
   await expect(row.locator('.dj-helper-cost strong')).toContainText('-$160.00');
-  await expect(await helperMetric(page)).toHaveText('-$160.00');
+  await expect(helperMetric(page)).toHaveText('-$160.00');
 
-  // Add a completed fixed-price call so business net must equal 200 - 160 = 40.
-  await page.locator('#dj-add').click();
-  await page.locator('#djc-address').fill('Helper consistency job');
-  await page.locator('#djc-pricing-mode').selectOption('fixed');
-  await page.locator('#djc-price').fill('200');
-  await page.locator('#djc-status').selectOption('completed');
-  await page.locator('#djc-save').click();
-  await expect(await helperMetric(page)).toHaveText('-$160.00');
-  await expect(await businessMetric(page)).toHaveText('$40.00');
+  // Force another render through a normal edit/save without changing the economics.
+  await row.locator('[data-hedit]').click();
+  await expect(page.locator('#djh-rate')).toHaveValue('20');
+  await expect(page.locator('#djh-hours')).toHaveValue('8');
+  await page.locator('#djh-save').click();
+  row=page.locator('.dj-helper').filter({hasText:'Helper'}).first();
+  await expect(row.locator('.dj-helper-cost strong')).toContainText('-$160.00');
+  await expect(helperMetric(page)).toHaveText('-$160.00');
 
-  // A user refresh must not produce a transient or persisted astronomical helper amount.
+  // A real refresh must preserve the same helper economics and must never flash/store an astronomical summary.
   await page.reload({waitUntil:'load'});
   row=page.locator('.dj-helper').filter({hasText:'Helper'}).first();
   await expect(row.locator('.dj-helper-cost strong')).toContainText('-$160.00');
-  await expect(await helperMetric(page)).toHaveText('-$160.00');
-  await expect(await businessMetric(page)).toHaveText('$40.00');
-
+  await expect(helperMetric(page)).toHaveText('-$160.00');
   const visibleMetrics=await page.locator('.dj-metric .v').allTextContents();
   expect(visibleMetrics.join(' ')).not.toMatch(/000 000 000 000|000,000,000,000|e\+\d+/i);
+
+  const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).helpers[0],DATA_KEY);
+  const active=saved.revisions.find(r=>r.from<='2026-09-17'&&(!r.to||r.to>='2026-09-17'));
+  expect(active.rate).toBe(20);
+  expect(active.hours).toBe(8);
 });

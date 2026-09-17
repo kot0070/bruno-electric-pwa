@@ -1,5 +1,5 @@
-/* Bruno Electric Estimating — app shell offline cache. Previous cache: bruno-electric-v68; current: bruno-electric-v69. Historical audited baseline: bruno-electric-v45. */
-const CACHE = 'bruno-electric-v69';
+/* Bruno Electric Estimating — app shell offline cache. Previous cache: bruno-electric-v69; current: bruno-electric-v70. Historical audited baseline: bruno-electric-v45. */
+const CACHE = 'bruno-electric-v70';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [
   './','./index.html','./electrical-tools.html','./manifest.webmanifest','./sw-register.js',
@@ -7,7 +7,7 @@ const CORE_SHELL = [
   './electric-dispatch-journal-v2.js','./electric-catalog-cost-semantics.js','./electric-pricing-margins-semantics.js','./electric-job-material-cost-semantics.js','./electric-job-summary-semantics.js','./electric-pricing-domain-guard.js','./electric-quote-lifecycle.js','./electric-fixed-price-invoice.js','./electric-catalog-job-ux-semantics.js','./electric-custom-materials.js',
   './electric-reference-data.js','./electric-calculators.js','./electric-catalog-v1.js','./electric-bom.js','./electric-electrical-tasks.js','./electric-electrical-task-engine.js','./electric-raceway-engine.js','./electric-grounding-reference.js','./electric-grounding-engine.js','./electric-electrical-task-advanced.js','./electric-electrical-task-solver.js','./electric-electrical-task-material-takeoff.js','./electric-electrical-task-archive.js','./electrical-tasks-ui.js','./electrical-tasks-stage2-ui.js','./electrical-tasks-stage3-ui.js','./electrical-tasks-stage4-ui.js','./electrical-tasks-stage5-ui.js','./electrical-tasks-stage6-ui.js','./electrical-tasks-stage7-ui.js','./electrical-tasks-stage8-ui.js',
   './electric-residential-rules.js','./electric-residential.js','./electric-residential-pricing.js','./electric-residential-catalog-bridge.js','./electric-residential-takeoff.js','./electric-residential-live.js','./electric-residential-live-levels.js','./electric-residential-live-history.js','./electric-residential-history-job-scope.js','./electric-residential-live-workspace.js','./electric-residential-wire-takeoff.js','./electric-residential-apply-job.js','./electric-residential-save-archive-ux.js',
-  './electric-phase3-rules.js','./electric-phase3.js','./electrical-tools-ui.js','./electrical-bom-ui.js','./electrical-residential-ui.js','./electrical-residential-pricing-ui.js','./electrical-residential-takeoff-ui.js','./electrical-residential-live-ui.js','./electrical-residential-live-levels-ui.js','./electrical-phase3-ui.js','./electrical-project-calculator-ui.js','./electrical-tools-shell.js'
+  './electric-phase3-rules.js','./electric-phase3.js','./electric-evse-professional.js','./electrical-tools-ui.js','./electrical-bom-ui.js','./electrical-residential-ui.js','./electrical-residential-pricing-ui.js','./electrical-residential-takeoff-ui.js','./electrical-residential-live-ui.js','./electrical-residential-live-levels-ui.js','./electrical-phase3-ui.js','./electrical-evse-professional-ui.js','./electrical-project-calculator-ui.js','./electrical-tools-shell.js'
 ];
 const OPTIONAL_SHELL = ['./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
 const SHELL = CORE_SHELL.concat(OPTIONAL_SHELL);

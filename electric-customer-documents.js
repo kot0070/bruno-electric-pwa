@@ -63,6 +63,8 @@ function openHtmlPreview(opts){
   var close=document.createElement('button');close.type='button';close.className='btn';close.textContent='Close';close.id='be-preview-close-bottom';close.onclick=closePreview;actions.appendChild(close);h.hidden=false;document.body.classList.add('be-doc-preview-open');h.scrollTop=0;return h
 }
 function printOpenPreview(){document.body.classList.add('be-doc-print');var done=function(){document.body.classList.remove('be-doc-print')};window.addEventListener('afterprint',done,{once:true});window.print()}
+function hardPrintIntercept(e){var b=e.target&&e.target.closest&&e.target.closest('#be-preview-download');if(!b)return;e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();printOpenPreview()}
+window.addEventListener('click',hardPrintIntercept,true);
 
 function callPreviewHtml(c,s){
   var sub=subtotal(c),pct=taxPct(c,s),tx=sub*pct/100,itemHtml='';

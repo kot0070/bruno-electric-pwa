@@ -1,5 +1,5 @@
-/* Bruno Electric Estimating — app shell offline cache. Runtime authority refresh 2026-09-17: current assets are reinstalled into bruno-electric-v71; shell assets use network-first online with cached fallback offline. Historical audited baseline: bruno-electric-v45. */
-const CACHE = 'bruno-electric-v71';
+/* Bruno Electric Estimating — app shell offline cache. Atomic settings authority refresh 2026-09-17: current assets are reinstalled into bruno-electric-v72; shell assets use network-first online with cached fallback offline. Historical audited baseline: bruno-electric-v45. */
+const CACHE = 'bruno-electric-v72';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [
   './','./index.html','./electrical-tools.html','./manifest.webmanifest','./sw-register.js',

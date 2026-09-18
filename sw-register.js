@@ -8,6 +8,7 @@
 'use strict';
 
 var RETIRE_RELOAD_KEY='bruno-sw-retired-reload-v1';
+var BUILD_VERSION='20260918-0324';
 var isTools=/electrical-tools\.html$/i.test(location.pathname);
 
 function installShellGuard(){
@@ -35,8 +36,9 @@ function retireServiceWorkers(){
   return navigator.serviceWorker.getRegistrations().then(function(regs){return Promise.all(regs.map(function(r){return r.unregister()}))}).catch(function(){}).then(removeLegacyCaches).then(function(){return hadController})
 }
 
-function hasScript(src){return Array.prototype.some.call(document.scripts,function(s){var v=s.getAttribute('src')||'';return v===src||v.endsWith('/'+src.replace(/^\.\//,''))})}
-function load(src){return new Promise(function(resolve){if(hasScript(src)){resolve();return}var s=document.createElement('script');s.src=src;s.async=false;s.onload=resolve;s.onerror=function(){console.error('Required runtime module failed: '+src);resolve()};document.head.appendChild(s)})}
+function cleanSrc(v){return String(v||'').split('?')[0]}
+function hasScript(src){var target=cleanSrc(src);return Array.prototype.some.call(document.scripts,function(s){var v=cleanSrc(s.getAttribute('src')||'');return v===target||v.endsWith('/'+target.replace(/^\.\//,''))})}
+function load(src){return new Promise(function(resolve){if(hasScript(src)){resolve();return}var s=document.createElement('script');s.src=src+(src.indexOf('?')>=0?'&':'?')+'v='+encodeURIComponent(BUILD_VERSION);s.async=false;s.onload=resolve;s.onerror=function(){console.error('Required runtime module failed: '+src);resolve()};document.head.appendChild(s)})}
 function sequence(list){return list.reduce(function(p,src){return p.then(function(){return load(src)})},Promise.resolve())}
 
 var APP_MODULES=[

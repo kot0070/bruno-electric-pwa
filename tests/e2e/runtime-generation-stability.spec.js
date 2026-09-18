@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 const DATA_KEY='bruno-electric-dispatch-journal-v2';
 const SETTINGS_KEY='bruno-electric-dispatch-settings-v2';
-const VERSION='v1.16';
+const VERSION='v1.17';
 
 async function expectStableGeneration(page){
   await expect(page.locator('.ver-badge')).toHaveText(VERSION);

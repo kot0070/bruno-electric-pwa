@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 const DATA_KEY='bruno-electric-dispatch-journal-v2';
 const SETTINGS_KEY='bruno-electric-dispatch-settings-v2';
-const VERSION='v1.18';
+const VERSION='v1.19';
 const JOURNAL_URL='/index.html#be=JOB&tab=dispatch';
 
 async function expectStableGeneration(page){

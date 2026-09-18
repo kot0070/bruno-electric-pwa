@@ -1,0 +1,81 @@
+name: One-shot invoice print layout v1.12
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-shot-invoice-print-v112.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Build dedicated invoice print layout and bump v1.12
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          VERSION='v1.12'
+          BUILD='1.12'
+
+          # Visible app version + cache-busted bootstrap.
+          p=Path('index.html')
+          text=p.read_text()
+          text=re.sub(r'>v1\.\d+<', f'>{VERSION}<', text, count=1)
+          text=re.sub(r'<script src="\./sw-register\.js\?v=[^"]+"></script>', f'<script src="./sw-register.js?v={BUILD}"></script>', text, count=1)
+          p.write_text(text)
+
+          p=Path('sw-register.js')
+          text=p.read_text()
+          text=re.sub(r"var BUILD_VERSION='[^']+';", f"var BUILD_VERSION='{BUILD}';", text, count=1)
+          p.write_text(text)
+
+          # Dedicated Letter print stylesheet. This is intentionally different from
+          # the mobile preview: proper page margins, compact invoice typography,
+          # no modal chrome, no viewport/min-height spill to a blank second page.
+          p=Path('electric-customer-documents.js')
+          text=p.read_text()
+          new_print=r'''@media print{html,body{margin:0!important;padding:0!important;background:#fff!important;height:auto!important;min-height:0!important;overflow:visible!important}body.be-doc-print{font-family:Arial,"Helvetica Neue",sans-serif!important;min-height:0!important}body.be-doc-print>*:not(#be-doc-preview){display:none!important}body.be-doc-print #be-doc-preview{position:static!important;inset:auto!important;display:block!important;width:auto!important;height:auto!important;min-height:0!important;overflow:visible!important;background:#fff!important;padding:0!important;margin:0!important;color:#17202b!important}body.be-doc-print .be-doc-top,body.be-doc-print .be-doc-actions,body.be-doc-print .be-doc-alert{display:none!important}body.be-doc-print .be-doc-shell{width:auto!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important}body.be-doc-print .be-doc-paper{width:auto!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;box-shadow:none!important;overflow:visible!important;font-size:10.5pt!important;line-height:1.35!important}body.be-doc-print .be-doc-letter{margin:0 0 14pt!important;padding:0 0 10pt!important;border-bottom-width:2pt!important}body.be-doc-print .be-doc-letter h1{font-size:16pt!important}body.be-doc-print .be-doc-title strong{font-size:16pt!important}body.be-doc-print .be-doc-grid{gap:8pt!important;margin:10pt 0 14pt!important}body.be-doc-print .be-doc-box{padding:7pt 8pt!important;border-radius:4pt!important}body.be-doc-print .be-doc-section{margin:13pt 0!important}body.be-doc-print .be-doc-section h3{margin-bottom:6pt!important;padding-bottom:4pt!important}body.be-doc-print .be-doc-row{padding:3pt 0!important}body.be-doc-print .be-doc-row.total{margin-top:5pt!important;padding-top:7pt!important;font-size:12pt!important}body.be-doc-print .be-doc-muted{font-size:8.5pt!important}body.be-doc-print .be-doc-reg{margin-top:20pt!important;padding-top:8pt!important;font-size:7.5pt!important;line-height:1.35!important}.be-doc-letter,.be-doc-grid,.be-doc-section,.be-doc-reg{break-inside:avoid;page-break-inside:avoid}@page{size:Letter portrait;margin:.7in}}'''
+          pattern=r'@media print\{body\.be-doc-print.*?@page\{size:letter portrait;margin:\.5in\}\}'
+          text,n=re.subn(pattern,new_print,text,count=1,flags=re.S|re.I)
+          if n!=1:
+              raise SystemExit('existing invoice print CSS target not found')
+          p.write_text(text)
+
+          # Keep runtime marker aligned with visible build.
+          p=Path('electric-runtime-authority-v1.js')
+          text=p.read_text()
+          text=re.sub(r"data-be-runtime-authority','v1\.\d+'", "data-be-runtime-authority','v1.12'", text)
+          text=re.sub(r"version:'1\.\d+\.0'", "version:'1.12.0'", text)
+          p.write_text(text)
+          PY
+
+          node --check sw-register.js
+          node --check electric-customer-documents.js
+          node --check electric-runtime-authority-v1.js
+          grep -q '>v1.12<' index.html
+          grep -q "BUILD_VERSION='1.12'" sw-register.js
+          grep -q 'sw-register.js?v=1.12' index.html
+          grep -q 'margin:.7in' electric-customer-documents.js
+          grep -q 'min-height:0!important' electric-customer-documents.js
+
+      - name: Commit repair
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No repair needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898204+github-actions[bot]@users.noreply.github.com'
+          git add index.html sw-register.js electric-customer-documents.js electric-runtime-authority-v1.js
+          git commit -m 'fix(invoice): dedicated Letter print layout and bump v1.12'
+          git push origin HEAD:main

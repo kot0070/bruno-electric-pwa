@@ -6,8 +6,19 @@
   "strict_sequential": true,
   "implementation_branch": "main",
   "audit_branch_policy": "separate_exact_sha",
-  "capability_statuses": ["PASS", "PARTIAL", "FAIL", "UNTESTED", "NOT_APPLICABLE"],
-  "severity_levels": ["P0", "P1", "P2", "P3"],
+  "capability_statuses": [
+    "PASS",
+    "PARTIAL",
+    "FAIL",
+    "UNTESTED",
+    "NOT_APPLICABLE"
+  ],
+  "severity_levels": [
+    "P0",
+    "P1",
+    "P2",
+    "P3"
+  ],
   "stage_0": {
     "status": "DONE_ACCEPTED",
     "pre_stage_exact_sha": "41ba3758fd358ad159645e46b42c472d9fcb4157",
@@ -82,10 +93,23 @@
     "matrix": "audits/function-capability/REQUIREMENT_RUNTIME_GAP_MATRIX.md",
     "final_audit_report": "audits/reports/FUNCTION_CAPABILITY_STAGE2_AUDIT_b246300.md",
     "final_audit_verdict": "A_ACCEPT",
-    "required_classification": ["EXACT", "DIFFERENT_VALID", "PARTIAL", "MISSING", "UNREACHABLE", "UNDOCUMENTED", "OBSOLETE"],
+    "required_classification": [
+      "EXACT",
+      "DIFFERENT_VALID",
+      "PARTIAL",
+      "MISSING",
+      "UNREACHABLE",
+      "UNDOCUMENTED",
+      "OBSOLETE"
+    ],
     "p0_open": 0,
     "p1_open": 0,
-    "p2_carried": ["FCA-S2-P2-001", "FCA-S2-P2-002", "FCA-S2-P2-003", "FCA-S2-P2-004"],
+    "p2_carried": [
+      "FCA-S2-P2-001",
+      "FCA-S2-P2-002",
+      "FCA-S2-P2-003",
+      "FCA-S2-P2-004"
+    ],
     "capability_passes_granted": 0,
     "gate": "ACCEPTED"
   },
@@ -96,7 +120,20 @@
     "required_browser_framework": "Playwright",
     "required_browser": "Chromium",
     "required_same_sha_ci": true,
-    "required_journeys": ["E2E-01", "E2E-02", "E2E-03", "E2E-04", "E2E-05", "E2E-06", "E2E-07", "E2E-08", "E2E-09", "E2E-10", "E2E-11", "E2E-12"],
+    "required_journeys": [
+      "E2E-01",
+      "E2E-02",
+      "E2E-03",
+      "E2E-04",
+      "E2E-05",
+      "E2E-06",
+      "E2E-07",
+      "E2E-08",
+      "E2E-09",
+      "E2E-10",
+      "E2E-11",
+      "E2E-12"
+    ],
     "implemented_evidence_sha": "a86f38937d82399b1d37cfe9ca49405b0633d1be",
     "implementation_ci_run": 585,
     "implementation_ci_run_id": 35225679044,
@@ -126,13 +163,43 @@
     "status": "DONE_ACCEPTED",
     "name": "Function-level deterministic audit",
     "entry_basis": "Stage 3 A_ACCEPT with P0=0/P1=0",
-    "required_classification": ["DIRECTLY_TESTED", "INTEGRATION_TESTED", "TRIVIAL_PLUMBING", "DEAD_UNREACHABLE", "UNTESTED_HIGH_RISK"],
-    "required_targeted_tests": ["BOUNDARY", "INVALID", "ROLLBACK", "STALE_ID", "BLANK_ZERO", "UNSUPPORTED"],
+    "required_classification": [
+      "DIRECTLY_TESTED",
+      "INTEGRATION_TESTED",
+      "TRIVIAL_PLUMBING",
+      "DEAD_UNREACHABLE",
+      "UNTESTED_HIGH_RISK"
+    ],
+    "required_targeted_tests": [
+      "BOUNDARY",
+      "INVALID",
+      "ROLLBACK",
+      "STALE_ID",
+      "BLANK_ZERO",
+      "UNSUPPORTED"
+    ],
     "coverage_policy": "LOCATE_GAPS_ONLY_NOT_CORRECTNESS_PROOF",
     "coverage_map": "audits/function-capability/FUNCTION_COVERAGE_MAP.md",
     "inventory_source_sha": "efb02bf1f867787e5bf7251d9045be2931eeb6d3",
-    "targeted_test_commits": ["50cdf090468f0772dc078ccb936a27473dfc9141", "7cea5eda0425798a06bb2adb62025c7d683c1ecc", "d3ab36e2597ab45826d616235e78ee83463a3390", "c33d6cca88297253924e9f4e4d974a8e7504bbfd", "577c494df99315e2f5627cb910cd136ea1d7299f", "fc3c57e31244446c33eb6e56929e6bfeec1c28c6", "19e672c41d9260b8851e5aee96fe86a4438b4f6d", "430cac4c936e493427c43b5510ca20dee9dce1a3", "efb02bf1f867787e5bf7251d9045be2931eeb6d3"],
-    "targeted_test_areas": ["BOM_PREPARE_REPLACEMENT_AND_SOURCE_ISOLATION", "APP_BACKUP_DISPATCH_INSTALL_WRAPPER", "CALCULATOR_BLANK_ZERO_BOUNDARIES", "CONDUIT_BOX_FILL_RENDERED_UI", "PROJECT_CALCULATOR_RESIDENTIAL_COMMERCIAL_ROUTING", "FULL_APP_BACKUP_REAL_UI_ROUNDTRIP"],
+    "targeted_test_commits": [
+      "50cdf090468f0772dc078ccb936a27473dfc9141",
+      "7cea5eda0425798a06bb2adb62025c7d683c1ecc",
+      "d3ab36e2597ab45826d616235e78ee83463a3390",
+      "c33d6cca88297253924e9f4e4d974a8e7504bbfd",
+      "577c494df99315e2f5627cb910cd136ea1d7299f",
+      "fc3c57e31244446c33eb6e56929e6bfeec1c28c6",
+      "19e672c41d9260b8851e5aee96fe86a4438b4f6d",
+      "430cac4c936e493427c43b5510ca20dee9dce1a3",
+      "efb02bf1f867787e5bf7251d9045be2931eeb6d3"
+    ],
+    "targeted_test_areas": [
+      "BOM_PREPARE_REPLACEMENT_AND_SOURCE_ISOLATION",
+      "APP_BACKUP_DISPATCH_INSTALL_WRAPPER",
+      "CALCULATOR_BLANK_ZERO_BOUNDARIES",
+      "CONDUIT_BOX_FILL_RENDERED_UI",
+      "PROJECT_CALCULATOR_RESIDENTIAL_COMMERCIAL_ROUTING",
+      "FULL_APP_BACKUP_REAL_UI_ROUNDTRIP"
+    ],
     "implementation_evidence_sha": "efb02bf1f867787e5bf7251d9045be2931eeb6d3",
     "implementation_exact_head_ci_run": 606,
     "implementation_exact_head_ci_run_id": 35243084444,
@@ -171,9 +238,38 @@
     "entry_ci_conclusion": "success",
     "fault_matrix": "audits/function-capability/STAGE5_FAULT_INJECTION_MATRIX.md",
     "corrective_production_sha": "bed87c9134c0341e72f9bbe0c7b5f4c7693ff10f",
-    "additional_corrective_shas": ["15eea1302984c0b37d93485ced85796bf2bf5593"],
+    "additional_corrective_shas": [
+      "15eea1302984c0b37d93485ced85796bf2bf5593"
+    ],
     "corrective_summary": "FULL_APP_RESTORE_IS_TRANSACTIONAL; LOCALE_FORMATTED_HELPER_METRICS_USE_NUMERIC_SUMMARY_SOURCE; CUSTOMER_DOCUMENTS_PREVIEW_BEFORE_OUTPUT; CURRENT_SHELL_NO_LEGACY_FLASH; DARK_NATIVE_CONTROLS",
-    "targeted_fault_areas": ["MALFORMED_APP_JSON", "WRONG_IMPORT_TYPE", "INCOMPLETE_APP_BACKUP", "PARTIAL_STORAGE_WRITE_ROLLBACK", "INVALID_APP_SUBBLOCK", "CANCELLED_RESTORE_NOOP", "OVERSIZED_APP_BACKUP", "MALFORMED_JOB_JSON", "REPEATED_RESTORE_IDEMPOTENCY", "FAILED_TASK_UPDATE_ROLLBACK", "STALE_MISSING_TASK_ID", "IMPOSSIBLE_RACEWAY", "UNSUPPORTED_CALCULATIONS", "OPTIONAL_SERVICE_WORKER_ASSET_FAILURE", "CORE_SERVICE_WORKER_CACHE_FAILURE", "STALE_CACHE_OWNERSHIP", "REPEATED_BOM_REPLACEMENT", "REPEATED_TASK_APPLY", "CROSS_JOB_STALE_REVISION_APPLY", "LOCALE_DECIMAL_HELPER_METRIC_AMPLIFICATION", "CALCULATION_PREVIEW_NO_OUTPUT", "FIXED_INVOICE_PREVIEW_NO_PRINT", "MISSING_COMPANY_IDENTITY_BLOCKS_PDF", "LEGACY_HEADER_PREPAINT", "DARK_DISABLED_CONTROLS", "CALCULATOR_FAIL_RECOVER_VISIBLE_UI"],
+    "targeted_fault_areas": [
+      "MALFORMED_APP_JSON",
+      "WRONG_IMPORT_TYPE",
+      "INCOMPLETE_APP_BACKUP",
+      "PARTIAL_STORAGE_WRITE_ROLLBACK",
+      "INVALID_APP_SUBBLOCK",
+      "CANCELLED_RESTORE_NOOP",
+      "OVERSIZED_APP_BACKUP",
+      "MALFORMED_JOB_JSON",
+      "REPEATED_RESTORE_IDEMPOTENCY",
+      "FAILED_TASK_UPDATE_ROLLBACK",
+      "STALE_MISSING_TASK_ID",
+      "IMPOSSIBLE_RACEWAY",
+      "UNSUPPORTED_CALCULATIONS",
+      "OPTIONAL_SERVICE_WORKER_ASSET_FAILURE",
+      "CORE_SERVICE_WORKER_CACHE_FAILURE",
+      "STALE_CACHE_OWNERSHIP",
+      "REPEATED_BOM_REPLACEMENT",
+      "REPEATED_TASK_APPLY",
+      "CROSS_JOB_STALE_REVISION_APPLY",
+      "LOCALE_DECIMAL_HELPER_METRIC_AMPLIFICATION",
+      "CALCULATION_PREVIEW_NO_OUTPUT",
+      "FIXED_INVOICE_PREVIEW_NO_PRINT",
+      "MISSING_COMPANY_IDENTITY_BLOCKS_PDF",
+      "LEGACY_HEADER_PREPAINT",
+      "DARK_DISABLED_CONTROLS",
+      "CALCULATOR_FAIL_RECOVER_VISIBLE_UI"
+    ],
     "implementation_evidence_sha": "f1b5ab8b69a3a509037520d077a28e2dee038528",
     "implementation_exact_head_ci_run": 703,
     "implementation_exact_head_ci_run_id": 35282365016,
@@ -187,7 +283,28 @@
     "playwright_passed": 88,
     "playwright_skipped_by_viewport_contract": 80,
     "playwright_failed": 0,
-    "human_walkthrough_scope": ["PROJECT_CALCULATOR", "RESIDENTIAL_LIVE_DESIGN", "RESIDENTIAL_ESTIMATOR", "RESIDENTIAL_FULL_TAKEOFF", "AMPACITY", "VOLTAGE_DROP", "CONDUIT_FILL", "BOX_FILL", "EVSE", "HVAC_MCA_MOCP", "MOTOR_CIRCUIT", "GROUNDING", "FEEDER_HELPER", "CATALOG_REFERENCE", "ELECTRICAL_TASKS", "CALCULATION_PREVIEW_PDF", "FIXED_PRICE_INVOICE_PREVIEW_PRINT", "CALL_SERVICE_JOURNAL", "CURRENT_SHELL_RELOAD_STABILITY", "DARK_NATIVE_CONTROLS"],
+    "human_walkthrough_scope": [
+      "PROJECT_CALCULATOR",
+      "RESIDENTIAL_LIVE_DESIGN",
+      "RESIDENTIAL_ESTIMATOR",
+      "RESIDENTIAL_FULL_TAKEOFF",
+      "AMPACITY",
+      "VOLTAGE_DROP",
+      "CONDUIT_FILL",
+      "BOX_FILL",
+      "EVSE",
+      "HVAC_MCA_MOCP",
+      "MOTOR_CIRCUIT",
+      "GROUNDING",
+      "FEEDER_HELPER",
+      "CATALOG_REFERENCE",
+      "ELECTRICAL_TASKS",
+      "CALCULATION_PREVIEW_PDF",
+      "FIXED_PRICE_INVOICE_PREVIEW_PRINT",
+      "CALL_SERVICE_JOURNAL",
+      "CURRENT_SHELL_RELOAD_STABILITY",
+      "DARK_NATIVE_CONTROLS"
+    ],
     "independent_audit_branch": "audit/function-capability-stage5-2f0e708",
     "independent_audit_report": "audits/reports/FUNCTION_CAPABILITY_STAGE5_AUDIT_2f0e708.md",
     "independent_audit_verdict": "A_ACCEPT",
@@ -221,7 +338,18 @@
     "name": "Cross-module regression matrix",
     "entry_basis": "Stage 6 A_ACCEPT at exact SHA 485b3efd448f6757bdc3283f8ad3a34923c9bf10 with P0=0/P1=0",
     "required_matrix": "audits/function-capability/STAGE7_CROSS_MODULE_REGRESSION_MATRIX.md",
-    "required_pairs": ["CATALOG_JOB_MATERIALS", "JOB_MATERIALS_QUOTE", "QUOTE_APPROVED_QUOTE", "APPROVED_QUOTE_INVOICE", "ELECTRICAL_TASKS_JOB_MATERIALS", "RESIDENTIAL_JOB_MATERIALS", "CUSTOM_MATERIALS_PRICING", "JOB_SWITCHING_SCOPED_ARCHIVES", "IMPORT_EXPORT_HISTORY_PROVENANCE", "PWA_UPDATE_STORED_JOB_DATA"],
+    "required_pairs": [
+      "CATALOG_JOB_MATERIALS",
+      "JOB_MATERIALS_QUOTE",
+      "QUOTE_APPROVED_QUOTE",
+      "APPROVED_QUOTE_INVOICE",
+      "ELECTRICAL_TASKS_JOB_MATERIALS",
+      "RESIDENTIAL_JOB_MATERIALS",
+      "CUSTOM_MATERIALS_PRICING",
+      "JOB_SWITCHING_SCOPED_ARCHIVES",
+      "IMPORT_EXPORT_HISTORY_PROVENANCE",
+      "PWA_UPDATE_STORED_JOB_DATA"
+    ],
     "implementation_evidence_sha": "e7ac30404bf17698507ad6ea17b14f3a6fcafcf6",
     "implementation_exact_head_ci_run": 722,
     "implementation_exact_head_ci_run_id": 35286879122,
@@ -250,9 +378,32 @@
     "name": "Responsive / PWA browser audit",
     "entry_basis": "Stage 7 A_ACCEPT at implementation SHA e7ac30404bf17698507ad6ea17b14f3a6fcafcf6; evidence synchronization SHA dbaeb3459b9e0da0fd7ff9b7ee5527abf7d63a88 exact-head CI #723 green; acceptance validation complete; P0=0/P1=0",
     "required_matrix": "audits/function-capability/STAGE8_RESPONSIVE_PWA_MATRIX.md",
-    "required_viewports": ["phone_390", "tablet_820", "desktop_1440"],
-    "required_checks": ["CRITICAL_ACTION_REACHABILITY", "CRITICAL_HORIZONTAL_OVERFLOW", "BOTTOM_NAV_OBSTRUCTION", "LONG_FORM_TABLE_USABILITY", "SERVICE_WORKER_OFFLINE", "SERVICE_WORKER_UPGRADE", "PERSISTED_JOB_SURVIVAL"],
-    "gate": "DISCOVER_DEFINE_MATRIX_AND_EXECUTABLE_GAPS"
+    "required_viewports": [
+      "phone_390",
+      "tablet_820",
+      "desktop_1440"
+    ],
+    "required_checks": [
+      "CRITICAL_ACTION_REACHABILITY",
+      "CRITICAL_HORIZONTAL_OVERFLOW",
+      "BOTTOM_NAV_OBSTRUCTION",
+      "LONG_FORM_TABLE_USABILITY",
+      "SERVICE_WORKER_OFFLINE",
+      "SERVICE_WORKER_UPGRADE",
+      "PERSISTED_JOB_SURVIVAL"
+    ],
+    "gate": "DISCOVER_DEFINE_MATRIX_AND_EXECUTABLE_GAPS",
+    "architecture_cleanup_status": "IMPLEMENTED_PENDING_EXACT_HEAD_CI_AND_BROWSER_REAUDIT",
+    "architecture_cleanup_report": "audits/function-capability/STAGE8_RUNTIME_ARCHITECTURE_CLEANUP.md",
+    "target_visible_build": "v1.15",
+    "runtime_owner_invariants": [
+      "SINGLE_BOOTSTRAP_OWNER",
+      "SINGLE_VISIBLE_VERSION_SOURCE",
+      "NO_DYNAMIC_RETIRED_PATCH_LOADERS",
+      "SINGLE_CUSTOMER_DOCUMENT_RENDERER",
+      "SINGLE_JOURNAL_METRICS_SETTINGS_WRITER_CHAIN",
+      "RETIRED_DUPLICATE_OWNERS_PHYSICALLY_ABSENT"
+    ]
   },
   "browser_e2e": {
     "required": true,
@@ -261,27 +412,121 @@
     "mandatory_ci": true,
     "exact_head_required": true,
     "critical_user_facing_pass_requires_browser_evidence": true,
-    "viewport_profiles": ["phone_360_430", "tablet_768_1024", "desktop_1200_plus"],
-    "configured_viewports": {"phone": 390, "tablet": 820, "desktop": 1440},
-    "mandatory_journeys": ["E2E-01", "E2E-02", "E2E-03", "E2E-04", "E2E-05", "E2E-06", "E2E-07", "E2E-08", "E2E-09", "E2E-10", "E2E-11", "E2E-12"],
-    "additional_browser_journeys": ["E2E-EVSE-01", "STAGE4-APP-BACKUP-01", "STAGE4-CALC-01", "STAGE4-CALC-02", "STAGE4-CALC-03", "STAGE4-CALC-04", "STAGE4-PROJECT-01", "STAGE4-PROJECT-02", "STAGE5-FAULT-01", "STAGE5-FAULT-02", "STAGE5-FAULT-03", "STAGE5-FAULT-04", "STAGE5-FAULT-05", "STAGE5-FAULT-06", "HUMAN-CALC-01", "HUMAN-CALC-02", "HUMAN-CALC-03", "HUMAN-CALC-04", "HUMAN-CALC-05", "HUMAN-CALC-06", "HUMAN-CALC-07", "HUMAN-CALC-08", "HUMAN-CALC-09", "HUMAN-CALC-10", "HUMAN-CALC-11", "JOURNAL-MATERIALS-01", "JOURNAL-MATERIALS-02", "JOURNAL-MATERIALS-03", "JOURNAL-TAX-01", "JOURNAL-PREVIEW-01", "JOURNAL-HUMAN-01", "JOURNAL-PRICING-HUMAN-01", "JOURNAL-HELPER-HUMAN-01", "UI-STABILITY-01", "UI-STABILITY-02", "STAGE7-XMOD-01"],
+    "viewport_profiles": [
+      "phone_360_430",
+      "tablet_768_1024",
+      "desktop_1200_plus"
+    ],
+    "configured_viewports": {
+      "phone": 390,
+      "tablet": 820,
+      "desktop": 1440
+    },
+    "mandatory_journeys": [
+      "E2E-01",
+      "E2E-02",
+      "E2E-03",
+      "E2E-04",
+      "E2E-05",
+      "E2E-06",
+      "E2E-07",
+      "E2E-08",
+      "E2E-09",
+      "E2E-10",
+      "E2E-11",
+      "E2E-12"
+    ],
+    "additional_browser_journeys": [
+      "E2E-EVSE-01",
+      "STAGE4-APP-BACKUP-01",
+      "STAGE4-CALC-01",
+      "STAGE4-CALC-02",
+      "STAGE4-CALC-03",
+      "STAGE4-CALC-04",
+      "STAGE4-PROJECT-01",
+      "STAGE4-PROJECT-02",
+      "STAGE5-FAULT-01",
+      "STAGE5-FAULT-02",
+      "STAGE5-FAULT-03",
+      "STAGE5-FAULT-04",
+      "STAGE5-FAULT-05",
+      "STAGE5-FAULT-06",
+      "HUMAN-CALC-01",
+      "HUMAN-CALC-02",
+      "HUMAN-CALC-03",
+      "HUMAN-CALC-04",
+      "HUMAN-CALC-05",
+      "HUMAN-CALC-06",
+      "HUMAN-CALC-07",
+      "HUMAN-CALC-08",
+      "HUMAN-CALC-09",
+      "HUMAN-CALC-10",
+      "HUMAN-CALC-11",
+      "JOURNAL-MATERIALS-01",
+      "JOURNAL-MATERIALS-02",
+      "JOURNAL-MATERIALS-03",
+      "JOURNAL-TAX-01",
+      "JOURNAL-PREVIEW-01",
+      "JOURNAL-HUMAN-01",
+      "JOURNAL-PRICING-HUMAN-01",
+      "JOURNAL-HELPER-HUMAN-01",
+      "UI-STABILITY-01",
+      "UI-STABILITY-02",
+      "STAGE7-XMOD-01"
+    ],
     "latest_green_evidence_sha": "dbaeb3459b9e0da0fd7ff9b7ee5527abf7d63a88",
     "latest_green_ci_run": 723,
     "latest_green_ci_run_id": 35287548626
   },
   "stages": {
-    "stage_0": {"status": "DONE_ACCEPTED", "name": "Baseline + requirements index + browser baseline"},
-    "stage_1": {"status": "DONE_ACCEPTED", "name": "Runtime capability inventory"},
-    "stage_2": {"status": "DONE_ACCEPTED", "name": "Requirement-to-runtime gap audit"},
-    "stage_3": {"status": "DONE_ACCEPTED", "name": "Executable core workflows + Playwright foundation"},
-    "stage_4": {"status": "DONE_ACCEPTED", "name": "Function-level deterministic audit"},
-    "stage_5": {"status": "DONE_ACCEPTED", "name": "Negative / fault-injection audit"},
-    "stage_6": {"status": "DONE_ACCEPTED", "name": "UI action wiring audit"},
-    "stage_7": {"status": "DONE_ACCEPTED", "name": "Cross-module regression matrix"},
-    "stage_8": {"status": "ACTIVE", "name": "Responsive / PWA browser audit"},
-    "stage_9": {"status": "LOCKED", "name": "Corrective master"},
-    "stage_10": {"status": "LOCKED", "name": "Independent re-audit"},
-    "stage_11": {"status": "LOCKED", "name": "Final capability certification"}
+    "stage_0": {
+      "status": "DONE_ACCEPTED",
+      "name": "Baseline + requirements index + browser baseline"
+    },
+    "stage_1": {
+      "status": "DONE_ACCEPTED",
+      "name": "Runtime capability inventory"
+    },
+    "stage_2": {
+      "status": "DONE_ACCEPTED",
+      "name": "Requirement-to-runtime gap audit"
+    },
+    "stage_3": {
+      "status": "DONE_ACCEPTED",
+      "name": "Executable core workflows + Playwright foundation"
+    },
+    "stage_4": {
+      "status": "DONE_ACCEPTED",
+      "name": "Function-level deterministic audit"
+    },
+    "stage_5": {
+      "status": "DONE_ACCEPTED",
+      "name": "Negative / fault-injection audit"
+    },
+    "stage_6": {
+      "status": "DONE_ACCEPTED",
+      "name": "UI action wiring audit"
+    },
+    "stage_7": {
+      "status": "DONE_ACCEPTED",
+      "name": "Cross-module regression matrix"
+    },
+    "stage_8": {
+      "status": "ACTIVE",
+      "name": "Responsive / PWA browser audit"
+    },
+    "stage_9": {
+      "status": "LOCKED",
+      "name": "Corrective master"
+    },
+    "stage_10": {
+      "status": "LOCKED",
+      "name": "Independent re-audit"
+    },
+    "stage_11": {
+      "status": "LOCKED",
+      "name": "Final capability certification"
+    }
   },
   "completion_gate": {
     "p0": 0,

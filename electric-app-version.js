@@ -1,7 +1,7 @@
 /* Bruno Electric — single runtime app version source. */
 (function(){
 'use strict';
-var VERSION='v1.14';
+var VERSION='v1.15';
 window.BRUNO_APP_VERSION=VERSION;
 document.documentElement.setAttribute('data-be-app-version',VERSION);
 function sync(){

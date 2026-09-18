@@ -270,6 +270,10 @@ Required Stage 8 contract:
 
 Required deliverable: `audits/function-capability/STAGE8_RESPONSIVE_PWA_MATRIX.md`.
 
+### Stage 8 architecture corrective substage — ACTIVE
+Real-device testing discovered runtime generation flicker and duplicate ownership. Before Stage 8 acceptance, perform architecture cleanup under `audits/function-capability/STAGE8_RUNTIME_ARCHITECTURE_CLEANUP.md`: physically remove retired duplicate invoice/Journal writers, enforce one bootstrap + one visible build version source, prohibit dynamic resurrection of retired business modules, and inventory remaining legacy monolith ownership in `index.html`. Version stability must be proven in real Browser E2E after reload, delayed mutations, Journal entry and invoice preview.
+
+
 Gate: ACTIVE — discover responsive/PWA gaps, define explicit invariants, add executable browser evidence, correct every P0/P1, then exact-head CI and independent audit.
 
 ---

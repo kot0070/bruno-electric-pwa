@@ -10,7 +10,6 @@ function syncTotals(){var totals=document.getElementById('live-totals');if(!tota
 function clickId(id){var el=document.getElementById(id);if(el)el.click()}
 function printCurrent(){if(activeTab()==='tm')clickId('btn-print-tm');else clickId('btn-print-quote')}
 function closeMore(menu,btn){if(!menu||!btn)return;menu.hidden=true;btn.setAttribute('aria-expanded','false')}
-function loadInvoicePatch(){if(window.BrunoCustomerInvoicePatch||document.querySelector('script[data-be-customer-invoice-patch]'))return;var s=document.createElement('script');s.src='./electric-customer-invoice-patch.js';s.defer=true;s.setAttribute('data-be-customer-invoice-patch','1');s.onerror=function(){};(document.head||document.documentElement).appendChild(s)}
 function installBaseStyle(){
   if(document.getElementById('be-current-shell-style'))return;
   var style=document.createElement('style');style.id='be-current-shell-style';style.textContent='\
@@ -43,7 +42,7 @@ function install(){
   document.addEventListener('click',function(e){if(!actions.contains(e.target))closeMore(overflow,more)});document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMore(overflow,more)});
   var tabs=document.getElementById('nav-tabs');if(tabs)tabs.addEventListener('click',function(){setTimeout(syncTotals,0)});var observer=new MutationObserver(syncTotals);if(tabs)observer.observe(tabs,{subtree:true,attributes:true,attributeFilter:['class']});syncTotals();markReady();window.BrunoCompactHeader={syncTotals:syncTotals,relevantTabs:Object.keys(RELEVANT_TOTAL_TABS)};return true
 }
-installBaseStyle();loadInvoicePatch();
+installBaseStyle();
 if(!install()){
   var tries=0,t=setInterval(function(){tries++;if(install()||tries>100){clearInterval(t);if(tries>100){var a=q('.header-actions');if(a)a.style.visibility='visible';markReady()}}},10);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true})

@@ -1,5 +1,5 @@
-/* Bruno Electric Estimating — app shell offline cache. v71 refreshes the responsive shell/invoice runtime and uses network-first shell assets online so an old cached UI is not replayed before the current shell. Historical audited baseline: bruno-electric-v45. */
-const CACHE = 'bruno-electric-v71';
+/* Bruno Electric Estimating — app shell offline cache. Refresh marker 2026-09-17 responsive-invoice-hotfix: current assets are reinstalled into bruno-electric-v70; controlled navigations receive a prepaint shell guard and shell assets use network-first online with cached fallback offline. Historical audited baseline: bruno-electric-v45. */
+const CACHE = 'bruno-electric-v70';
 const OWNED_CACHE_RE = /^bruno-electric-v\d+$/;
 const CORE_SHELL = [
   './','./index.html','./electrical-tools.html','./manifest.webmanifest','./sw-register.js',
@@ -11,6 +11,8 @@ const CORE_SHELL = [
 ];
 const OPTIONAL_SHELL = ['./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
 const SHELL = CORE_SHELL.concat(OPTIONAL_SHELL);
+const PREPAINT_GUARD='<style id="be-sw-prepaint">html:not([data-be-workspace="1"]) #nav-tabs{visibility:hidden!important;pointer-events:none!important}</style>';
+function guardedNavigation(res){if(!res)return Promise.resolve(res);return res.text().then((text)=>{const guarded=text.indexOf('id="be-sw-prepaint"')>=0?text:text.replace(/<head(\s[^>]*)?>/i,(m)=>m+PREPAINT_GUARD);const headers=new Headers(res.headers);headers.delete('content-length');headers.delete('content-encoding');headers.delete('etag');return new Response(guarded,{status:res.status,statusText:res.statusText,headers})})}
 self.addEventListener('install',(event)=>{event.waitUntil(caches.open(CACHE).then((cache)=>cache.addAll(CORE_SHELL).then(()=>Promise.all(OPTIONAL_SHELL.map((url)=>cache.add(url).catch(() => null))))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',(event)=>{event.waitUntil(caches.keys().then((keys)=>Promise.all(keys.filter((k)=>OWNED_CACHE_RE.test(k)&&k!==CACHE).map((k)=>caches.delete(k)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',(event)=>{const req=event.request;if(req.method!=='GET')return;const url=new URL(req.url);if(url.origin!==self.location.origin)return;event.respondWith(caches.match(req).then((cached)=>{const isShell=SHELL.some((p)=>url.pathname.endsWith(p.replace('./','/'))||url.pathname.endsWith(p.replace('./','')));const net=fetch(req).then((res)=>{if(res&&res.ok&&(req.mode==='navigate'||isShell)){const copy=res.clone();caches.open(CACHE).then((c)=>c.put(req,copy))}return res}).catch(()=>cached);if(req.mode==='navigate'||isShell)return net.then((r)=>r||cached||(req.mode==='navigate'?caches.match('./index.html'):null));return cached||net}))});
+self.addEventListener('fetch',(event)=>{const req=event.request;if(req.method!=='GET')return;const url=new URL(req.url);if(url.origin!==self.location.origin)return;event.respondWith(caches.match(req).then((cached)=>{const isShell=SHELL.some((p)=>url.pathname.endsWith(p.replace('./','/'))||url.pathname.endsWith(p.replace('./','')));const net=fetch(req).then((res)=>{if(res&&res.ok&&(req.mode==='navigate'||isShell)){const copy=res.clone();caches.open(CACHE).then((c)=>c.put(req,copy))}return res}).catch(()=>cached);if(req.mode==='navigate')return net.then((r)=>r||cached||caches.match('./index.html')).then(guardedNavigation);if(isShell)return net.then((r)=>r||cached);return cached||net}))});

@@ -65,6 +65,9 @@ test('STAGE8-INVOICE-01 invoice rows are conditional and commercial repair tax i
   await expect(row(page,'Amount due')).toContainText('$216.50');
   text=await pdfText(page);
   expect(text).toContain('Included materials reference: $50.00');
-  expect(text).toContain('sales tax (8.25%): $16.50');
+  expect(text).toContain('Texas state/local sales tax');
+  expect(text).toContain('8.25%');
+  expect(text).toContain('$16.50');
+  expect(text).toContain('AMOUNT DUE: $216.50');
   expect(text).not.toContain('Tool / consumables');
 });

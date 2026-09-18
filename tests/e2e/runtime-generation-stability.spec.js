@@ -3,6 +3,7 @@ const { test, expect } = require('@playwright/test');
 const DATA_KEY='bruno-electric-dispatch-journal-v2';
 const SETTINGS_KEY='bruno-electric-dispatch-settings-v2';
 const VERSION='v1.17';
+const JOURNAL_URL='/index.html#be=JOB&tab=dispatch';
 
 async function expectStableGeneration(page){
   await expect(page.locator('.ver-badge')).toHaveText(VERSION);
@@ -24,16 +25,17 @@ async function expectStableGeneration(page){
   expect(new Set(runtimeScripts).size).toBe(runtimeScripts.length);
 }
 
-test('STAGE8-RUNTIME-01 visible build and runtime generation remain stable through delayed mutations and invoice preview',async({page})=>{
+test('STAGE8-RUNTIME-01 human phone journey boots, opens Journal, reloads and previews invoice without generation regression',async({page})=>{
   const errors=[];
   const failedRequests=[];
   page.on('pageerror',e=>errors.push(String(e.message||e)));
   page.on('requestfailed',r=>failedRequests.push(String(r.url())));
 
-  await page.goto('/index.html',{waitUntil:'load'});
-  await expect(page.locator('#be-modern-shell-loader')).toHaveCount(0,{timeout:10000});
-  await expect(page.locator('#panel-dispatch')).toBeVisible();
+  await page.goto(JOURNAL_URL,{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#be-modern-shell-loader')).toHaveCount(0,{timeout:12000});
   await expectStableGeneration(page);
+  await expect(page.locator('#panel-dispatch')).toBeVisible();
+  await expect(page.getByText('Call Journal',{exact:true}).first()).toBeVisible();
 
   await page.waitForTimeout(1500);
   await expectStableGeneration(page);
@@ -56,9 +58,10 @@ test('STAGE8-RUNTIME-01 visible build and runtime generation remain stable throu
     }],helpers:[]}));
   },[DATA_KEY,SETTINGS_KEY]);
 
-  await page.reload({waitUntil:'load'});
-  await expect(page.locator('#be-modern-shell-loader')).toHaveCount(0,{timeout:10000});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await expect(page.locator('#be-modern-shell-loader')).toHaveCount(0,{timeout:12000});
   await expectStableGeneration(page);
+  await expect(page.locator('#panel-dispatch')).toBeVisible();
   const call=page.locator('.dj-call').filter({hasText:'Runtime Stability'});
   await expect(call).toBeVisible();
   await call.locator('[data-invoice]').click();

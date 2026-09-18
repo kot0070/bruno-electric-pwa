@@ -2,15 +2,17 @@ const { test, expect } = require('@playwright/test');
 
 const DATA_KEY='bruno-electric-dispatch-journal-v2';
 const SETTINGS_KEY='bruno-electric-dispatch-settings-v2';
-const VERSION='v1.15';
+const VERSION='v1.16';
 
 async function expectStableGeneration(page){
   await expect(page.locator('.ver-badge')).toHaveText(VERSION);
   await expect.poll(()=>page.evaluate(()=>({
     global: window.BRUNO_APP_VERSION,
     html: document.documentElement.getAttribute('data-be-app-version'),
-    bootstrap: document.documentElement.getAttribute('data-be-bootstrap')
-  }))).toEqual({global:VERSION,html:VERSION,bootstrap:'single-runtime-v2'});
+    bootstrap: document.documentElement.getAttribute('data-be-bootstrap'),
+    loader: !!document.getElementById('be-modern-shell-loader'),
+    pending: document.documentElement.getAttribute('data-be-shell-pending')
+  }))).toEqual({global:VERSION,html:VERSION,bootstrap:'single-runtime-v3',loader:false,pending:null});
 
   const scripts=await page.evaluate(()=>Array.from(document.scripts)
     .map(s=>String(s.src||''))
@@ -24,9 +26,12 @@ async function expectStableGeneration(page){
 
 test('STAGE8-RUNTIME-01 visible build and runtime generation remain stable through delayed mutations and invoice preview',async({page})=>{
   const errors=[];
+  const failedRequests=[];
   page.on('pageerror',e=>errors.push(String(e.message||e)));
+  page.on('requestfailed',r=>failedRequests.push(String(r.url())));
 
   await page.goto('/index.html',{waitUntil:'load'});
+  await expect(page.locator('#be-modern-shell-loader')).toHaveCount(0,{timeout:10000});
   await expect(page.locator('#panel-dispatch')).toBeVisible();
   await expectStableGeneration(page);
 
@@ -52,6 +57,7 @@ test('STAGE8-RUNTIME-01 visible build and runtime generation remain stable throu
   },[DATA_KEY,SETTINGS_KEY]);
 
   await page.reload({waitUntil:'load'});
+  await expect(page.locator('#be-modern-shell-loader')).toHaveCount(0,{timeout:10000});
   await expectStableGeneration(page);
   const call=page.locator('.dj-call').filter({hasText:'Runtime Stability'});
   await expect(call).toBeVisible();
@@ -62,4 +68,5 @@ test('STAGE8-RUNTIME-01 visible build and runtime generation remain stable throu
   await page.waitForTimeout(1500);
   await expectStableGeneration(page);
   expect(errors).toEqual([]);
+  expect(failedRequests).toEqual([]);
 });

@@ -1,0 +1,49 @@
+name: One-shot remove sales tax hardcode
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-shot-remove-sales-tax-hardcode.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Remove fixed sales-tax fallback
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          targets = [
+              Path('electric-customer-documents.js'),
+              Path('electric-runtime-authority-v1.js'),
+          ]
+          for path in targets:
+              text = path.read_text()
+              text = text.replace('commercialTaxPct:8.25', 'commercialTaxPct:0')
+              text = text.replace('commercialTaxPct,8.25', 'commercialTaxPct,0')
+              path.write_text(text)
+          PY
+          if grep -n "8\.25" electric-customer-documents.js electric-runtime-authority-v1.js; then
+            echo 'Hardcoded 8.25 still present in active tax files.' >&2
+            exit 1
+          fi
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No cleanup needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add electric-customer-documents.js electric-runtime-authority-v1.js
+          git commit -m 'fix(tax): settings are sole sales-tax source'
+          git push origin HEAD:main

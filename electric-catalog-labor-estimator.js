@@ -8,7 +8,7 @@
 'use strict';
 var JOB_KEY='bruno-electric-v1';
 var RATE_KEY='bruno-electric-labor-cost-rate-v1';
-var busy=false;
+var busy=false,scheduled=false;
 function num(v){var n=Number(v);return Number.isFinite(n)?n:0}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function legacyHours(row,qty){
@@ -49,18 +49,20 @@ function renderRows(){
   for(var i=0;i<buttons.length;i++){
     var btn=buttons[i],id=String(btn.getAttribute('data-id')||''),row=byId[id],tr=btn.closest&&btn.closest('tr');if(!row||!tr)continue;
     var cell=tr.cells&&tr.cells[0];if(!cell)continue;
-    var old=cell.querySelector('.be-labor-row');if(old)old.remove();
-    var h=legacyHoursPerUnit(row),box=root.document.createElement('div');box.className='be-labor-row';
-    box.setAttribute('data-labor-source','legacy-excel');box.setAttribute('data-labor-hours-unit',String(h));
-    if(rate>0)box.setAttribute('data-labor-cost-unit',String(laborCost(row,1,rate)));
-    var prod=num(row.prod),crew=num(row.crew),u=String(row.prodUnit||'').trim();
+    var h=legacyHoursPerUnit(row),cost=rate>0?laborCost(row,1,rate):0,prod=num(row.prod),crew=num(row.crew),u=String(row.prodUnit||'').trim();
+    var signature=[h,cost,rate,prod,crew,u,row.unit||''].join('|');
+    var box=cell.querySelector('.be-labor-row');
+    if(box&&box.getAttribute('data-labor-signature')===signature)continue;
+    if(!box){box=root.document.createElement('div');box.className='be-labor-row';cell.appendChild(box)}
+    box.setAttribute('data-labor-signature',signature);box.setAttribute('data-labor-source','legacy-excel');box.setAttribute('data-labor-hours-unit',String(h));
+    if(rate>0)box.setAttribute('data-labor-cost-unit',String(cost));else box.removeAttribute('data-labor-cost-unit');
     if(!h){box.innerHTML='<span class="be-labor-source">LEGACY EXCEL</span><span class="be-labor-stale">Labor baseline unavailable</span>'}
-    else box.innerHTML='<span class="be-labor-source">LEGACY EXCEL</span><strong>'+esc(fmtHours(h))+' h/'+esc(row.unit||'unit')+'</strong>'+(rate>0?' · '+esc(money(laborCost(row,1,rate)))+' labor/'+esc(row.unit||'unit'):' · set $/hr for cost')+'<br><span>crew '+esc(crew)+' · productivity '+esc(prod)+'/'+esc(u||'unit')+'</span>';
-    cell.appendChild(box);
+    else box.innerHTML='<span class="be-labor-source">LEGACY EXCEL</span><strong>'+esc(fmtHours(h))+' h/'+esc(row.unit||'unit')+'</strong>'+(rate>0?' · '+esc(money(cost))+' labor/'+esc(row.unit||'unit'):' · set $/hr for cost')+'<br><span>crew '+esc(crew)+' · productivity '+esc(prod)+'/'+esc(u||'unit')+'</span>';
   }
 }
 function render(){if(busy||!root.document)return;busy=true;try{ensureStyle();ensureToolbar();renderRows()}finally{busy=false}}
-function install(){render();var panel=root.document.getElementById('panel-catalog');if(root.MutationObserver&&panel)new root.MutationObserver(function(){root.setTimeout(render,0)}).observe(panel,{childList:true,subtree:true});root.addEventListener('storage',function(e){if(!e||e.key===JOB_KEY||e.key===RATE_KEY)root.setTimeout(render,0)});root.addEventListener('focus',render)}
+function scheduleRender(){if(scheduled)return;scheduled=true;root.setTimeout(function(){scheduled=false;render()},0)}
+function install(){render();var groups=root.document.getElementById('cat-groups');if(root.MutationObserver&&groups)new root.MutationObserver(function(muts){var meaningful=false;for(var i=0;i<muts.length;i++){var m=muts[i];for(var j=0;j<m.addedNodes.length;j++){var n=m.addedNodes[j];if(!(n.nodeType===1&&n.classList&&n.classList.contains('be-labor-row'))){meaningful=true;break}}if(meaningful)break}if(meaningful)scheduleRender()}).observe(groups,{childList:true,subtree:true});root.addEventListener('storage',function(e){if(!e||e.key===JOB_KEY||e.key===RATE_KEY)scheduleRender()});root.addEventListener('focus',render)}
 root.BrunoCatalogLaborEstimator=Object.freeze({legacyHours:legacyHours,legacyHoursPerUnit:legacyHoursPerUnit,laborCost:laborCost,readRate:readRate,writeRate:writeRate,render:render,version:'labor-v1',source:'Legacy Excel Material Sheet formula'});
 if(root.document&&root.document.querySelector){if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',function(){root.setTimeout(install,160)},{once:true});else root.setTimeout(install,160)}
 })(typeof window!=='undefined'?window:globalThis);

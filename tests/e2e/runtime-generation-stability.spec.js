@@ -2,18 +2,19 @@ const { test, expect } = require('@playwright/test');
 
 const DATA_KEY='bruno-electric-dispatch-journal-v2';
 const SETTINGS_KEY='bruno-electric-dispatch-settings-v2';
-const VERSION='v1.20';
 const JOURNAL_URL='/index.html#be=JOB&tab=dispatch';
 
 async function expectStableGeneration(page){
-  await expect(page.locator('.ver-badge')).toHaveText(VERSION);
+  const visibleVersion=await page.locator('.ver-badge').textContent();
+  expect(visibleVersion).toMatch(/^v\d+\.\d+$/);
   await expect.poll(()=>page.evaluate(()=>({
+    visible: document.querySelector('.ver-badge')&&document.querySelector('.ver-badge').textContent,
     global: window.BRUNO_APP_VERSION,
     html: document.documentElement.getAttribute('data-be-app-version'),
     bootstrap: document.documentElement.getAttribute('data-be-bootstrap'),
     loader: !!document.getElementById('be-modern-shell-loader'),
     pending: document.documentElement.getAttribute('data-be-shell-pending')
-  }))).toEqual({global:VERSION,html:VERSION,bootstrap:'single-runtime-v3',loader:false,pending:null});
+  }))).toEqual({visible:visibleVersion,global:visibleVersion,html:visibleVersion,bootstrap:'single-runtime-v3',loader:false,pending:null});
 
   const scripts=await page.evaluate(()=>Array.from(document.scripts)
     .map(s=>String(s.src||''))

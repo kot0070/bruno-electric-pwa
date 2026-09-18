@@ -1,0 +1,111 @@
+name: One-shot original-inspired invoice v1.13
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-shot-invoice-original-v113.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Re-align invoice with original Excel layout and bump v1.13
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          VERSION='v1.13'
+          BUILD='1.13'
+
+          p=Path('index.html')
+          text=p.read_text()
+          text=re.sub(r'>v1\.\d+<', f'>{VERSION}<', text, count=1)
+          text=re.sub(r'sw-register\.js\?v=[0-9.]+', f'sw-register.js?v={BUILD}', text, count=1)
+          p.write_text(text)
+
+          p=Path('sw-register.js')
+          text=p.read_text()
+          text=re.sub(r"var BUILD_VERSION='[^']+';", f"var BUILD_VERSION='{BUILD}';", text, count=1)
+          p.write_text(text)
+
+          p=Path('electric-customer-documents.js')
+          text=p.read_text()
+
+          # Keep the existing structure but move it visually much closer to the original T&M invoice.
+          text=text.replace(
+            '.be-doc-letter{display:flex;justify-content:space-between;gap:20px;border-bottom:3px solid #d58a00;padding-bottom:14px;margin-bottom:20px}',
+            '.be-doc-letter{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:32px;border-bottom:2px solid #2c3440;padding-bottom:16px;margin-bottom:18px}'
+          )
+          text=text.replace(
+            '.be-doc-letter h1{font-size:1.45rem;margin:0 0 4px}',
+            '.be-doc-letter h1{font-size:1.35rem;margin:0 0 8px;letter-spacing:.01em}'
+          )
+          text=text.replace(
+            '.be-doc-title{text-align:right}.be-doc-title strong{display:block;font-size:1.4rem;letter-spacing:.06em}',
+            '.be-doc-title{text-align:right;min-width:180px}.be-doc-title strong{display:block;font-size:1.7rem;letter-spacing:.08em;margin-bottom:5px}.be-doc-title span{font-weight:700}'
+          )
+          text=text.replace(
+            '.be-doc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 20px}',
+            '.be-doc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border:1px solid #d6dce3;margin:14px 0 20px}'
+          )
+          text=text.replace(
+            '.be-doc-box{border:1px solid #d6dce3;border-radius:6px;padding:9px 10px}',
+            '.be-doc-box{border:0;border-right:1px solid #e0e4e8;border-bottom:1px solid #e0e4e8;border-radius:0;padding:10px 12px;min-height:62px}'
+          )
+          text=text.replace(
+            '.be-doc-section{margin:18px 0}.be-doc-section h3{font-size:.83rem;text-transform:uppercase;letter-spacing:.08em;color:#8a5a00;border-bottom:1px solid #e0e4e8;padding-bottom:5px;margin:0 0 8px}',
+            '.be-doc-section{margin:20px 0}.be-doc-section h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:#17202b;background:#f3f5f7;border:1px solid #d6dce3;border-left:4px solid #d58a00;padding:7px 9px;margin:0 0 10px}'
+          )
+          text=text.replace(
+            '.be-doc-row{display:flex;justify-content:space-between;gap:20px;padding:5px 0}',
+            '.be-doc-row{display:flex;justify-content:space-between;gap:20px;padding:6px 2px;border-bottom:1px solid #edf0f2}'
+          )
+          text=text.replace(
+            '.be-doc-row.total{font-size:1.1rem;font-weight:800;border-top:2px solid #25313e;margin-top:7px;padding-top:10px}',
+            '.be-doc-row.total{font-size:1.15rem;font-weight:800;border-top:2px solid #25313e;border-bottom:0;margin-top:8px;padding:11px 2px 4px}'
+          )
+          text=text.replace(
+            '.be-doc-reg{font-size:.68rem;color:#69737e;margin-top:28px;border-top:1px solid #ddd;padding-top:10px}',
+            '.be-doc-reg{font-size:.68rem;color:#69737e;margin-top:24px;border-top:1px solid #d6dce3;padding-top:10px}'
+          )
+
+          # Add original-style document cues without changing call economics.
+          text=text.replace(
+            "<div class=\"be-doc-muted\" style=\"margin-top:8px\">'+esc(s.invoiceTerms||'Due upon receipt')+'</div></div><div class=\"be-doc-reg\">",
+            "<div class=\"be-doc-muted\" style=\"margin-top:10px\">'+esc(s.invoiceTerms||'Due upon receipt')+'</div><div style=\"margin-top:14px;font-weight:700\">Thank you for your business.</div></div><div class=\"be-doc-reg\">"
+          )
+
+          # Print should look like a document, not a mobile screenshot.
+          text=text.replace('@page{size:Letter portrait;margin:.7in}', '@page{size:Letter portrait;margin:.65in .72in .7in}')
+          text=text.replace('body.be-doc-print .be-doc-paper{width:auto!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;box-shadow:none!important;overflow:visible!important;font-size:10.5pt!important;line-height:1.35!important}', 'body.be-doc-print .be-doc-paper{width:100%!important;max-width:7.06in!important;height:auto!important;min-height:0!important;margin:0 auto!important;padding:0!important;box-shadow:none!important;overflow:visible!important;font-size:10.25pt!important;line-height:1.32!important}')
+          text=text.replace('body.be-doc-print .be-doc-grid{gap:8pt!important;margin:10pt 0 14pt!important}', 'body.be-doc-print .be-doc-grid{gap:0!important;margin:10pt 0 14pt!important}')
+
+          p.write_text(text)
+          PY
+
+          node --check sw-register.js
+          node --check electric-customer-documents.js
+          grep -q '>v1.13<' index.html
+          grep -q "BUILD_VERSION='1.13'" sw-register.js
+          grep -q 'Thank you for your business.' electric-customer-documents.js
+      - name: Commit repair
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No repair needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898204+github-actions[bot]@users.noreply.github.com'
+          git add index.html sw-register.js electric-customer-documents.js
+          git commit -m 'fix(invoice): align layout with original workbook and bump v1.13'
+          git push origin HEAD:main

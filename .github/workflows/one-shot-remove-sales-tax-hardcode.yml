@@ -1,4 +1,4 @@
-name: One-shot versioned runtime bootstrap repair
+name: One-shot invoice renderer cleanup and version bump
 
 on:
   push:
@@ -16,49 +16,72 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Version bootstrap and runtime module URLs
+      - name: Remove legacy invoice PDF path, unstick bars, bump visible app version
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          BUILD='20260918-0324'
+          import re
+
+          VERSION='v1.10'
+          BUILD='1.10'
 
           p=Path('index.html')
           text=p.read_text()
-          old='<script src="./sw-register.js"></script>'
-          new=f'<script src="./sw-register.js?v={BUILD}"></script>'
-          if old in text:
-              text=text.replace(old,new,1)
-          elif f'./sw-register.js?v={BUILD}' not in text:
-              raise SystemExit('index bootstrap script target not found')
+          text=text.replace('v1.9', VERSION)
+          text=re.sub(r'<script src="\./sw-register\.js\?v=[^"]+"></script>', f'<script src="./sw-register.js?v={BUILD}"></script>', text, count=1)
           p.write_text(text)
 
           p=Path('sw-register.js')
           text=p.read_text()
-          marker="var RETIRE_RELOAD_KEY='bruno-sw-retired-reload-v1';"
-          if "var BUILD_VERSION='20260918-0324';" not in text:
-              if marker not in text: raise SystemExit('bootstrap version anchor not found')
-              text=text.replace(marker,marker+"\nvar BUILD_VERSION='20260918-0324';",1)
+          text=re.sub(r"var BUILD_VERSION='[^']+';", f"var BUILD_VERSION='{BUILD}';", text, count=1)
+          p.write_text(text)
 
-          old="function hasScript(src){return Array.prototype.some.call(document.scripts,function(s){var v=s.getAttribute('src')||'';return v===src||v.endsWith('/'+src.replace(/^\\.\\//,''))})}"
-          new="function cleanSrc(v){return String(v||'').split('?')[0]}\nfunction hasScript(src){var target=cleanSrc(src);return Array.prototype.some.call(document.scripts,function(s){var v=cleanSrc(s.getAttribute('src')||'');return v===target||v.endsWith('/'+target.replace(/^\\.\\//,''))})}"
-          if old in text:
-              text=text.replace(old,new,1)
-          elif 'function cleanSrc(v)' not in text:
-              raise SystemExit('hasScript target not found')
+          p=Path('electric-customer-documents.js')
+          text=p.read_text()
 
-          old="function load(src){return new Promise(function(resolve){if(hasScript(src)){resolve();return}var s=document.createElement('script');s.src=src;s.async=false;s.onload=resolve;s.onerror=function(){console.error('Required runtime module failed: '+src);resolve()};document.head.appendChild(s)})}"
-          new="function load(src){return new Promise(function(resolve){if(hasScript(src)){resolve();return}var s=document.createElement('script');s.src=src+(src.indexOf('?')>=0?'&':'?')+'v='+encodeURIComponent(BUILD_VERSION);s.async=false;s.onload=resolve;s.onerror=function(){console.error('Required runtime module failed: '+src);resolve()};document.head.appendChild(s)})}"
-          if old in text:
-              text=text.replace(old,new,1)
-          elif "encodeURIComponent(BUILD_VERSION)" not in text:
-              raise SystemExit('load target not found')
+          old='.be-doc-top{position:sticky;top:0;z-index:3;background:#17212c;border:1px solid #344256;border-radius:12px 12px 0 0;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px}'
+          new='.be-doc-top{position:static;width:fit-content;max-width:calc(100% - 24px);margin:12px auto;background:#17212c;border:1px solid #344256;border-radius:12px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:18px}'
+          if old not in text:
+              raise SystemExit('top preview bar target not found')
+          text=text.replace(old,new,1)
+
+          old='.be-doc-actions{position:static;background:#17212c;border:1px solid #344256;border-radius:0 0 12px 12px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}'
+          new='.be-doc-actions{position:static;width:fit-content;max-width:calc(100% - 24px);margin:14px auto 24px;background:#17212c;border:1px solid #344256;border-radius:12px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}'
+          if old not in text:
+              raise SystemExit('bottom preview bar target not found')
+          text=text.replace(old,new,1)
+
+          text=text.replace('.be-doc-top,.be-doc-actions{border-radius:0;border-left:0;border-right:0}', '.be-doc-top,.be-doc-actions{border-radius:12px}', 1)
+
+          # Physically remove the obsolete hand-built ASCII PDF generator.
+          text, n1 = re.subn(r"\nfunction ascii\(s\)\{.*?\nfunction missingCompany\(s\)", "\nfunction missingCompany(s)", text, count=1, flags=re.S)
+          if n1 != 1:
+              raise SystemExit('legacy PDF generator block not found')
+
+          # Remove the obsolete text invoice sections renderer too.
+          text, n2 = re.subn(r"\nfunction callSections\(c,s\)\{.*?\nfunction callPreviewHtml\(c,s\)", "\nfunction callPreviewHtml(c,s)", text, count=1, flags=re.S)
+          if n2 != 1:
+              raise SystemExit('legacy callSections block not found')
+
           p.write_text(text)
           PY
+
           node --check sw-register.js
-          grep -q 'sw-register.js?v=20260918-0324' index.html
-          grep -q "BUILD_VERSION='20260918-0324'" sw-register.js
-          grep -q 'encodeURIComponent(BUILD_VERSION)' sw-register.js
+          node --check electric-customer-documents.js
+          grep -q '>v1.10<' index.html
+          grep -q "BUILD_VERSION='1.10'" sw-register.js
+          grep -q 'sw-register.js?v=1.10' index.html
+          grep -q '.be-doc-top{position:static' electric-customer-documents.js
+          grep -q '.be-doc-actions{position:static;width:fit-content' electric-customer-documents.js
+          if grep -q 'function pdf(' electric-customer-documents.js; then
+            echo 'legacy pdf() function still exists' >&2
+            exit 1
+          fi
+          if grep -q 'function callSections(' electric-customer-documents.js; then
+            echo 'legacy callSections() still exists' >&2
+            exit 1
+          fi
       - name: Commit repair
         shell: bash
         run: |
@@ -68,6 +91,6 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898204+github-actions[bot]@users.noreply.github.com'
-          git add index.html sw-register.js
-          git commit -m 'fix(runtime): version bootstrap and module loads'
+          git add index.html sw-register.js electric-customer-documents.js
+          git commit -m 'fix(invoice): remove legacy PDF renderer and bump v1.10'
           git push origin HEAD:main

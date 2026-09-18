@@ -1,9 +1,24 @@
 const { test, expect } = require('@playwright/test');
 
+async function openTool(page,id){
+  const compact=await page.evaluate(()=>matchMedia('(max-width:1199.98px)').matches);
+  if(compact){
+    const picker=page.locator('#be-tool-select');
+    await expect(picker).toBeVisible();
+    await picker.selectOption(id);
+  }else{
+    const button=page.locator(`#tool-nav [data-tool="${id}"]`);
+    await expect(button).toBeVisible();
+    await button.click();
+  }
+  await expect(page.locator(`#tool-${id}`)).toBeVisible();
+}
+
 test('STAGE9-FIELD-01 motor HP/W helper, voltage-drop verdict, and verified conduit ranges work as a field user', async ({page}) => {
   await page.goto('/electrical-tools.html', {waitUntil:'load'});
+  await page.locator('#be-tool-select').waitFor({state:'attached'});
 
-  await page.locator('[data-tool="mo3"]').click();
+  await openTool(page,'mo3');
   await expect(page.locator('#mo-punit')).toBeVisible();
   await page.locator('#mo-punit').selectOption('hp');
   await page.locator('#mo-power').fill('5');
@@ -18,7 +33,7 @@ test('STAGE9-FIELD-01 motor HP/W helper, voltage-drop verdict, and verified cond
   await expect(page.locator('#mo-flc')).toHaveValue('14');
   expect(Number(await page.locator('#mo-np').inputValue())).toBeGreaterThan(0);
 
-  await page.locator('[data-tool="vd"]').click();
+  await openTool(page,'vd');
   await page.locator('#v-v').fill('240');
   await page.locator('#v-i').fill('40');
   await page.locator('#v-d').fill('100');
@@ -28,7 +43,7 @@ test('STAGE9-FIELD-01 motor HP/W helper, voltage-drop verdict, and verified cond
   await expect(page.locator('#out-vd')).toContainText('% target');
   await expect(page.locator('#out-vd')).toContainText('V at load');
 
-  await page.locator('[data-tool="cf"]').click();
+  await openTool(page,'cf');
   await expect(page.locator('#c-r')).toHaveValue('EMT');
   await expect(page.locator('#c-ts option')).toHaveCount(10);
   await expect(page.locator('.c-size').first().locator('option')).toHaveCount(24);

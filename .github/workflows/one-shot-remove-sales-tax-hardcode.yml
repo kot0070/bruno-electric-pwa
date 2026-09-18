@@ -1,4 +1,4 @@
-name: One-shot remove sales tax hardcode
+name: One-shot journal metric and call-id repair
 
 on:
   push:
@@ -10,40 +10,90 @@ permissions:
   contents: write
 
 jobs:
-  cleanup:
+  repair:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Remove fixed sales-tax fallback
+      - name: Apply journal metric and durable call-id fixes
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          targets = [
-              Path('electric-customer-documents.js'),
-              Path('electric-runtime-authority-v1.js'),
-          ]
-          for path in targets:
-              text = path.read_text()
-              text = text.replace('commercialTaxPct:8.25', 'commercialTaxPct:0')
-              text = text.replace('commercialTaxPct,8.25', 'commercialTaxPct,0')
-              path.write_text(text)
+          import re
+
+          runtime = Path('electric-runtime-authority-v1.js')
+          text = runtime.read_text()
+          new_metrics = r'''function patchMetrics(){
+            var panel=q('#panel-dispatch'),host=panel&&q('.dj-metrics',panel);if(!host)return;
+            var d=data(),s=settings(),p=currentPeriodIds(d),base=0,income=0;
+            (d.calls||[]).forEach(function(c){
+              if(!p.ids[c.id]||c.status!=='completed')return;
+              var ct=customerTotal(c,s);base+=ct.base;income+=ct.total;
+            });
+            var helper=p.period?Math.max(0,n(p.period.helperGross)):0,
+                sales=salesPct(s),estimatedRate=reservePct(s),
+                tax=base*sales/100,
+                estimated=base*estimatedRate/100,
+                taxPlusEstimated=tax+estimated,
+                netProfit=income-tax,
+                businessNet=netProfit-helper,
+                rows=[
+                  ['Income',money(income),''],
+                  ['Tax + Estimated','-'+money(taxPlusEstimated),'neg'],
+                  ['Net Profit',money(netProfit),'net'],
+                  ['Business Net',money(businessNet),businessNet<0?'neg':'net'],
+                  ['Helper','-'+money(helper),'neg'],
+                  ['Tax','-'+money(tax),'neg']
+                ];
+            host.style.gridTemplateColumns='repeat(2,minmax(0,1fr))';
+            host.style.gap='.32rem';
+            host.innerHTML=rows.map(function(r){return '<div class="dj-metric '+r[2]+'" style="padding:.42rem .55rem;min-height:68px"><span class="k" style="font-size:.64rem">'+r[0]+'</span><span class="v" style="font-size:.96rem">'+r[1]+'</span></div>'}).join('');
+          }
+          function patchCallCards'''
+          text,nsub=re.subn(r"function patchMetrics\(\)\{.*?\}\nfunction patchCallCards",new_metrics,text,count=1,flags=re.S)
+          if nsub!=1:
+              raise SystemExit('patchMetrics replacement failed')
+          text=text.replace("data-be-runtime-authority','v1.8')","data-be-runtime-authority','v1.9')")
+          text=text.replace("version:'1.8.0'","version:'1.9.0'")
+          runtime.write_text(text)
+
+          docs = Path('electric-customer-documents.js')
+          text = docs.read_text()
+          marker="var SETTINGS_KEY='bruno-electric-dispatch-settings-v2';\n"
+          if 'var editingCallId=null;' not in text:
+              text=text.replace(marker,marker+'var editingCallId=null;\n',1)
+          anchor="function data(){var d=read(DATA_KEY,{calls:[],helpers:[]});d.calls=Array.isArray(d.calls)?d.calls:[];d.helpers=Array.isArray(d.helpers)?d.helpers:[];return d}\n"
+          tracker="document.addEventListener('click',function(e){var add=e.target.closest&&e.target.closest('#dj-add');if(add)editingCallId=null;var edit=e.target.closest&&e.target.closest('[data-edit]');if(edit)editingCallId=edit.getAttribute('data-edit')||null},true);\n"
+          if tracker not in text:
+              text=text.replace(anchor,anchor+tracker,1)
+          new_find="function findEditingCall(e){var d=data();if(editingCallId){var byId=d.calls.find(function(c){return c.id===editingCallId});if(byId)return byId}var date=(q('#djc-date',e)||{}).value,time=(q('#djc-time',e)||{}).value,address=(q('#djc-address',e)||{}).value;return d.calls.find(function(c){return c.date===date&&c.time===time&&String(c.address||'')===String(address||'')})}\nfunction editorUi"
+          text,nsub=re.subn(r"function findEditingCall\(e\)\{.*?\}\nfunction editorUi",new_find,text,count=1,flags=re.S)
+          if nsub!=1:
+              raise SystemExit('findEditingCall replacement failed')
+          old="var d=data(),rows=d.calls.slice().sort(function(a,b){return String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))}),saved=rows[0];if(!saved)return;"
+          new="var d=data(),rows=d.calls.slice().sort(function(a,b){return String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))}),saved=editingCallId?d.calls.find(function(x){return x.id===editingCallId}):rows[0];if(!saved)return;editingCallId=saved.id;"
+          if old not in text:
+              raise SystemExit('save target replacement failed')
+          text=text.replace(old,new,1)
+          docs.write_text(text)
           PY
-          if grep -n "8\.25" electric-customer-documents.js electric-runtime-authority-v1.js; then
-            echo 'Hardcoded 8.25 still present in active tax files.' >&2
+          node --check electric-runtime-authority-v1.js
+          node --check electric-customer-documents.js
+          if grep -n "8\.25" electric-runtime-authority-v1.js electric-customer-documents.js; then
+            echo 'Hardcoded 8.25 returned to active tax files.' >&2
             exit 1
           fi
-      - name: Commit cleanup
+      - name: Commit repair
         shell: bash
         run: |
           if git diff --quiet; then
-            echo 'No cleanup needed.'
+            echo 'No repair needed.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add electric-customer-documents.js electric-runtime-authority-v1.js
-          git commit -m 'fix(tax): settings are sole sales-tax source'
+          git config user.email '41898204+github-actions[bot]@users.noreply.github.com'
+          git add electric-runtime-authority-v1.js electric-customer-documents.js
+          git commit -m 'fix(journal): six-cell cashflow metrics and durable call edit id'
           git push origin HEAD:main

@@ -37,6 +37,13 @@ async function openJournal(page){
   await expect(page.locator('.dj-settings')).toBeVisible();
 }
 
+async function openSettings(page){
+  const details=page.locator('.dj-settings');
+  await details.evaluate(el=>{el.open=true;});
+  await expect(details).toHaveAttribute('open','');
+  await expect(page.locator('#djs-helper-enabled')).toBeVisible();
+}
+
 function metric(page,label){
   return page.locator('.dj-metric').filter({hasText:new RegExp('^'+label,'i')}).locator('.v');
 }
@@ -46,7 +53,7 @@ test('JOURNAL-HELPER-HUMAN-01 helper is configured once and counted only on date
   const selectedDate=await page.locator('#dj-date').inputValue();
   expect(selectedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 
-  await page.locator('.dj-settings summary').click();
+  await openSettings(page);
   await page.locator('#djs-helper-enabled').check();
   await page.locator('#djs-helper-name').fill('Helper');
   await page.locator('#djs-helper-mode').selectOption('hourly');

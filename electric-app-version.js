@@ -9,7 +9,7 @@ function setTextIfNeeded(el,value){
 }
 function sync(){
   setTextIfNeeded(document.querySelector('.ver-badge'),VERSION);
-  document.querySelectorAll('[data-be-app-version-label]').forEach(function(el){setTextIfNeeded(el,value=VERSION)});
+  document.querySelectorAll('[data-be-app-version-label]').forEach(function(el){setTextIfNeeded(el,VERSION)});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();
 var obs=new MutationObserver(function(){sync()});

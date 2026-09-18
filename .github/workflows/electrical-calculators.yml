@@ -62,6 +62,8 @@ jobs:
         env:
           BRUNO_TESTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: npx playwright test tests/e2e/runtime-generation-stability.spec.js --project=chromium-phone --workers=1
+      - name: Run project and calculation workflow phone smoke
+        run: npx playwright test tests/e2e/calculation-workflow-human.spec.js --project=chromium-phone --workers=1
       - name: Run Stage 9 field calculator phone smoke
         run: npx playwright test tests/e2e/stage9-field-usability.spec.js --project=chromium-phone --workers=1
       - name: Run Stage 9 helper accounting phone smoke

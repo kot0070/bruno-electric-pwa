@@ -1,4 +1,4 @@
-name: One-shot invoice action bar layout repair
+name: One-shot versioned runtime bootstrap repair
 
 on:
   push:
@@ -16,23 +16,49 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Make invoice action bar non-sticky and centered
+      - name: Version bootstrap and runtime module URLs
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('electric-customer-documents.js')
+          BUILD='20260918-0324'
+
+          p=Path('index.html')
           text=p.read_text()
-          old=".be-doc-actions{position:sticky;bottom:0;z-index:4;background:#17212c;border:1px solid #344256;border-radius:0 0 12px 12px;padding:10px;display:flex;gap:8px;flex-wrap:wrap}"
-          new=".be-doc-actions{position:static;background:#17212c;border:1px solid #344256;border-radius:0 0 12px 12px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}"
-          if old not in text:
-              raise SystemExit('invoice action bar CSS target not found')
-          text=text.replace(old,new,1)
+          old='<script src="./sw-register.js"></script>'
+          new=f'<script src="./sw-register.js?v={BUILD}"></script>'
+          if old in text:
+              text=text.replace(old,new,1)
+          elif f'./sw-register.js?v={BUILD}' not in text:
+              raise SystemExit('index bootstrap script target not found')
+          p.write_text(text)
+
+          p=Path('sw-register.js')
+          text=p.read_text()
+          marker="var RETIRE_RELOAD_KEY='bruno-sw-retired-reload-v1';"
+          if "var BUILD_VERSION='20260918-0324';" not in text:
+              if marker not in text: raise SystemExit('bootstrap version anchor not found')
+              text=text.replace(marker,marker+"\nvar BUILD_VERSION='20260918-0324';",1)
+
+          old="function hasScript(src){return Array.prototype.some.call(document.scripts,function(s){var v=s.getAttribute('src')||'';return v===src||v.endsWith('/'+src.replace(/^\\.\\//,''))})}"
+          new="function cleanSrc(v){return String(v||'').split('?')[0]}\nfunction hasScript(src){var target=cleanSrc(src);return Array.prototype.some.call(document.scripts,function(s){var v=cleanSrc(s.getAttribute('src')||'');return v===target||v.endsWith('/'+target.replace(/^\\.\\//,''))})}"
+          if old in text:
+              text=text.replace(old,new,1)
+          elif 'function cleanSrc(v)' not in text:
+              raise SystemExit('hasScript target not found')
+
+          old="function load(src){return new Promise(function(resolve){if(hasScript(src)){resolve();return}var s=document.createElement('script');s.src=src;s.async=false;s.onload=resolve;s.onerror=function(){console.error('Required runtime module failed: '+src);resolve()};document.head.appendChild(s)})}"
+          new="function load(src){return new Promise(function(resolve){if(hasScript(src)){resolve();return}var s=document.createElement('script');s.src=src+(src.indexOf('?')>=0?'&':'?')+'v='+encodeURIComponent(BUILD_VERSION);s.async=false;s.onload=resolve;s.onerror=function(){console.error('Required runtime module failed: '+src);resolve()};document.head.appendChild(s)})}"
+          if old in text:
+              text=text.replace(old,new,1)
+          elif "encodeURIComponent(BUILD_VERSION)" not in text:
+              raise SystemExit('load target not found')
           p.write_text(text)
           PY
-          node --check electric-customer-documents.js
-          grep -q ".be-doc-actions{position:static" electric-customer-documents.js
-          grep -q "justify-content:center" electric-customer-documents.js
+          node --check sw-register.js
+          grep -q 'sw-register.js?v=20260918-0324' index.html
+          grep -q "BUILD_VERSION='20260918-0324'" sw-register.js
+          grep -q 'encodeURIComponent(BUILD_VERSION)' sw-register.js
       - name: Commit repair
         shell: bash
         run: |
@@ -42,6 +68,6 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898204+github-actions[bot]@users.noreply.github.com'
-          git add electric-customer-documents.js
-          git commit -m 'fix(invoice): make preview actions non-sticky and centered'
+          git add index.html sw-register.js
+          git commit -m 'fix(runtime): version bootstrap and module loads'
           git push origin HEAD:main

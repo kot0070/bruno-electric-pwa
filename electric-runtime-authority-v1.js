@@ -34,7 +34,32 @@ function ensureSettingsAuthority(){var body=q('#dj-settings-body'),save=q('#djs-
 if(!save.dataset.atomicAuthority){save.dataset.atomicAuthority='1';save.addEventListener('click',function(ev){ev.preventDefault();ev.stopImmediatePropagation();var x=settings();x.serviceHourlyRate=Math.max(0,n((q('#djs-service-rate')||{}).value,175));x.businessReservePct=Math.max(0,n((q('#djs-business-reserve')||{}).value,0));x.estimatedSetAsideV1=true;x.taxEnabled=x.businessReservePct>0;x.ownerTaxPct=x.businessReservePct;x.stateTaxPct=0;x.localTaxPct=0;x.commercialTaxPct=Math.max(0,n((q('#djs-commercial-tax')||{}).value,0));x.invoiceCompanyName=String((q('#djs-company')||{}).value||'').trim()||'Bruno Electric Services LLC';x.invoiceAddress=String((q('#djs-address')||{}).value||'').trim();x.invoicePhone=String((q('#djs-phone')||{}).value||'').trim();x.invoiceLicense=String((q('#djs-license')||{}).value||'').trim()||'TECL 28137';x.invoiceEmail=String((q('#djs-email')||{}).value||'').trim();x.invoiceTerms=String((q('#djs-terms')||{}).value||'').trim()||'Due upon receipt';write(SETTINGS_KEY,x);syncCallTaxSnapshots(x);window.dispatchEvent(new CustomEvent('bruno:dispatch-changed'));schedule();alert('Tax & journal settings saved.')},true)}}
 function patchLegacyEditor(){var e=q('#dj-call-editor.open');if(!e)return;var tax=q('#djc-tax',e);if(tax&&tax.closest('.field'))tax.closest('.field').style.display='none';qa('.field',e).forEach(function(f){if(/tax\s*%\s*override/i.test(String((q('label',f)||{}).textContent||'')))f.style.display='none'})}
 function currentPeriodIds(d){var ids={};if(window.BrunoDispatchJournalV2&&q('#dj-date')&&q('#dj-mode')){var p=window.BrunoDispatchJournalV2.summary(d,settings(),q('#dj-date').value,q('#dj-mode').value);(p.calls||[]).forEach(function(c){ids[c.id]=true});return{ids:ids,period:p}}var date=(q('#dj-date')||{}).value;d.calls.forEach(function(c){if(!date||c.date===date)ids[c.id]=true});return{ids:ids,period:null}}
-function patchMetrics(){var panel=q('#panel-dispatch'),metrics=panel&&qa('.dj-metric',panel);if(!metrics||metrics.length<4)return;var d=data(),s=settings(),p=currentPeriodIds(d),gross=0;(d.calls||[]).forEach(function(c){if(p.ids[c.id]&&c.status==='completed')gross+=subtotal(c)});var helper=p.period?Math.max(0,n(p.period.helperGross)):0,sales=salesPct(s),setAsideRate=reservePct(s),taxPlanning=gross*(sales+setAsideRate)/100,setAside=gross*setAsideRate/100,net=gross-setAside-helper,rows=[['Gross earned',money(gross)],['Tax + Estimated','-'+money(taxPlanning)],['Helpers gross','-'+money(helper)],['Business net',money(net)]];rows.forEach(function(r,i){var k=q('.k',metrics[i]),v=q('.v',metrics[i]);if(k)k.textContent=r[0];if(v)v.textContent=r[1]})}
+function patchMetrics(){
+  var panel=q('#panel-dispatch'),host=panel&&q('.dj-metrics',panel);if(!host)return;
+  var d=data(),s=settings(),p=currentPeriodIds(d),base=0,income=0;
+  (d.calls||[]).forEach(function(c){
+    if(!p.ids[c.id]||c.status!=='completed')return;
+    var ct=customerTotal(c,s);base+=ct.base;income+=ct.total;
+  });
+  var helper=p.period?Math.max(0,n(p.period.helperGross)):0,
+      sales=salesPct(s),estimatedRate=reservePct(s),
+      tax=base*sales/100,
+      estimated=base*estimatedRate/100,
+      taxPlusEstimated=tax+estimated,
+      netProfit=income-tax,
+      businessNet=netProfit-helper,
+      rows=[
+        ['Income',money(income),''],
+        ['Tax + Estimated','-'+money(taxPlusEstimated),'neg'],
+        ['Net Profit',money(netProfit),'net'],
+        ['Business Net',money(businessNet),businessNet<0?'neg':'net'],
+        ['Helper','-'+money(helper),'neg'],
+        ['Tax','-'+money(tax),'neg']
+      ];
+  host.style.gridTemplateColumns='repeat(2,minmax(0,1fr))';
+  host.style.gap='.32rem';
+  host.innerHTML=rows.map(function(r){return '<div class="dj-metric '+r[2]+'" style="padding:.42rem .55rem;min-height:68px"><span class="k" style="font-size:.64rem">'+r[0]+'</span><span class="v" style="font-size:.96rem">'+r[1]+'</span></div>'}).join('');
+}
 function patchCallCards(){var d=data(),s=settings(),map={};d.calls.forEach(function(c){map[c.id]=c});qa('[data-invoice]').forEach(function(btn){var c=map[btn.dataset.invoice],row=btn.closest('.dj-call');if(!c||!row)return;var ct=customerTotal(c,s),amount=q('.dj-call-money',row),amountWrap=amount&&amount.parentElement,sub=amountWrap&&q('.dj-call-sub',amountWrap),residentialNet=ct.base-(ct.base*salesPct(s)/100);if(amount)amount.textContent=money(ct.total);if(sub){if(c.status!=='completed')sub.textContent='customer total '+money(ct.total);else if(c.callType==='commercial_repair')sub.textContent='net '+money(ct.base);else sub.textContent='net '+money(residentialNet)}})}
 function patchMiniInvoices(){var d=data(),s=settings();qa('.dj-invoice').forEach(function(inv){var id=String(inv.id||'').replace(/^dj-invoice-/,'');var c=d.calls.find(function(x){return x.id===id});if(!c)return;qa('.dj-invoice-row',inv).forEach(function(r){var label=String((r.firstElementChild||{}).textContent||'').trim(),val=r.lastElementChild;if(/^Materials$/i.test(label))hide(r,materialTotal(c)<=0);if(/^Tool \/ consumables$/i.test(label))hide(r,tool(c)<=0);if(/^(Tax reserve|Estimated tax set-aside)/i.test(label)){r.style.display='';if(r.firstElementChild)r.firstElementChild.textContent='Estimated tax set-aside · '+reservePct(s).toFixed(2)+'%';if(val)val.textContent='-'+money(subtotal(c)*reservePct(s)/100)}})})}
 function previewVisible(){var h=q('#be-doc-preview');return !!(h&&!h.hidden)}
@@ -43,9 +68,9 @@ function syncPreviewHistory(){if(previewVisible()&&!modalHistoryActive){try{hist
 window.addEventListener('popstate',function(){if(previewVisible()){closePreviewDom();modalHistoryActive=false;schedule()}});
 document.addEventListener('click',function(e){var inv=e.target.closest&&e.target.closest('[data-invoice]');if(inv){activeInvoiceId=inv.dataset.invoice||null;syncCallTaxSnapshots(settings())}var close=e.target.closest&&e.target.closest('#be-doc-preview-close,#be-preview-close-bottom');if(close&&previewVisible()&&modalHistoryActive)setTimeout(function(){if(history.state&&history.state.beDocPreview)history.back();else modalHistoryActive=false},0)},true);
 function migrateEstimatedSetAside(){var raw=read(SETTINGS_KEY,{});if(raw.estimatedSetAsideV1===true)return raw;raw.businessReservePct=0;raw.ownerTaxPct=0;raw.stateTaxPct=0;raw.localTaxPct=0;raw.taxEnabled=false;raw.estimatedSetAsideV1=true;write(SETTINGS_KEY,raw);return raw}
-function patch(){ensureSettingsAuthority();patchLegacyEditor();patchMetrics();patchCallCards();patchMiniInvoices();patchPreview();syncPreviewHistory();document.documentElement.setAttribute('data-be-runtime-authority','v1.8')}
+function patch(){ensureSettingsAuthority();patchLegacyEditor();patchMetrics();patchCallCards();patchMiniInvoices();patchPreview();syncPreviewHistory();document.documentElement.setAttribute('data-be-runtime-authority','v1.9')}
 function schedule(){if(pending)return;pending=true;setTimeout(function(){pending=false;if(observer)observer.disconnect();patch();if(observer)observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','open']})},25)}
 function install(){migrateEstimatedSetAside();var s=settings();syncCallTaxSnapshots(s);patch();observer=new MutationObserver(schedule);observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','open']});window.addEventListener('bruno:dispatch-changed',schedule)}
-window.BrunoRuntimeAuthorityV1={version:'1.8.0',schedule:schedule,customerTaxPct:customerTaxPct,customerTotal:customerTotal,reservePct:reservePct,salesPct:salesPct,syncCallTaxSnapshots:syncCallTaxSnapshots};
+window.BrunoRuntimeAuthorityV1={version:'1.9.0',schedule:schedule,customerTaxPct:customerTaxPct,customerTotal:customerTotal,reservePct:reservePct,salesPct:salesPct,syncCallTaxSnapshots:syncCallTaxSnapshots};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();

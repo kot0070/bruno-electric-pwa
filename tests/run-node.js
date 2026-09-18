@@ -65,6 +65,7 @@ require('./quote-lifecycle.test.js');
 require('./fixed-price-invoice.test.js');
 require('./pricing-domain-guard.test.js');
 require('./catalog-job-ux-semantics.test.js');
+require('./catalog-labor-estimator.test.js');
 require('./workflow-final-integration.test.js');
 require('./dispatch-journal-v2.test.js');
 require('./customer-documents.test.js');

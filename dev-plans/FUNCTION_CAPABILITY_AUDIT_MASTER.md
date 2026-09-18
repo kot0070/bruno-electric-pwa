@@ -271,6 +271,16 @@ Required Stage 8 contract:
 Required deliverable: `audits/function-capability/STAGE8_RESPONSIVE_PWA_MATRIX.md`.
 
 ### Stage 8 architecture corrective substage — ACTIVE
+
+#### Binding production-tree hygiene
+- `main` is the current production tree, not executable history.
+- superseded UI/runtime/renderer/patch files that own the same capability must be physically removed after replacement is proven; omission from the main loader alone is insufficient;
+- Git history is the default backup for removed implementations; any exceptional human-readable archive must live outside runtime paths and must never be loaded or cached as executable application code;
+- completed one-shot repair workflows are removed after application; durable CI only remains under `.github/workflows`;
+- a replacement requires repository-wide search for retired filenames, handlers, selectors, storage writers, dynamic loaders and stale version literals;
+- Stage 8 cannot be accepted while multiple executable generations of the same user-facing capability remain in the production tree;
+- visible build version must have one runtime authority and must remain stable after delayed DOM mutations, Journal navigation, invoice preview and reload.
+
 Real-device testing discovered runtime generation flicker and duplicate ownership. Before Stage 8 acceptance, perform architecture cleanup under `audits/function-capability/STAGE8_RUNTIME_ARCHITECTURE_CLEANUP.md`: physically remove retired duplicate invoice/Journal writers, enforce one bootstrap + one visible build version source, prohibit dynamic resurrection of retired business modules, and inventory remaining legacy monolith ownership in `index.html`. Version stability must be proven in real Browser E2E after reload, delayed mutations, Journal entry and invoice preview.
 
 

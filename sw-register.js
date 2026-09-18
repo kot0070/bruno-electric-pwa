@@ -8,7 +8,7 @@
 'use strict';
 
 var RETIRE_RELOAD_KEY='bruno-sw-retired-reload-v1';
-var BUILD_VERSION='20260918-0324';
+var BUILD_VERSION='1.10';
 var isTools=/electrical-tools\.html$/i.test(location.pathname);
 
 function installShellGuard(){

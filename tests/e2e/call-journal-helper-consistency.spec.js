@@ -15,12 +15,11 @@ function errorsFor(page){
   return rows;
 }
 function amount(re){return new RegExp(re.replace('.', '[,.]'))}
-function weekdayNumber(date){const d=new Date(date+'T12:00:00').getDay();return d===0?7:d;}
 
 test.beforeEach(async({page})=>{
   errorsFor(page);
   await page.addInitScript(([d,s])=>{
-    const guard='__bruno_helper_consistency_reset__';
+    const guard='__bruno_helper_consistency_reset_v2__';
     if(sessionStorage.getItem(guard)==='1')return;
     localStorage.removeItem(d);localStorage.removeItem(s);sessionStorage.setItem(guard,'1');
   },[DATA_KEY,SETTINGS_KEY]);
@@ -35,62 +34,64 @@ test.afterEach(async({page},testInfo)=>{
 async function openJournal(page){
   await page.goto('/index.html#be=JOB&tab=dispatch',{waitUntil:'load'});
   await expect(page.locator('#panel-dispatch')).toBeVisible();
-  await expect(page.locator('#dj-helper-add')).toBeVisible();
+  await expect(page.locator('.dj-settings')).toBeVisible();
 }
 
 function metric(page,label){
   return page.locator('.dj-metric').filter({hasText:new RegExp('^'+label,'i')}).locator('.v');
 }
 
-test('JOURNAL-HELPER-HUMAN-01 current helper contributes exactly once to Helper and Business Net through save, period changes and reload',async({page})=>{
+test('JOURNAL-HELPER-HUMAN-01 helper is configured once and counted only on dates explicitly switched ON',async({page})=>{
   await openJournal(page);
   const selectedDate=await page.locator('#dj-date').inputValue();
   expect(selectedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 
-  // Every-day schedule isolates effective-date behavior from weekday filtering.
-  await page.locator('#dj-helper-add').click();
-  await expect(page.locator('#djh-name')).toBeVisible();
-  await page.locator('#djh-name').fill('Helper');
-  await page.locator('#djh-mode').selectOption('hourly');
-  await page.locator('#djh-rate').fill('20');
-  await page.locator('#djh-hours').fill('8');
-  await page.locator('#djh-active').check();
-  await page.locator('#djh-days').selectOption('all');
-  await page.locator('#djh-save').click();
+  await page.locator('.dj-settings summary').click();
+  await page.locator('#djs-helper-enabled').check();
+  await page.locator('#djs-helper-name').fill('Helper');
+  await page.locator('#djs-helper-mode').selectOption('hourly');
+  await page.locator('#djs-helper-rate').fill('20');
+  await page.locator('#djs-helper-hours').fill('8');
+  await page.locator('#djs-helper-tax-enabled').uncheck();
+  await page.locator('#djs-save').click();
 
   let row=page.locator('.dj-helper').filter({hasText:'Helper'}).first();
   await expect(row).toContainText(amount('20.00'));
   await expect(row).toContainText('8 h');
-  await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('160.00'));
-  await expect(metric(page,'Helper')).toContainText(amount('160.00'));
-  await expect(metric(page,'Business Net')).toContainText(amount('160.00'));
+  await expect(row).toContainText('OFF today');
+  await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('0.00'));
+  await expect(metric(page,'Helper')).toContainText(amount('0.00'));
 
-  // A newly-created helper revision starts on selectedDate. Week view must not back-charge days
-  // earlier in that Monday-Sunday period; only selectedDate through Sunday are applicable here.
-  const weekApplicableDays=8-weekdayNumber(selectedDate);
-  const weekGross=(160*weekApplicableDays).toFixed(2);
-  await page.locator('#dj-mode').selectOption('week');
-  await expect(metric(page,'Helper')).toContainText(amount(weekGross));
-  await expect(metric(page,'Business Net')).toContainText(amount(weekGross));
-  await page.locator('#dj-mode').selectOption('day');
-  await expect(metric(page,'Helper')).toContainText(amount('160.00'));
-
-  // Give observers multiple cycles; helper must not disappear or be multiplied repeatedly.
-  await page.waitForTimeout(500);
-  await expect(metric(page,'Helper')).toContainText(amount('160.00'));
-
-  // Real reload must preserve helper economics and selected-current-day calculation.
-  await page.reload({waitUntil:'load'});
+  await page.locator('#dj-helper-worked').check();
   row=page.locator('.dj-helper').filter({hasText:'Helper'}).first();
+  await expect(row).toContainText('ON today');
   await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('160.00'));
   await expect(metric(page,'Helper')).toContainText(amount('160.00'));
   await expect(metric(page,'Business Net')).toContainText(amount('160.00'));
 
-  const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).helpers[0],DATA_KEY);
-  const active=saved.revisions.find(r=>r.from<=selectedDate&&(!r.to||r.to>=selectedDate));
-  expect(active,'No active helper revision for selected journal date '+selectedDate).toBeTruthy();
-  expect(active.from).toBe(selectedDate);
-  expect(active.rate).toBe(20);
-  expect(active.hours).toBe(8);
-  expect(active.days).toEqual([1,2,3,4,5,6,7]);
+  await page.locator('#dj-mode').selectOption('week');
+  await expect(metric(page,'Helper')).toContainText(amount('160.00'));
+  await expect(metric(page,'Business Net')).toContainText(amount('160.00'));
+
+  await page.locator('#dj-mode').selectOption('day');
+  await page.locator('#dj-next').click();
+  await expect(page.locator('.dj-helper').filter({hasText:'Helper'})).toContainText('OFF today');
+  await expect(metric(page,'Helper')).toContainText(amount('0.00'));
+
+  await page.locator('#dj-prev').click();
+  await expect(page.locator('#dj-date')).toHaveValue(selectedDate);
+  await expect(page.locator('#dj-helper-worked')).toBeChecked();
+  await expect(metric(page,'Helper')).toContainText(amount('160.00'));
+
+  await page.reload({waitUntil:'load'});
+  await expect(page.locator('#dj-date')).toHaveValue(selectedDate);
+  await expect(page.locator('#dj-helper-worked')).toBeChecked();
+  await expect(metric(page,'Helper')).toContainText(amount('160.00'));
+
+  const saved=await page.evaluate(([d,s])=>({data:JSON.parse(localStorage.getItem(d)),settings:JSON.parse(localStorage.getItem(s))}),[DATA_KEY,SETTINGS_KEY]);
+  expect(saved.settings.helperEnabled).toBe(true);
+  expect(saved.settings.helperRate).toBe(20);
+  expect(saved.settings.helperHours).toBe(8);
+  expect(saved.data.helperDays[selectedDate]).toBe(true);
+  expect(saved.data.helpers).toBeUndefined();
 });

@@ -6,7 +6,7 @@
 'use strict';
 
 var RETIRE_RELOAD_KEY='bruno-sw-retired-reload-v1';
-var BUILD_VERSION='1.21';
+var BUILD_VERSION='1.22';
 var isTools=/electrical-tools\.html$/i.test(location.pathname);
 var bootFailures=[];
 
@@ -117,7 +117,8 @@ var TOOLS_MODULES=[
   './electrical-tasks-stage6-ui.js',
   './electrical-tasks-stage7-ui.js',
   './electric-electrical-task-solver.js',
-  './electrical-tasks-stage8-ui.js'
+  './electrical-tasks-stage8-ui.js',
+  './electrical-calculation-workflow.js'
 ];
 
 function finishBoot(){

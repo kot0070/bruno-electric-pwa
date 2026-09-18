@@ -64,7 +64,7 @@ test('STAGE8-RUNTIME-01 human phone journey boots, opens Journal, reloads and pr
   await expect(page.locator('#be-modern-shell-loader')).toHaveCount(0,{timeout:12000});
   await expectStableGeneration(page);
   await expect(page.locator('#panel-dispatch')).toBeVisible();
-  const call=page.locator('.dj-call').filter({hasText:'Runtime Stability'});
+  const call=page.locator('.dj-call').filter({hasText:'1 Test Way'});
   await expect(call).toBeVisible();
   await call.locator('[data-invoice]').click();
   await expect(page.locator('#be-doc-preview')).toBeVisible();

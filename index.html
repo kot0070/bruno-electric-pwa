@@ -16118,7 +16118,6 @@ function normalizeState(s) {
     if (ship) document.body.classList.add('ship-mode');
     else document.body.classList.remove('ship-mode');
     var badge = document.querySelector('.ver-badge');
-    if (badge && ship) badge.textContent = 'v1.15';
     if (ship) {
       document.title = 'Bruno Electric Estimating';
       var foot = document.querySelector('.app-foot');
@@ -16193,6 +16192,6 @@ function normalizeState(s) {
 })();
 
   </script>
-  <script src="./sw-register.js?v=1.15"></script>
+  <script src="./sw-register.js?v=1.17"></script>
 </body>
 </html>

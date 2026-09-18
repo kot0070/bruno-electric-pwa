@@ -61,6 +61,7 @@ jobs:
       - name: Run deterministic calculator and integrity tests
         run: npm run test:deterministic
       - name: Run Function Capability Playwright journeys
+        if: always()
         env:
           BRUNO_TESTED_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: npm run test:e2e:chromium

@@ -1,4 +1,4 @@
-name: One-shot journal controls and persistence repair
+name: One-shot invoice preview PDF parity repair
 
 on:
   push:
@@ -16,69 +16,32 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Repair settings save, helper delete and date ranges
+      - name: Make invoice PDF use preview print renderer
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-
-          p = Path('electric-dispatch-journal-v2.js')
-          text = p.read_text()
-
-          old = "function writeSettings(s){localStorage.setItem(SETTINGS_KEY,JSON.stringify(s));window.dispatchEvent(new CustomEvent('bruno:dispatch-changed'))}"
-          new = "function writeSettings(s){var current={};try{current=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')||{}}catch(e){};localStorage.setItem(SETTINGS_KEY,JSON.stringify(Object.assign({},current,s)));window.dispatchEvent(new CustomEvent('bruno:dispatch-changed'))}"
-          if old not in text: raise SystemExit('writeSettings target not found')
-          text = text.replace(old,new,1)
-
-          old = "function periodRange(date,mode){var d=new Date(date+'T12:00:00'),a,b;if(mode==='week'){a=startOfWeek(date);b=new Date(a);b.setDate(b.getDate()+6)}else if(mode==='month'){a=new Date(d.getFullYear(),d.getMonth(),1);b=new Date(d.getFullYear(),d.getMonth()+1,0)}else if(mode==='quarter'){a=quarterStart(date);b=new Date(a.getFullYear(),a.getMonth()+3,0)}else{a=d;b=d}return[a,b]}"
-          new = "function periodRange(date,mode){var d=new Date(date+'T12:00:00'),a,b;if(mode==='custom'){a=new Date((customStart||date)+'T12:00:00');b=new Date((customEnd||customStart||date)+'T12:00:00');if(b<a){var t=a;a=b;b=t}}else if(mode==='week'){a=startOfWeek(date);b=new Date(a);b.setDate(b.getDate()+6)}else if(mode==='month'){a=new Date(d.getFullYear(),d.getMonth(),1);b=new Date(d.getFullYear(),d.getMonth()+1,0)}else if(mode==='quarter'){a=quarterStart(date);b=new Date(a.getFullYear(),a.getMonth()+3,0)}else if(mode==='year'){a=new Date(d.getFullYear(),0,1);b=new Date(d.getFullYear(),11,31)}else{a=d;b=d}return[a,b]}"
-          if old not in text: raise SystemExit('periodRange target not found')
-          text = text.replace(old,new,1)
-
-          old = "var selected=today(),mode='day',editingId=null;"
-          new = "var selected=today(),mode='day',editingId=null,customStart=today(),customEnd=today();"
-          if old not in text: raise SystemExit('selected state target not found')
-          text = text.replace(old,new,1)
-
-          old = '<select id="dj-mode"><option value="day">Day</option><option value="week">Week</option><option value="month">Month</option><option value="quarter">Quarter</option></select>'
-          new = '''<select id="dj-mode"><option value="day">Day</option><option value="week">Week</option><option value="month">Month</option><option value="quarter">Quarter</option><option value="year">Year</option><option value="custom">Custom</option></select><span id="dj-range" style="display:'+(mode==='custom'?'flex':'none')+';gap:.35rem;align-items:center;flex-wrap:wrap"><input id="dj-from" type="date" value="'+customStart+'"><span style="color:var(--text-muted)">to</span><input id="dj-to" type="date" value="'+customEnd+'"></span>'''
-          if old not in text: raise SystemExit('mode select target not found')
-          text = text.replace(old,new,1)
-
-          old = '<button class="btn dj-mini" data-hdel="'+"'+h.id+'"+'">Disable from '+"'+selected+'"+'</button>'
-          new = '<button class="btn dj-mini" data-hdel="'+"'+h.id+'"+'">Disable from '+"'+selected+'"+'</button><button class="btn dj-mini" data-hremove="'+"'+h.id+'"+'">Delete helper</button>'
-          if old not in text: raise SystemExit('helper button target not found')
-          text = text.replace(old,new,1)
-
-          anchor = "function disableHelper(id){var data=readData(),h=data.helpers.find(function(x){return x.id===id});if(!h)return;var r=revisionFor(h,selected)||{};putRevision(h,{payMode:r.payMode||'hourly',rate:n(r.rate),hours:n(r.hours,8),taxPct:n(r.taxPct,readSettings().helperTaxPct),taxEnabled:r.taxEnabled!==false,active:false,days:Array.isArray(r.days)?r.days:[1,2,3,4,5]},selected);writeData(data);render()}"
-          addition = anchor + "\nfunction removeHelper(id){var data=readData(),h=data.helpers.find(function(x){return x.id===id});if(!h)return;if(!confirm('Delete '+(h.name||'Helper')+' completely?'))return;data.helpers=data.helpers.filter(function(x){return x.id!==id});writeData(data);render()}"
-          if anchor not in text: raise SystemExit('disableHelper anchor not found')
-          text = text.replace(anchor,addition,1)
-
-          text = text.replace('>Save settings</button>', '>Save journal settings</button>', 1)
-
-          old = "function shift(k){var d=new Date(selected+'T12:00:00');if(mode==='month')d.setMonth(d.getMonth()+k);else if(mode==='quarter')d.setMonth(d.getMonth()+3*k);else d.setDate(d.getDate()+(mode==='week'?7*k:k));selected=iso(d);render()}"
-          new = "function shift(k){if(mode==='custom'){var a=new Date(customStart+'T12:00:00'),b=new Date(customEnd+'T12:00:00'),days=Math.max(1,Math.round((b-a)/86400000)+1);a.setDate(a.getDate()+days*k);b.setDate(b.getDate()+days*k);customStart=iso(a);customEnd=iso(b);selected=customStart;render();return}var d=new Date(selected+'T12:00:00');if(mode==='month')d.setMonth(d.getMonth()+k);else if(mode==='quarter')d.setMonth(d.getMonth()+3*k);else if(mode==='year')d.setFullYear(d.getFullYear()+k);else d.setDate(d.getDate()+(mode==='week'?7*k:k));selected=iso(d);render()}"
-          if old not in text: raise SystemExit('shift target not found')
-          text = text.replace(old,new,1)
-
-          old = "q('#dj-mode').onchange=function(){mode=this.value;render()};"
-          new = "q('#dj-mode').onchange=function(){mode=this.value;if(mode==='custom'){customStart=selected;customEnd=selected}render()};var from=q('#dj-from'),to=q('#dj-to');if(from)from.onchange=function(){customStart=this.value||selected;if(customEnd<customStart)customEnd=customStart;selected=customStart;render()};if(to)to.onchange=function(){customEnd=this.value||customStart;if(customEnd<customStart)customStart=customEnd;selected=customStart;render()};"
-          if old not in text: raise SystemExit('mode bind target not found')
-          text = text.replace(old,new,1)
-
-          old = "q('#dj-helpers').onclick=function(e){var b=e.target.closest('[data-hedit],[data-hdel]');if(!b)return;var d=readData(),h=d.helpers.find(function(x){return x.id===(b.dataset.hedit||b.dataset.hdel)});if(b.dataset.hedit)helperEditor(h);else disableHelper(b.dataset.hdel)}"
-          new = "q('#dj-helpers').onclick=function(e){var b=e.target.closest('[data-hedit],[data-hdel],[data-hremove]');if(!b)return;var id=b.dataset.hedit||b.dataset.hdel||b.dataset.hremove,d=readData(),h=d.helpers.find(function(x){return x.id===id});if(b.dataset.hedit)helperEditor(h);else if(b.dataset.hremove)removeHelper(id);else disableHelper(id)}"
-          if old not in text: raise SystemExit('helper bind target not found')
-          text = text.replace(old,new,1)
-
+          p=Path('electric-customer-documents.js')
+          text=p.read_text()
+          old="function callPdf(c){var s=settings(),missing=missingCompany(s);if(missing.length){alert('Complete invoice settings before customer PDF: '+missing.join(', ')+'.');return false}download(pdf('SERVICE INVOICE',callSections(c,s)),'Bruno-Electric-'+invoiceNo(c)+'.pdf');return true}"
+          new="function callPdf(c){var s=settings(),missing=missingCompany(s);if(missing.length){alert('Complete invoice settings before customer PDF: '+missing.join(', ')+'.');return false}printOpenPreview();return true}"
+          if old not in text:
+              raise SystemExit('callPdf target not found')
+          text=text.replace(old,new,1)
+          old_calc="function calcPdf(model){var m=model||captureCalcModel();if(!m){alert('Open a calculator result first.');return false}download(pdf('ELECTRICAL CALCULATION REPORT · '+m.title,m.sections),'Bruno-Electric-Calculation-'+new Date().toISOString().slice(0,10)+'.pdf');return true}"
+          new_calc="function calcPdf(model){var m=model||captureCalcModel();if(!m){alert('Open a calculator result first.');return false}printOpenPreview();return true}"
+          if old_calc in text:
+              text=text.replace(old_calc,new_calc,1)
+          text=text.replace("label:'Download PDF',primary:true,onClick:function(){var fresh=data().calls.find(function(x){return x.id===id});if(fresh)callPdf(fresh)}},{id:'be-preview-print',label:'Print',onClick:printOpenPreview}","label:'Save / Print PDF',primary:true,onClick:function(){var fresh=data().calls.find(function(x){return x.id===id});if(fresh)callPdf(fresh)}}",1)
+          text=text.replace("label:'Download PDF',primary:true,onClick:function(){calcPdf(m)}},{id:'be-preview-print',label:'Print',onClick:printOpenPreview}","label:'Save / Print PDF',primary:true,onClick:function(){calcPdf(m)}}",1)
           p.write_text(text)
           PY
-          node --check electric-dispatch-journal-v2.js
-          grep -q "Delete helper" electric-dispatch-journal-v2.js
-          grep -q "option value=\"custom\"" electric-dispatch-journal-v2.js
-          grep -q "option value=\"year\"" electric-dispatch-journal-v2.js
-          grep -q "Object.assign({},current,s)" electric-dispatch-journal-v2.js
+          node --check electric-customer-documents.js
+          grep -q "function callPdf(c).*printOpenPreview" electric-customer-documents.js
+          if grep -q "download(pdf('SERVICE INVOICE'" electric-customer-documents.js; then
+            echo 'Legacy invoice PDF renderer still active' >&2
+            exit 1
+          fi
       - name: Commit repair
         shell: bash
         run: |
@@ -88,6 +51,6 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898204+github-actions[bot]@users.noreply.github.com'
-          git add electric-dispatch-journal-v2.js
-          git commit -m 'fix(journal): preserve settings, delete helpers, add date ranges'
+          git add electric-customer-documents.js
+          git commit -m 'fix(invoice): use preview renderer for PDF and print'
           git push origin HEAD:main

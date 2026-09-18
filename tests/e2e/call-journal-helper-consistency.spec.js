@@ -32,21 +32,21 @@ test.afterEach(async({page},testInfo)=>{
 });
 
 async function openJournal(page){
-  await page.goto('/index.html',{waitUntil:'load'});
+  await page.goto('/index.html#be=JOB&tab=dispatch',{waitUntil:'load'});
   await expect(page.locator('#panel-dispatch')).toBeVisible();
   await expect(page.locator('#dj-helper-add')).toBeVisible();
 }
 
-function helperMetric(page){
-  return page.locator('.dj-metric').filter({hasText:'Helpers gross'}).locator('.v');
+function metric(page,label){
+  return page.locator('.dj-metric').filter({hasText:new RegExp('^'+label,'i')}).locator('.v');
 }
 
-test('JOURNAL-HELPER-HUMAN-01 comma-decimal locale keeps helper row and summary numerically consistent through save edit and reload',async({page})=>{
+test('JOURNAL-HELPER-HUMAN-01 current helper contributes exactly once to Helper and Business Net through save, period changes and reload',async({page})=>{
   await openJournal(page);
   const selectedDate=await page.locator('#dj-date').inputValue();
   expect(selectedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 
-  // Reproduce the reported mobile setup in a comma-decimal locale: $20/hr x 8 h = $160/day.
+  // Every-day schedule makes the regression independent of the CI runner weekday.
   await page.locator('#dj-helper-add').click();
   await expect(page.locator('#djh-name')).toBeVisible();
   await page.locator('#djh-name').fill('Helper');
@@ -54,42 +54,38 @@ test('JOURNAL-HELPER-HUMAN-01 comma-decimal locale keeps helper row and summary 
   await page.locator('#djh-rate').fill('20');
   await page.locator('#djh-hours').fill('8');
   await page.locator('#djh-active').check();
-  await page.locator('#djh-days').selectOption('weekdays');
+  await page.locator('#djh-days').selectOption('all');
   await page.locator('#djh-save').click();
 
   let row=page.locator('.dj-helper').filter({hasText:'Helper'}).first();
   await expect(row).toContainText(amount('20.00'));
   await expect(row).toContainText('8 h');
   await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('160.00'));
-  await expect(helperMetric(page)).toContainText(amount('160.00'));
+  await expect(metric(page,'Helper')).toContainText(amount('160.00'));
+  await expect(metric(page,'Business Net')).toContainText(amount('160.00'));
 
-  // Give the MutationObserver several patch cycles; the old defect multiplied 160 by 100 each cycle.
-  await page.waitForTimeout(350);
-  await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('160.00'));
-  await expect(helperMetric(page)).toContainText(amount('160.00'));
+  // Period changes must use the same effective revision and multiply only by applicable days.
+  await page.locator('#dj-mode').selectOption('week');
+  await expect(metric(page,'Helper')).toContainText(amount('1120.00'));
+  await expect(metric(page,'Business Net')).toContainText(amount('1120.00'));
+  await page.locator('#dj-mode').selectOption('day');
+  await expect(metric(page,'Helper')).toContainText(amount('160.00'));
 
-  // Force another render through a normal edit/save without changing the economics.
-  await row.locator('[data-hedit]').click();
-  await expect(page.locator('#djh-rate')).toHaveValue('20');
-  await expect(page.locator('#djh-hours')).toHaveValue('8');
-  await page.locator('#djh-save').click();
-  row=page.locator('.dj-helper').filter({hasText:'Helper'}).first();
-  await page.waitForTimeout(250);
-  await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('160.00'));
-  await expect(helperMetric(page)).toContainText(amount('160.00'));
+  // Give observers multiple cycles; helper must not disappear or be multiplied repeatedly.
+  await page.waitForTimeout(500);
+  await expect(metric(page,'Helper')).toContainText(amount('160.00'));
 
-  // A real refresh must preserve the same helper economics and never produce an astronomical summary.
+  // Real reload must preserve helper economics and selected-current-day calculation.
   await page.reload({waitUntil:'load'});
   row=page.locator('.dj-helper').filter({hasText:'Helper'}).first();
-  await page.waitForTimeout(350);
   await expect(row.locator('.dj-helper-cost strong')).toContainText(amount('160.00'));
-  await expect(helperMetric(page)).toContainText(amount('160.00'));
-  const visibleMetrics=await page.locator('.dj-metric .v').allTextContents();
-  expect(visibleMetrics.join(' ')).not.toMatch(/000[\s\u00a0\u202f,.]*000[\s\u00a0\u202f,.]*000|e\+\d+/i);
+  await expect(metric(page,'Helper')).toContainText(amount('160.00'));
+  await expect(metric(page,'Business Net')).toContainText(amount('160.00'));
 
   const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).helpers[0],DATA_KEY);
   const active=saved.revisions.find(r=>r.from<=selectedDate&&(!r.to||r.to>=selectedDate));
   expect(active,'No active helper revision for selected journal date '+selectedDate).toBeTruthy();
   expect(active.rate).toBe(20);
   expect(active.hours).toBe(8);
+  expect(active.days).toEqual([1,2,3,4,5,6,7]);
 });

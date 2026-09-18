@@ -1,0 +1,46 @@
+name: One-shot v1.17 index bootstrap cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-shot-v117-index-bootstrap.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - name: Remove stale index version ownership
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          old="    if (badge && ship) badge.textContent = 'v1.15';\n"
+          if old not in s:
+              raise SystemExit('legacy v1.15 badge writer not found')
+          s=s.replace(old,'')
+          old_script='<script src="./sw-register.js?v=1.15"></script>'
+          if old_script not in s:
+              raise SystemExit('stale sw-register v1.15 src not found')
+          s=s.replace(old_script,'<script src="./sw-register.js?v=1.17"></script>')
+          p.write_text(s)
+          PY
+          ! grep -F "badge.textContent = 'v1.15'" index.html
+          grep -F '<script src="./sw-register.js?v=1.17"></script>' index.html
+      - name: Commit patch
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898204+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'fix(bootstrap): remove stale v1.15 index ownership'
+          git push origin HEAD:main

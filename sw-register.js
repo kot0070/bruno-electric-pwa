@@ -6,7 +6,7 @@
 'use strict';
 
 var RETIRE_RELOAD_KEY='bruno-sw-retired-reload-v1';
-var BUILD_VERSION='1.19';
+var BUILD_VERSION='1.20';
 var isTools=/electrical-tools\.html$/i.test(location.pathname);
 var bootFailures=[];
 
@@ -83,6 +83,7 @@ var APP_MODULES=[
   './electric-fixed-price-invoice.js',
   './electric-custom-materials.js',
   './electric-catalog-job-ux-semantics.js',
+  './electric-catalog-labor-estimator.js',
   './electric-compact-header.js',
   './electric-dispatch-journal-v2.js',
   './electric-customer-documents.js',

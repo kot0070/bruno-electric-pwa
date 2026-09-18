@@ -43,6 +43,8 @@ function helperMetric(page){
 
 test('JOURNAL-HELPER-HUMAN-01 comma-decimal locale keeps helper row and summary numerically consistent through save edit and reload',async({page})=>{
   await openJournal(page);
+  const selectedDate=await page.locator('#dj-date').inputValue();
+  expect(selectedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 
   // Reproduce the reported mobile setup in a comma-decimal locale: $20/hr x 8 h = $160/day.
   await page.locator('#dj-helper-add').click();
@@ -86,7 +88,8 @@ test('JOURNAL-HELPER-HUMAN-01 comma-decimal locale keeps helper row and summary 
   expect(visibleMetrics.join(' ')).not.toMatch(/000[\s\u00a0\u202f,.]*000[\s\u00a0\u202f,.]*000|e\+\d+/i);
 
   const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).helpers[0],DATA_KEY);
-  const active=saved.revisions.find(r=>r.from<='2026-09-17'&&(!r.to||r.to>='2026-09-17'));
+  const active=saved.revisions.find(r=>r.from<=selectedDate&&(!r.to||r.to>=selectedDate));
+  expect(active,'No active helper revision for selected journal date '+selectedDate).toBeTruthy();
   expect(active.rate).toBe(20);
   expect(active.hours).toBe(8);
 });

@@ -15,6 +15,7 @@ function errorsFor(page){
   return rows;
 }
 function amount(re){return new RegExp(re.replace('.', '[,.]'))}
+function weekdayNumber(date){const d=new Date(date+'T12:00:00').getDay();return d===0?7:d;}
 
 test.beforeEach(async({page})=>{
   errorsFor(page);
@@ -46,7 +47,7 @@ test('JOURNAL-HELPER-HUMAN-01 current helper contributes exactly once to Helper 
   const selectedDate=await page.locator('#dj-date').inputValue();
   expect(selectedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 
-  // Every-day schedule makes the regression independent of the CI runner weekday.
+  // Every-day schedule isolates effective-date behavior from weekday filtering.
   await page.locator('#dj-helper-add').click();
   await expect(page.locator('#djh-name')).toBeVisible();
   await page.locator('#djh-name').fill('Helper');
@@ -64,10 +65,13 @@ test('JOURNAL-HELPER-HUMAN-01 current helper contributes exactly once to Helper 
   await expect(metric(page,'Helper')).toContainText(amount('160.00'));
   await expect(metric(page,'Business Net')).toContainText(amount('160.00'));
 
-  // Period changes must use the same effective revision and multiply only by applicable days.
+  // A newly-created helper revision starts on selectedDate. Week view must not back-charge days
+  // earlier in that Monday-Sunday period; only selectedDate through Sunday are applicable here.
+  const weekApplicableDays=8-weekdayNumber(selectedDate);
+  const weekGross=(160*weekApplicableDays).toFixed(2);
   await page.locator('#dj-mode').selectOption('week');
-  await expect(metric(page,'Helper')).toContainText(amount('1120.00'));
-  await expect(metric(page,'Business Net')).toContainText(amount('1120.00'));
+  await expect(metric(page,'Helper')).toContainText(amount(weekGross));
+  await expect(metric(page,'Business Net')).toContainText(amount(weekGross));
   await page.locator('#dj-mode').selectOption('day');
   await expect(metric(page,'Helper')).toContainText(amount('160.00'));
 
@@ -85,6 +89,7 @@ test('JOURNAL-HELPER-HUMAN-01 current helper contributes exactly once to Helper 
   const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)).helpers[0],DATA_KEY);
   const active=saved.revisions.find(r=>r.from<=selectedDate&&(!r.to||r.to>=selectedDate));
   expect(active,'No active helper revision for selected journal date '+selectedDate).toBeTruthy();
+  expect(active.from).toBe(selectedDate);
   expect(active.rate).toBe(20);
   expect(active.hours).toBe(8);
   expect(active.days).toEqual([1,2,3,4,5,6,7]);

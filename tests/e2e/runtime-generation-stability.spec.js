@@ -36,11 +36,13 @@ test('STAGE8-RUNTIME-01 human phone journey boots, opens Journal, reloads and pr
   await expectStableGeneration(page);
   await expect(page.locator('#panel-dispatch')).toBeVisible();
   await expect(page.getByText('Call Journal',{exact:true}).first()).toBeVisible();
+  const journalDate=await page.locator('#dj-date').inputValue();
+  expect(journalDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
 
   await page.waitForTimeout(1500);
   await expectStableGeneration(page);
 
-  await page.evaluate(([dk,sk])=>{
+  await page.evaluate(([dk,sk,date])=>{
     localStorage.setItem(sk,JSON.stringify({
       serviceHourlyRate:175,
       commercialTaxPct:8.25,
@@ -54,9 +56,9 @@ test('STAGE8-RUNTIME-01 human phone journey boots, opens Journal, reloads and pr
       invoiceTerms:'Due upon receipt'
     }));
     localStorage.setItem(dk,JSON.stringify({calls:[{
-      id:'runtime-stability-call',date:'2026-09-17',time:'21:07',customer:'Runtime Stability',address:'1 Test Way',hours:2,price:400,status:'completed',description:'Electrical service',callType:'commercial_repair',pricingMode:'fixed',taxPct:8.25,taxPctApplied:8.25,customerSalesTaxPctApplied:8.25,includedMaterialsMode:'quick',includedMaterialsTotal:0,includedMaterialItems:[],toolFeeEnabled:false,toolFeePct:0
+      id:'runtime-stability-call',date:date,time:'21:07',customer:'Runtime Stability',address:'1 Test Way',hours:2,price:400,status:'completed',description:'Electrical service',callType:'commercial_repair',pricingMode:'fixed',taxPct:8.25,taxPctApplied:8.25,customerSalesTaxPctApplied:8.25,includedMaterialsMode:'quick',includedMaterialsTotal:0,includedMaterialItems:[],toolFeeEnabled:false,toolFeePct:0
     }],helpers:[]}));
-  },[DATA_KEY,SETTINGS_KEY]);
+  },[DATA_KEY,SETTINGS_KEY,journalDate]);
 
   await page.reload({waitUntil:'domcontentloaded'});
   await expect(page.locator('#be-modern-shell-loader')).toHaveCount(0,{timeout:12000});

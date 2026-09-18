@@ -1,66 +1,100 @@
-(function () {
-  'use strict';
-  var shellGuardTimer=null;
-  function installShellGuard(){
-    if(/electrical-tools\.html$/i.test(location.pathname)||!document.body)return;
-    document.documentElement.setAttribute('data-be-shell-pending','1');
-    if(!document.getElementById('be-shell-prepaint-style')){
-      var st=document.createElement('style');
-      st.id='be-shell-prepaint-style';
-      st.textContent='html[data-be-shell-pending="1"] body>.app-header,html[data-be-shell-pending="1"] body>.live-totals,html[data-be-shell-pending="1"] body>#nav-tabs,html[data-be-shell-pending="1"] body>main{visibility:hidden!important}#be-modern-shell-loader{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:flex-start;justify-content:center;padding:18px;background:#0f1419;color:#e8eef6;font:700 16px/1.35 system-ui,-apple-system,Segoe UI,sans-serif}#be-modern-shell-loader .be-shell-card{width:min(520px,100%);padding:14px 16px;border:1px solid #2e3a4a;border-radius:12px;background:#17212c;box-shadow:0 10px 30px rgba(0,0,0,.28)}#be-modern-shell-loader small{display:block;margin-top:3px;color:#8b9bb0;font-weight:600}';
-      document.head.appendChild(st);
-    }
-    if(!document.getElementById('be-modern-shell-loader')){
-      var loader=document.createElement('div');loader.id='be-modern-shell-loader';loader.setAttribute('role','status');loader.setAttribute('aria-live','polite');loader.innerHTML='<div class="be-shell-card">Bruno Electric Services LLC<small>Loading current workspace…</small></div>';document.body.appendChild(loader);
-    }
-    clearTimeout(shellGuardTimer);shellGuardTimer=setTimeout(clearShellGuard,3500);
+/* Bruno Electric — deterministic runtime bootstrap.
+ * No shell service worker is registered here. The previous offline cache could
+ * mix old and new generations of runtime modules, so it is explicitly retired.
+ * Journal/invoice ownership is now: dispatch data -> customer documents ->
+ * runtime authority. Legacy invoice/metrics patch modules are not loaded.
+ */
+(function(){
+'use strict';
+
+var RETIRE_RELOAD_KEY='bruno-sw-retired-reload-v1';
+var isTools=/electrical-tools\.html$/i.test(location.pathname);
+
+function installShellGuard(){
+  if(isTools||!document.body)return;
+  document.documentElement.setAttribute('data-be-shell-pending','1');
+  if(!document.getElementById('be-shell-prepaint-style')){
+    var st=document.createElement('style');
+    st.id='be-shell-prepaint-style';
+    st.textContent='html[data-be-shell-pending="1"] body>.app-header,html[data-be-shell-pending="1"] body>.live-totals,html[data-be-shell-pending="1"] body>#nav-tabs,html[data-be-shell-pending="1"] body>main{visibility:hidden!important}#be-modern-shell-loader{position:fixed;inset:0;z-index:2147483000;padding:18px;background:#0f1419;color:#e8eef6;font:700 16px/1.35 system-ui,-apple-system,Segoe UI,sans-serif}#be-modern-shell-loader>div{max-width:520px;margin:auto;padding:14px 16px;border:1px solid #2e3a4a;border-radius:12px;background:#17212c}#be-modern-shell-loader small{display:block;margin-top:3px;color:#8b9bb0}';
+    document.head.appendChild(st);
   }
-  function clearShellGuard(){clearTimeout(shellGuardTimer);shellGuardTimer=null;document.documentElement.removeAttribute('data-be-shell-pending');var loader=document.getElementById('be-modern-shell-loader');if(loader)loader.remove()}
-  function prepareStrictMarginsRuntime(){if(/electrical-tools\.html$/i.test(location.pathname))return;var strict=document.getElementById('margins-body-strict');if(strict)return;var legacy=document.getElementById('margins-body');if(!legacy||!legacy.parentNode)return;strict=document.createElement('tbody');strict.id='margins-body-strict';strict.setAttribute('data-pricing-margins-runtime','strict-v2');legacy.parentNode.insertBefore(strict,legacy);legacy.parentNode.removeChild(legacy);var panel=document.getElementById('panel-margins');if(panel){panel.setAttribute('data-pricing-margins-runtime','strict-v2');panel.setAttribute('data-legacy-margins-disabled','1')}}
-  function script(src,attr,globalName,skipTools){if(skipTools&&/electrical-tools\.html$/i.test(location.pathname))return;if(globalName&&window[globalName]||document.querySelector('script['+attr+']'))return;var s=document.createElement('script');s.src=src;s.defer=true;s.setAttribute(attr,'1');s.onerror=function(){};document.head.appendChild(s);return s}
-  function loadCatalogCostSemantics(){script('./electric-catalog-cost-semantics.js','data-be-catalog-cost-semantics','BrunoCatalogCostSemantics',true)}
-  function loadPricingMarginsSemantics(){script('./electric-pricing-margins-semantics.js','data-be-pricing-margins-semantics','BrunoPricingMarginsSemantics',true)}
-  function loadJobMaterialCostSemantics(){script('./electric-job-material-cost-semantics.js','data-be-job-material-cost-semantics','BrunoJobMaterialCostSemantics',true)}
-  function loadJobSummarySemantics(){script('./electric-job-summary-semantics.js','data-be-job-summary-semantics','BrunoJobSummarySemantics',true)}
-  function loadFixedPriceInvoice(){script('./electric-fixed-price-invoice.js','data-be-fixed-price-invoice','BrunoFixedPriceInvoice',true)}
-  function loadQuoteLifecycle(){var s=script('./electric-quote-lifecycle.js','data-be-quote-lifecycle','BrunoQuoteLifecycle',true);if(s){s.onload=loadFixedPriceInvoice;s.onerror=loadFixedPriceInvoice}else loadFixedPriceInvoice()}
-  function loadPricingDomainGuard(){var s=script('./electric-pricing-domain-guard.js','data-be-pricing-domain-guard','BrunoPricingDomainGuard',true);if(s){s.onload=loadQuoteLifecycle;s.onerror=loadQuoteLifecycle}else loadQuoteLifecycle()}
-  function loadCustomMaterials(){script('./electric-custom-materials.js','data-be-custom-materials','BrunoCustomMaterials',true)}
-  function loadCatalogJobUXSemantics(){script('./electric-catalog-job-ux-semantics.js','data-be-catalog-job-ux','BrunoCatalogJobUXSemantics',true)}
-  function loadDispatchJournal(){script('./electric-dispatch-journal-v2.js','data-be-dispatch-v2','BrunoDispatchJournalV2',true)}
-  function loadCustomerInvoicePatch(){script('./electric-customer-invoice-patch.js','data-be-customer-invoice-patch','BrunoCustomerInvoicePatch',false)}
-  function loadCustomerDocuments(){var s=script('./electric-customer-documents.js','data-be-customer-documents','BrunoCustomerDocuments',false);if(s){s.onload=loadCustomerInvoicePatch;s.onerror=loadCustomerInvoicePatch}else loadCustomerInvoicePatch()}
-  function loadCustomerJournalMetrics(){script('./electric-journal-customer-metrics.js','data-be-customer-journal-metrics',null,true)}
-  function loadCompactHeader(){script('./electric-compact-header.js','data-be-compact-header','BrunoCompactHeader',true)}
-  function loadRuntimeAuthority(){script('./electric-runtime-authority-v1.js','data-be-runtime-authority','BrunoRuntimeAuthorityV1',false)}
-  function loadResidentialHistoryJobScope(){script('./electric-residential-history-job-scope.js','data-be-res-history-job-scope','BrunoResidentialLiveHistory',false)}
-  function loadResidentialWireTakeoff(){script('./electric-residential-wire-takeoff.js','data-be-res-wire-takeoff','BrunoResidentialWireTakeoff',false)}
-  function loadResidentialApplyJob(){script('./electric-residential-apply-job.js','data-be-res-apply-job','BrunoResidentialApplyJob',false)}
-  function loadResidentialSaveArchiveUX(){script('./electric-residential-save-archive-ux.js','data-be-res-save-archive','BrunoResidentialSaveArchiveUX',false)}
-  function loadElectricalTasksStage8UI(){script('./electrical-tasks-stage8-ui.js','data-be-electrical-tasks-stage8-ui','BrunoElectricalTasksStage8UI',false)}
-  function loadElectricalTaskSolver(){if(window.BrunoElectricalTaskSolver){loadElectricalTasksStage8UI();return}var s=script('./electric-electrical-task-solver.js','data-be-electrical-task-solver','BrunoElectricalTaskSolver',false);if(s){s.onload=loadElectricalTasksStage8UI;s.onerror=loadElectricalTasksStage8UI}else loadElectricalTasksStage8UI()}
-  function loadElectricalTasksStage7UI(){var s=script('./electrical-tasks-stage7-ui.js','data-be-electrical-tasks-stage7-ui','BrunoElectricalTasksStage7UI',false);if(s){s.onload=loadElectricalTaskSolver;s.onerror=loadElectricalTaskSolver}else loadElectricalTaskSolver()}
-  function loadElectricalTasksStage6UI(){var s=script('./electrical-tasks-stage6-ui.js','data-be-electrical-tasks-stage6-ui','BrunoElectricalTasksStage6UI',false);if(s){s.onload=loadElectricalTasksStage7UI;s.onerror=loadElectricalTasksStage7UI}else loadElectricalTasksStage7UI()}
-  function loadElectricalTasksStage5UI(){var s=script('./electrical-tasks-stage5-ui.js','data-be-electrical-tasks-stage5-ui','BrunoElectricalTasksStage5UI',false);if(s){s.onload=loadElectricalTasksStage6UI;s.onerror=loadElectricalTasksStage6UI}else loadElectricalTasksStage6UI()}
-  function loadElectricalTasksStage4UI(){var s=script('./electrical-tasks-stage4-ui.js','data-be-electrical-tasks-stage4-ui','BrunoElectricalTasksStage4UI',false);if(s){s.onload=loadElectricalTasksStage5UI;s.onerror=loadElectricalTasksStage5UI}else loadElectricalTasksStage5UI()}
-  function loadElectricalTasksStage3UI(){var s=script('./electrical-tasks-stage3-ui.js','data-be-electrical-tasks-stage3-ui','BrunoElectricalTasksStage3UI',false);if(s){s.onload=loadElectricalTasksStage4UI;s.onerror=loadElectricalTasksStage4UI}else loadElectricalTasksStage4UI()}
-  function loadElectricalTasksStage2UI(){var s=script('./electrical-tasks-stage2-ui.js','data-be-electrical-tasks-stage2-ui','BrunoElectricalTasksStage2UI',false);if(s){s.onload=loadElectricalTasksStage3UI;s.onerror=loadElectricalTasksStage3UI}else loadElectricalTasksStage3UI()}
-  function loadElectricalTasksUI(){var s=script('./electrical-tasks-ui.js','data-be-electrical-tasks-ui','BrunoElectricalTasksUI',false);if(s){s.onload=loadElectricalTasksStage2UI}else loadElectricalTasksStage2UI()}
-  function loadTaskArchive(){if(window.BrunoElectricalTaskArchive){loadElectricalTasksUI();return}var s=script('./electric-electrical-task-archive.js','data-be-task-archive','BrunoElectricalTaskArchive',false);if(s){s.onload=loadElectricalTasksUI;s.onerror=loadElectricalTasksUI}else loadElectricalTasksUI()}
-  function loadTaskAdvanced(){if(window.BrunoElectricalTaskAdvanced){loadTaskArchive();return}var s=script('./electric-electrical-task-advanced.js','data-be-task-advanced','BrunoElectricalTaskAdvanced',false);if(s){s.onload=loadTaskArchive;s.onerror=loadTaskArchive}else loadTaskArchive()}
-  function loadTaskMaterialTakeoff(){if(window.BrunoElectricalTaskMaterialTakeoff){loadTaskAdvanced();return}var s=script('./electric-electrical-task-material-takeoff.js','data-be-task-material-takeoff','BrunoElectricalTaskMaterialTakeoff',false);if(s){s.onload=loadTaskAdvanced;s.onerror=loadTaskAdvanced}else loadTaskAdvanced()}
-  function loadGroundingEngine(){if(window.BrunoGroundingEngine){loadTaskMaterialTakeoff();return}var s=script('./electric-grounding-engine.js','data-be-grounding-engine','BrunoGroundingEngine',false);if(s){s.onload=loadTaskMaterialTakeoff;s.onerror=loadTaskMaterialTakeoff}else loadTaskMaterialTakeoff()}
-  function loadGroundingReference(){if(window.BrunoGroundingReference){loadTaskMaterialTakeoff();return}var s=script('./electric-grounding-reference.js','data-be-grounding-reference','BrunoGroundingReference',false);if(s){s.onload=loadTaskMaterialTakeoff;s.onerror=loadTaskMaterialTakeoff}else loadTaskMaterialTakeoff()}
-  function loadRacewayEngine(){if(window.BrunoRacewayEngine){loadGroundingReference();return}var s=script('./electric-raceway-engine.js','data-be-raceway-engine','BrunoRacewayEngine',false);if(s){s.onload=loadGroundingReference;s.onerror=loadGroundingReference}else loadGroundingReference()}
-  function loadElectricalTaskEngine(){if(window.BrunoElectricalTaskEngine){loadRacewayEngine();return}var s=script('./electric-electrical-task-engine.js','data-be-electrical-task-engine','BrunoElectricalTaskEngine',false);if(s){s.onload=loadRacewayEngine;s.onerror=loadRacewayEngine}else loadRacewayEngine()}
-  function loadElectricalTasksCore(){if(!/electrical-tools\.html$/i.test(location.pathname))return;if(window.BrunoElectricalTasks){loadElectricalTaskEngine();return}var s=script('./electric-electrical-tasks.js','data-be-electrical-tasks-core','BrunoElectricalTasks',false);if(s)s.onload=loadElectricalTaskEngine}
-  function loadResidentialWorkspaceModule(){script('./electric-residential-live-workspace.js','data-be-res-live-workspace','BrunoResidentialLiveWorkspace',true)}
-  function loadResidentialWorkspaceBridge(){if(/electrical-tools\.html$/i.test(location.pathname))return;if(window.BrunoResidentialPricing){loadResidentialWorkspaceModule();return}var existing=document.querySelector('script[data-be-res-pricing]');if(existing)return;var p=document.createElement('script');p.src='./electric-residential-pricing.js';p.defer=true;p.dataset.beResPricing='1';p.onload=loadResidentialWorkspaceModule;p.onerror=loadResidentialWorkspaceModule;document.head.appendChild(p)}
-  function loadNavigationBridge(){script('./electric-navigation-bridge.js','data-be-nav-bridge',null,true)}
-  function loadWorkspaceEnhancement(){if(/electrical-tools\.html$/i.test(location.pathname)){clearShellGuard();return}if(document.querySelector('script[data-be-workspace]'))return;var s=document.createElement('script');s.src='./electric-workspace.js';s.defer=true;s.dataset.beWorkspace='1';s.onload=function(){clearShellGuard();loadNavigationBridge();loadRuntimeAuthority()};s.onerror=function(){clearShellGuard();loadRuntimeAuthority()};document.head.appendChild(s)}
-  function loadAppNavigation(){prepareStrictMarginsRuntime();loadCatalogCostSemantics();loadPricingMarginsSemantics();loadJobMaterialCostSemantics();loadJobSummarySemantics();loadPricingDomainGuard();loadCustomMaterials();loadCatalogJobUXSemantics();loadCompactHeader();loadDispatchJournal();loadCustomerDocuments();loadCustomerJournalMetrics();loadResidentialWorkspaceBridge();loadResidentialHistoryJobScope();loadResidentialWireTakeoff();loadResidentialApplyJob();loadResidentialSaveArchiveUX();loadElectricalTasksCore();if(window.BrunoElectricAppNavigation){loadWorkspaceEnhancement();return}if(document.querySelector('script[data-be-app-nav]'))return;var n=document.createElement('script');n.src='./electric-app-navigation.js';n.defer=true;n.dataset.beAppNav='1';n.onload=loadWorkspaceEnhancement;n.onerror=loadWorkspaceEnhancement;document.head.appendChild(n)}
+  if(!document.getElementById('be-modern-shell-loader')){
+    var loader=document.createElement('div');loader.id='be-modern-shell-loader';loader.innerHTML='<div>Bruno Electric Services LLC<small>Loading current workspace…</small></div>';document.body.appendChild(loader);
+  }
+}
+function clearShellGuard(){document.documentElement.removeAttribute('data-be-shell-pending');var x=document.getElementById('be-modern-shell-loader');if(x)x.remove()}
+
+function removeLegacyCaches(){
+  if(!('caches' in window))return Promise.resolve();
+  return caches.keys().then(function(keys){return Promise.all(keys.filter(function(k){return /^bruno-electric-v\d+$/.test(k)}).map(function(k){return caches.delete(k)}))}).catch(function(){})
+}
+function retireServiceWorkers(){
+  if(!('serviceWorker' in navigator))return removeLegacyCaches().then(function(){return false});
+  var hadController=!!navigator.serviceWorker.controller;
+  return navigator.serviceWorker.getRegistrations().then(function(regs){return Promise.all(regs.map(function(r){return r.unregister()}))}).catch(function(){}).then(removeLegacyCaches).then(function(){return hadController})
+}
+
+function hasScript(src){return Array.prototype.some.call(document.scripts,function(s){var v=s.getAttribute('src')||'';return v===src||v.endsWith('/'+src.replace(/^\.\//,''))})}
+function load(src){return new Promise(function(resolve){if(hasScript(src)){resolve();return}var s=document.createElement('script');s.src=src;s.async=false;s.onload=resolve;s.onerror=function(){console.error('Required runtime module failed: '+src);resolve()};document.head.appendChild(s)})}
+function sequence(list){return list.reduce(function(p,src){return p.then(function(){return load(src)})},Promise.resolve())}
+
+var APP_MODULES=[
+  './electric-catalog-cost-semantics.js',
+  './electric-pricing-margins-semantics.js',
+  './electric-job-material-cost-semantics.js',
+  './electric-job-summary-semantics.js',
+  './electric-pricing-domain-guard.js',
+  './electric-quote-lifecycle.js',
+  './electric-fixed-price-invoice.js',
+  './electric-custom-materials.js',
+  './electric-catalog-job-ux-semantics.js',
+  './electric-compact-header.js',
+  './electric-dispatch-journal-v2.js',
+  './electric-customer-documents.js',
+  './electric-residential-pricing.js',
+  './electric-residential-live-workspace.js',
+  './electric-residential-history-job-scope.js',
+  './electric-residential-wire-takeoff.js',
+  './electric-residential-apply-job.js',
+  './electric-residential-save-archive-ux.js',
+  './electric-app-navigation.js',
+  './electric-workspace.js',
+  './electric-navigation-bridge.js',
+  './electric-runtime-authority-v1.js'
+];
+var TOOLS_MODULES=[
+  './electric-customer-documents.js',
+  './electric-electrical-tasks.js',
+  './electric-electrical-task-engine.js',
+  './electric-raceway-engine.js',
+  './electric-grounding-reference.js',
+  './electric-grounding-engine.js',
+  './electric-electrical-task-material-takeoff.js',
+  './electric-electrical-task-advanced.js',
+  './electric-electrical-task-archive.js',
+  './electrical-tasks-ui.js',
+  './electrical-tasks-stage2-ui.js',
+  './electrical-tasks-stage3-ui.js',
+  './electrical-tasks-stage4-ui.js',
+  './electrical-tasks-stage5-ui.js',
+  './electrical-tasks-stage6-ui.js',
+  './electrical-tasks-stage7-ui.js',
+  './electric-electrical-task-solver.js',
+  './electrical-tasks-stage8-ui.js'
+];
+
+function boot(){
   installShellGuard();
-  prepareStrictMarginsRuntime();
-  loadAppNavigation();
-  if(!('serviceWorker' in navigator))return;window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})});
+  retireServiceWorkers().then(function(hadController){
+    if(hadController&&sessionStorage.getItem(RETIRE_RELOAD_KEY)!=='1'){
+      sessionStorage.setItem(RETIRE_RELOAD_KEY,'1');location.reload();return;
+    }
+    sessionStorage.removeItem(RETIRE_RELOAD_KEY);
+    return sequence(isTools?TOOLS_MODULES:APP_MODULES).then(function(){
+      document.documentElement.setAttribute('data-be-bootstrap','single-runtime-v2');clearShellGuard();
+    })
+  }).catch(function(){clearShellGuard()})
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

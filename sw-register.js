@@ -6,7 +6,7 @@
 'use strict';
 
 var RETIRE_RELOAD_KEY='bruno-sw-retired-reload-v1';
-var BUILD_VERSION='1.17';
+var BUILD_VERSION='1.18';
 var isTools=/electrical-tools\.html$/i.test(location.pathname);
 var bootFailures=[];
 

@@ -1,0 +1,43 @@
+name: Temporary Stage 8 master hygiene sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-shot-stage8-master-hygiene.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Add binding production hygiene policy to active master
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md')
+          text=p.read_text()
+          anchor='### Stage 8 architecture corrective substage — ACTIVE\n'
+          policy='''\n#### Binding production-tree hygiene\n- `main` is the current production tree, not executable history.\n- superseded UI/runtime/renderer/patch files that own the same capability must be physically removed after replacement is proven; omission from the main loader alone is insufficient;\n- Git history is the default backup for removed implementations; any exceptional human-readable archive must live outside runtime paths and must never be loaded or cached as executable application code;\n- completed one-shot repair workflows are removed after application; durable CI only remains under `.github/workflows`;\n- a replacement requires repository-wide search for retired filenames, handlers, selectors, storage writers, dynamic loaders and stale version literals;\n- Stage 8 cannot be accepted while multiple executable generations of the same user-facing capability remain in the production tree;\n- visible build version must have one runtime authority and must remain stable after delayed DOM mutations, Journal navigation, invoice preview and reload.\n\n'''
+          if '#### Binding production-tree hygiene' not in text:
+              if anchor not in text: raise SystemExit('Stage 8 architecture anchor not found')
+              pos=text.index(anchor)+len(anchor)
+              text=text[:pos]+policy+text[pos:]
+              p.write_text(text)
+          PY
+          grep -q '#### Binding production-tree hygiene' dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
+      - name: Commit sync
+        shell: bash
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898204+github-actions[bot]@users.noreply.github.com'
+          git add dev-plans/FUNCTION_CAPABILITY_AUDIT_MASTER.md
+          git commit -m 'docs(master): bind production runtime hygiene in Stage 8'
+          git push origin HEAD:main

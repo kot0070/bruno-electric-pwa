@@ -8,7 +8,7 @@
 'use strict';
 
 var RETIRE_RELOAD_KEY='bruno-sw-retired-reload-v1';
-var BUILD_VERSION='1.13';
+var BUILD_VERSION='1.14';
 var isTools=/electrical-tools\.html$/i.test(location.pathname);
 
 function installShellGuard(){
@@ -42,6 +42,7 @@ function load(src){return new Promise(function(resolve){if(hasScript(src)){resol
 function sequence(list){return list.reduce(function(p,src){return p.then(function(){return load(src)})},Promise.resolve())}
 
 var APP_MODULES=[
+  './electric-app-version.js',
   './electric-catalog-cost-semantics.js',
   './electric-pricing-margins-semantics.js',
   './electric-job-material-cost-semantics.js',
@@ -66,6 +67,7 @@ var APP_MODULES=[
   './electric-runtime-authority-v1.js'
 ];
 var TOOLS_MODULES=[
+  './electric-app-version.js',
   './electric-customer-documents.js',
   './electric-electrical-tasks.js',
   './electric-electrical-task-engine.js',

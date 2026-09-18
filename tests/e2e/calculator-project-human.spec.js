@@ -42,6 +42,9 @@ test('HUMAN-CALC-06 project calculator validates input and switches residential/
   await page.goto('/electrical-tools.html',{waitUntil:'load'});
   await page.locator('#be-tool-select').waitFor({state:'attached'});
   await openTool(page,'project');
+  await expect(page.locator('.be-project-hub')).toBeVisible();
+  await page.locator('[data-hub="quick"]').click();
+  await expect(page.locator('.pc-hero')).toBeVisible();
 
   // Blank required area must fail closed and keep the user on Project Calculator.
   await page.locator('#pc-sqft').fill('');
